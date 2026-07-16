@@ -31,20 +31,6 @@ function isBlockedUrl(url: string | null | undefined): boolean {
   }
 }
 
-function classifyReferrer(ref: string | null | undefined): string | null {
-  if (!ref) return null;
-  let host = ref.toLowerCase();
-  try { host = new URL(ref).hostname.toLowerCase(); } catch { /* keep */ }
-  if (host.includes("instagram.com")) return "instagram";
-  if (host.includes("tiktok.com")) return "tiktok";
-  if (host.includes("pinterest.com")) return "pinterest";
-  if (host.includes("google.com") || host.includes("google.co")) return "google";
-  if (host.includes("facebook.com") || host.includes("fb.com") || host === "m.facebook.com") return "facebook";
-  if (host === "t.co" || host.includes("twitter.com") || host.includes("x.com")) return "twitter";
-  if (host.includes("weixin") || host.includes("wechat")) return "wechat";
-  return "referral";
-}
-
 const MAX_BATCH_SIZE = 25;
 const MAX_EVENT_NAME_LENGTH = 64;
 const EVENT_NAME_PATTERN = /^[a-z][a-z0-9_]{1,63}$/;
@@ -80,11 +66,6 @@ export async function POST(req: NextRequest) {
     // Read Vercel geo headers — populated automatically on every Vercel deployment.
     // Falls back to null in local dev (which is fine — those events are blocked by tracker.ts).
     const geoCountry = req.headers.get("x-vercel-ip-country") ?? null;
-    const geoRegion  = req.headers.get("x-vercel-ip-country-region") ?? null;
-    const geoCity    = req.headers.get("x-vercel-ip-city") ?? null; // bonus — stored in region as "city, region"
-    const regionLabel = geoCity && geoRegion
-      ? `${geoCity}, ${geoRegion}`
-      : geoRegion ?? geoCity ?? null;
 
     const now = new Date().toISOString();
 
@@ -92,12 +73,6 @@ export async function POST(req: NextRequest) {
       // Drop events originating from localhost/dev environments
       .filter((ev) => !isBlockedUrl(ev.page_url))
       .map((ev) => {
-        // Server-side traffic source: if client didn't classify (null/undefined),
-        // try to classify from referrer here.
-        const trafficSource =
-          ev.traffic_source ??
-          (ev.referrer ? classifyReferrer(ev.referrer) : "direct");
-
         // Strip localhost referrers from stored data
         const cleanReferrer = isBlockedUrl(ev.referrer) ? null : (ev.referrer ?? null);
 
@@ -109,12 +84,8 @@ export async function POST(req: NextRequest) {
           anonymous_user_id: ev.anonymous_user_id  ?? null,
           session_id:        ev.session_id          ?? null,
           device_type:       ev.device_type         ?? null,
-          browser:           ev.browser             ?? null,
-          traffic_source:    trafficSource,
           referrer:          cleanReferrer,
-          // Always override country/region from Vercel headers — authoritative
           country:           geoCountry,
-          region:            regionLabel,
           timestamp:         now,
         };
       });

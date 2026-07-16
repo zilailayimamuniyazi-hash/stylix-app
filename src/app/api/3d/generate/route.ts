@@ -1,15 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { timingSafeEqual as cryptoTimingSafeEqual } from "node:crypto";
 import path from "node:path";
 import { NextRequest, NextResponse } from "next/server";
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  return cryptoTimingSafeEqual(Buffer.from(a), Buffer.from(b));
-}
 import { products } from "@/lib/data/products";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { isValidGlbUrl } from "@/lib/utils/model3d";
+import { hasAdminSession } from "@/lib/admin/session";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -426,17 +421,7 @@ async function storeSupabaseModelUrl(productId: string, imageUrl: string, model3
 }
 
 export async function POST(req: NextRequest) {
-  const auth = req.headers.get("authorization") ?? "";
-  const token = auth.replace("Bearer ", "").trim();
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminPassword) {
-    console.error("[3d/generate] ADMIN_PASSWORD env var is not set");
-    return NextResponse.json({ error: "Service unavailable." }, { status: 503 });
-  }
-
-  if (!token || token.length !== adminPassword.length || !timingSafeEqual(token, adminPassword)) {
-    return unauthorized();
-  }
+  if (!(await hasAdminSession(req))) return unauthorized();
 
   try {
     const body = (await req.json()) as Generate3DRequest;

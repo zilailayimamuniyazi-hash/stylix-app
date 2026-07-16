@@ -297,9 +297,6 @@ function LoginScreen({ onLogin }: { onLogin: (pw: string) => void }) {
 // ── Main dashboard ────────────────────────────────────────────────────────────
 
 export function AdminAnalyticsDashboard() {
-  const [authed, setAuthed] = useState(false);
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState(false);
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<Range>("90d");
@@ -309,22 +306,16 @@ export function AdminAnalyticsDashboard() {
   const JOURNEY_PAGE_SIZE = 20;
 
   const fetchData = useCallback(
-    async (pw: string, r: Range) => {
+    async (r: Range) => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/analytics/data?range=${r}`, {
-          headers: { Authorization: `Bearer ${pw}` },
-        });
+        const res = await fetch(`/api/analytics/data?range=${r}`);
         if (res.status === 401) {
-          setLoginError(true);
-          setAuthed(false);
-          setLoading(false);
+          window.location.href = "/admin/login?next=/admin/analytics";
           return;
         }
         const json = await res.json();
         setData(json);
-        setAuthed(true);
-        setLoginError(false);
       } catch {
         // network error
       } finally {
@@ -334,18 +325,10 @@ export function AdminAnalyticsDashboard() {
     []
   );
 
-  function handleLogin(pw: string) {
-    setPassword(pw);
-    fetchData(pw, range);
-  }
-
   useEffect(() => {
-    if (authed && password) {
-      fetchData(password, range);
-      setJourneyPage(0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [range]);
+    fetchData(range);
+    setJourneyPage(0);
+  }, [fetchData, range]);
 
   function enableProjectionMode() {
     // Seed projection values from current real data so the founder has a starting point
@@ -366,14 +349,6 @@ export function AdminAnalyticsDashboard() {
 
   function updateProjection(key: keyof ProjectionValues, value: number) {
     setProjectionValues((prev) => ({ ...prev, [key]: value }));
-  }
-
-  if (!authed) {
-    return (
-      <LoginScreen
-        onLogin={handleLogin}
-      />
-    );
   }
 
   if (loading || !data) {
@@ -443,7 +418,7 @@ export function AdminAnalyticsDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div data-theme="light" className="min-h-screen bg-[var(--ui-bg)] text-[var(--ui-text)]">
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-4 flex items-center justify-between gap-6 flex-wrap">
@@ -491,7 +466,7 @@ export function AdminAnalyticsDashboard() {
                 ))}
                 <button
                   type="button"
-                  onClick={() => fetchData(password, range)}
+                  onClick={() => fetchData(range)}
                   className="px-3 py-1.5 text-xs font-medium rounded border bg-white border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors"
                 >
                   ↻ Refresh

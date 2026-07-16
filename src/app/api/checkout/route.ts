@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { products } from "@/lib/data/products";
 
 const SHIPPING_THRESHOLD = 500;
-const TAX_RATE = 0.08875;
+const SHIPPING_COST_CENTS = 1500;
 const MAX_QUANTITY_PER_ITEM = 10;
 const MAX_ITEMS = 20;
 
@@ -48,6 +48,32 @@ function getSiteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 }
 
+function normalizeQuantity(quantity: unknown): number {
+  if (
+    typeof quantity !== "number" ||
+    !Number.isFinite(quantity) ||
+    quantity <= 0 ||
+    !Number.isInteger(quantity)
+  ) {
+    return 1;
+  }
+  return Math.min(quantity, MAX_QUANTITY_PER_ITEM);
+}
+
+function itemsJsonMetadata(itemsJson: string): Record<string, string> {
+  const maxLen = 500;
+  if (itemsJson.length <= maxLen) {
+    return { items_json: itemsJson };
+  }
+  const result: Record<string, string> = {};
+  const partCount = Math.ceil(itemsJson.length / maxLen);
+  for (let i = 0; i < partCount; i++) {
+    result[`items_json_${i}`] = itemsJson.slice(i * maxLen, (i + 1) * maxLen);
+  }
+  result.items_json_parts = String(partCount);
+  return result;
+}
+
 export async function POST(req: NextRequest) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
@@ -77,7 +103,7 @@ export async function POST(req: NextRequest) {
   const resolvedItems = items.map((item) => {
     const product = products.find((p) => p.id === item.productId);
     if (!product) return null;
-    const qty = Math.max(1, Math.min(item.quantity, MAX_QUANTITY_PER_ITEM));
+    const qty = normalizeQuantity(item.quantity);
     return { product, quantity: qty };
   });
 
@@ -89,11 +115,14 @@ export async function POST(req: NextRequest) {
 
   const subtotal = validItems.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
   const shippingFree = subtotal >= SHIPPING_THRESHOLD;
-  const taxCents = Math.round(subtotal * TAX_RATE * 100);
   const subtotalCents = Math.round(subtotal * 100);
   const orderId = generateOrderId();
 
   const siteUrl = getSiteUrl();
+
+  const itemsJson = JSON.stringify(
+    validItems.map((i) => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.quantity }))
+  );
 
   const metadata: Record<string, string> = {
     order_id: orderId,
@@ -109,10 +138,8 @@ export async function POST(req: NextRequest) {
     shipping_country: (shipping.country ?? "US").slice(0, 5),
     shipping_free: String(shippingFree),
     subtotal_cents: String(subtotalCents),
-    tax_cents: String(taxCents),
-    items_json: JSON.stringify(
-      validItems.map((i) => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.quantity }))
-    ).slice(0, 500),
+    tax_cents: "0",
+    ...itemsJsonMetadata(itemsJson),
   };
 
   try {
@@ -137,16 +164,22 @@ export async function POST(req: NextRequest) {
         {
           shipping_rate_data: {
             type: "fixed_amount",
-            fixed_amount: { amount: 0, currency: "usd" },
+            fixed_amount: { amount: shippingFree ? 0 : SHIPPING_COST_CENTS, currency: "usd" },
             display_name: shippingFree ? "Complimentary Shipping" : "Standard Shipping",
           },
         },
       ],
       allow_promotion_codes: true,
+      automatic_tax: { enabled: true },
       metadata,
       success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/checkout/cancel`,
     });
+
+    if (!session.url) {
+      console.error("[checkout] Stripe session created but url is null", session.id);
+      return NextResponse.json({ error: "Unable to create checkout session." }, { status: 500 });
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (err) {

@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { hasAdminSession } from "@/lib/admin/session";
 
-const SECURITY_HEADERS = {
+const BASE_SECURITY_HEADERS = {
   "X-Frame-Options": "DENY",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "X-DNS-Prefetch-Control": "on",
-  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
   "Permissions-Policy": "camera=(self), microphone=(), geolocation=()",
 };
+
+const HSTS_HEADER = "max-age=31536000; includeSubDomains";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 30;
@@ -39,27 +41,32 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT_MAX;
 }
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-
-  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+function applySecurityHeaders(response: NextResponse, request: NextRequest) {
+  for (const [key, value] of Object.entries(BASE_SECURITY_HEADERS)) {
     response.headers.set(key, value);
   }
+  if (request.nextUrl.protocol === "https:") {
+    response.headers.set("Strict-Transport-Security", HSTS_HEADER);
+  }
+}
 
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin")) {
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminPassword) {
-      return new NextResponse("Admin access unavailable.", { status: 503 });
-    }
-    const cookie = request.cookies.get("admin_session")?.value;
-    if (cookie !== adminPassword) {
+    if (pathname !== "/admin/login" && !(await hasAdminSession(request))) {
       const url = request.nextUrl.clone();
-      url.pathname = "/";
-      return NextResponse.redirect(url);
+      url.pathname = "/admin/login";
+      url.search = "";
+      url.searchParams.set("next", pathname);
+      const redirectResponse = NextResponse.redirect(url);
+      applySecurityHeaders(redirectResponse, request);
+      return redirectResponse;
     }
   }
+
+  const response = NextResponse.next();
+  applySecurityHeaders(response, request);
 
   if (pathname.startsWith("/api/") && !pathname.startsWith("/api/webhooks")) {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";

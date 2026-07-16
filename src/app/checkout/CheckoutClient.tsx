@@ -8,8 +8,18 @@ import { track } from "@/lib/analytics/tracker";
 import { EVENTS } from "@/lib/analytics/events";
 import { useI18n } from "@/lib/i18n/context";
 
-const ESTIMATED_TAX_RATE = 0.08875;
 const SHIPPING_THRESHOLD = 500;
+const STANDARD_SHIPPING = 15;
+
+function isValidRedirectUrl(url: unknown): url is string {
+  if (typeof url !== "string" || !url.trim()) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" && (parsed.hostname === "checkout.stripe.com" || parsed.hostname.endsWith(".stripe.com"));
+  } catch {
+    return false;
+  }
+}
 
 function Field({
   label,
@@ -73,8 +83,8 @@ export function CheckoutClient() {
   const [error, setError] = useState<string | null>(null);
 
   const shippingFree = subtotal >= SHIPPING_THRESHOLD;
-  const estimatedTax = subtotal * ESTIMATED_TAX_RATE;
-  const estimatedTotal = subtotal + estimatedTax;
+  const shippingCost = shippingFree ? 0 : STANDARD_SHIPPING;
+  const estimatedTotal = subtotal + shippingCost;
 
   useEffect(() => {
     if (items.length > 0) {
@@ -85,7 +95,7 @@ export function CheckoutClient() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-ink-deep pt-16">
+      <div className="ui-page">
         <div className="border-b border-ivory/10 py-14">
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
             <div className="flex items-center gap-3 mb-6">
@@ -153,6 +163,12 @@ export function CheckoutClient() {
         return;
       }
 
+      if (!isValidRedirectUrl(data.url)) {
+        setError(data.error ?? t.checkout.errorDefault);
+        setSubmitting(false);
+        return;
+      }
+
       window.location.href = data.url;
     } catch {
       setError(t.checkout.errorNetwork);
@@ -164,7 +180,7 @@ export function CheckoutClient() {
     <>
       {submitting && <LoadingOverlay />}
 
-      <div className="min-h-screen bg-ink-deep pt-16">
+      <div className="ui-page">
         <div className="border-b border-ivory/10 py-14">
           <div className="mx-auto max-w-7xl px-6 lg:px-10">
             <div className="flex items-center gap-3 mb-6">
@@ -220,6 +236,11 @@ export function CheckoutClient() {
                     >
                       <option value="US">{t.checkout.countryUS}</option>
                       <option value="CA">{t.checkout.countryCA}</option>
+                      <option value="CN">中国大陆</option>
+                      <option value="HK">中国香港</option>
+                      <option value="SG">新加坡</option>
+                      <option value="AU">澳大利亚</option>
+                      <option value="GB">英国</option>
                     </select>
                   </div>
                 </div>
@@ -248,9 +269,12 @@ export function CheckoutClient() {
               </section>
 
               {error && (
-                <p className="border border-red-400/30 bg-red-400/5 px-4 py-3 text-sm text-red-400">
-                  {error}
-                </p>
+                <div
+                  role="alert"
+                  className="border border-gold/40 bg-gold/[0.06] px-5 py-4"
+                >
+                  <p className="text-sm text-ivory/80">{error}</p>
+                </div>
               )}
 
               <button
@@ -263,9 +287,9 @@ export function CheckoutClient() {
 
               <p className="text-[9px] text-ivory/40 text-center">
                 {t.checkout.termsPrefix}{" "}
-                <Link href="#" className="underline hover:text-ivory/40">{t.checkout.termsOfService}</Link>
+                <Link href="/terms" className="underline hover:text-gold/70 transition-colors">{t.checkout.termsOfService}</Link>
                 {" "}{t.checkout.and}{" "}
-                <Link href="#" className="underline hover:text-ivory/40">{t.checkout.privacyPolicy}</Link>.{" "}
+                <Link href="/privacy" className="underline hover:text-gold/70 transition-colors">{t.checkout.privacyPolicy}</Link>.{" "}
                 {t.checkout.termsSuffix}
               </p>
             </div>
@@ -313,12 +337,12 @@ export function CheckoutClient() {
                   <div className="flex justify-between">
                     <span className="text-ivory/50">{t.bag.shipping}</span>
                     <span className={shippingFree ? "text-gold/70" : "text-ivory/50"}>
-                      {shippingFree ? t.bag.complimentary : t.bag.calculatedAtCheckout}
+                      {shippingFree ? t.bag.complimentary : `$${STANDARD_SHIPPING.toFixed(2)}`}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-ivory/50">{t.bag.estimatedTax}</span>
-                    <span className="text-ivory/50">${estimatedTax.toFixed(2)}</span>
+                    <span className="text-ivory/50">{t.bag.calculatedAtCheckout}</span>
                   </div>
                 </div>
 

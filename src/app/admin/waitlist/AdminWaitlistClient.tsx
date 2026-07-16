@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface WaitlistUser {
   id: string;
@@ -34,7 +34,6 @@ function formatDate(value: string) {
 }
 
 export function AdminWaitlistClient() {
-  const [password, setPassword] = useState("");
   const [users, setUsers] = useState<WaitlistUser[]>([]);
   const [searchEmail, setSearchEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -74,17 +73,16 @@ export function AdminWaitlistClient() {
     URL.revokeObjectURL(url);
   }
 
-  async function loadWaitlist(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function loadWaitlist() {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/waitlist", {
-        headers: {
-          Authorization: `Bearer ${password}`,
-        },
-      });
+      const response = await fetch("/api/waitlist");
+      if (response.status === 401) {
+        window.location.href = "/admin/login?next=/admin/waitlist";
+        return;
+      }
       const data = await response.json();
 
       if (!response.ok) {
@@ -101,8 +99,12 @@ export function AdminWaitlistClient() {
     }
   }
 
+  useEffect(() => {
+    void loadWaitlist();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-ink-deep pt-24">
+    <div className="ui-page pt-24">
       <div className="mx-auto max-w-6xl px-6 py-12 lg:px-10">
         <div className="mb-10">
           <p className="text-[10px] uppercase tracking-[0.45em] text-gold/60">
@@ -116,30 +118,7 @@ export function AdminWaitlistClient() {
           </p>
         </div>
 
-        {!loaded && (
-          <form onSubmit={loadWaitlist} className="max-w-md border border-ivory/10 bg-ink-soft/30 p-6">
-            <label>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-gold/50">
-                Admin Password
-              </span>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                className="mt-3 w-full border-b border-ivory/15 bg-transparent py-3 text-sm text-ivory focus:border-gold/60 focus:outline-none"
-              />
-            </label>
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-6 inline-flex items-center justify-center bg-gold px-8 py-3 text-[10px] font-medium uppercase tracking-[0.25em] text-ink-deep transition-colors hover:bg-gold-light disabled:opacity-50"
-            >
-              {loading ? "Loading…" : "View Waitlist"}
-            </button>
-            {error && <p className="mt-4 text-sm text-red-300">{error}</p>}
-          </form>
-        )}
+        {!loaded && <div className="border border-ivory/10 bg-ink-soft/30 p-6 text-sm text-ivory/50">{loading ? "Loading waitlist..." : error || "No data available."}</div>}
 
         {loaded && (
           <div className="border border-ivory/10 bg-ink-soft/25">
@@ -147,17 +126,7 @@ export function AdminWaitlistClient() {
               <p className="text-[10px] uppercase tracking-[0.35em] text-gold/60">
                 {users.length} waitlist {users.length === 1 ? "user" : "users"}
               </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setLoaded(false);
-                  setUsers([]);
-                  setSearchEmail("");
-                }}
-                className="text-left text-[10px] uppercase tracking-[0.25em] text-ivory/35 transition-colors hover:text-gold sm:text-right"
-              >
-                Change Password
-              </button>
+              <button type="button" onClick={() => void loadWaitlist()} className="text-left text-[10px] uppercase tracking-[0.25em] text-ivory/35 transition-colors hover:text-gold sm:text-right">Refresh</button>
             </div>
 
             {users.length === 0 ? (

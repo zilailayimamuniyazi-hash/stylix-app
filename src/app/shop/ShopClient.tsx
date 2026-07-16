@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { products } from "@/lib/data/products";
 import type { JewelryCategory, Product } from "@/lib/types/product";
+import { ProductCard } from "@/components/product/ProductCard";
 
 type MaterialFilter = "all" | "gold" | "silver" | "diamond" | "pearl" | "colored-gem" | "jade";
 type ColorFilter = "all" | "gold" | "silver-white" | "rose" | "black" | "blue" | "red" | "rainbow";
@@ -75,6 +75,16 @@ export function ShopClient() {
   const [category, setCategory] = useState<"all" | JewelryCategory>("all");
   const [sort, setSort] = useState<SortMode>("recommend");
   const [keyword, setKeyword] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  function resetFilters() {
+    setMaterial("all");
+    setColor("all");
+    setPrice("all");
+    setCategory("all");
+    setKeyword("");
+    setSort("recommend");
+  }
 
   const filtered = useMemo(() => {
     const materialConfig = materialOptions.find((item) => item.value === material) ?? materialOptions[0];
@@ -98,30 +108,40 @@ export function ShopClient() {
     });
   }, [category, color, keyword, material, price, sort]);
 
-  const hotSearch = ["通勤戒指", "珍珠", "金色系", "约会", "星座项链", "设计师款"];
+  const hotSearchTerms: { label: string; keyword: string }[] = [
+    { label: "通勤戒指", keyword: "ring" },
+    { label: "珍珠", keyword: "pearl" },
+    { label: "金色系", keyword: "gold" },
+    { label: "约会", keyword: "date" },
+    { label: "星座项链", keyword: "constellation" },
+    { label: "设计师款", keyword: "talisman" },
+  ];
 
   return (
-    <div className="min-h-screen bg-ivory pt-16 text-ink-deep">
-      <section className="border-b border-ink/10 bg-ink-deep text-ivory">
-        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
-          <p className="text-[10px] uppercase tracking-[0.5em] text-gold/70">珠宝商城</p>
-          <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_360px] lg:items-end">
+    <div className="ui-page">
+      <header className="border-b border-[var(--ui-line)]">
+        <div className="ui-container py-14 lg:py-20">
+          <p className="ui-eyebrow">珠宝商城</p>
+          <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_360px] lg:items-end">
             <div>
-              <h1 className="font-serif text-5xl text-ivory sm:text-6xl">按材质、价格、色系挑珠宝。</h1>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-ivory/55">这里先做成商品流商城，后面可把珠宝图片、材质、库存、价格和标签上传进来，再由 JMTI 推荐和 Try-On 直接调用。</p>
+              <h1 className="ui-title">找到适合预算、材质与场景的珠宝。</h1>
+              <p className="ui-copy mt-4 max-w-2xl">按真实购买条件筛选，并在商品详情中查看 3D 或试戴效果。</p>
             </div>
-            <div className="border border-ivory/10 bg-ivory/[0.03] p-4">
-              <p className="text-[10px] uppercase tracking-[0.32em] text-gold/70">商品上传预留</p>
-              <p className="mt-3 text-sm leading-6 text-ivory/55">字段建议：主图、图库、品类、材质、价格、色系、库存、JMTI 标签、场景标签、试戴素材、3D 模型。</p>
-            </div>
+            <Link href="/test" className="ui-button ui-button--secondary justify-self-start lg:justify-self-end">不知道怎么选？获取 JMTI 推荐</Link>
           </div>
         </div>
-      </section>
+      </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-10 lg:px-10">
+      <main className="ui-container py-8 lg:py-10">
+        <div className="mb-4 flex items-center justify-between border-b border-[var(--ui-line)] pb-4 lg:hidden">
+          <p className="text-xs text-[var(--ui-text-3)]">{filtered.length} 件商品</p>
+          <button type="button" onClick={() => setFiltersOpen((value) => !value)} aria-expanded={filtersOpen} className="ui-button ui-button--secondary">
+            {filtersOpen ? "收起筛选" : "筛选条件"}
+          </button>
+        </div>
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          <aside className="border border-ink/10 bg-white/70 p-5 lg:sticky lg:top-24 lg:h-fit">
-            <p className="text-[10px] uppercase tracking-[0.32em] text-gold-deep">筛选</p>
+          <aside className={`${filtersOpen ? "block" : "hidden"} ui-surface p-5 lg:sticky lg:top-24 lg:block lg:h-fit`}>
+            <p className="ui-eyebrow">筛选</p>
             <div className="mt-5 space-y-6">
               <FilterGroup title="材质" options={materialOptions} value={material} onChange={setMaterial} />
               <FilterGroup title="价格" options={priceOptions} value={price} onChange={setPrice} />
@@ -131,24 +151,26 @@ export function ShopClient() {
           </aside>
 
           <section>
-            <div className="border border-ink/10 bg-white/70 p-4">
+            <div className="ui-surface p-4">
               <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                   <input
+                    id="shop-search"
+                    aria-label="搜索珠宝"
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                     placeholder="搜索戒指、珍珠、星座、材质或场景"
-                    className="w-full border border-ink/10 bg-ivory px-4 py-3 text-sm text-ink-deep outline-none focus:border-gold-deep/50"
+                    className="ui-field"
                   />
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {hotSearch.map((item) => (
-                      <button key={item} type="button" onClick={() => setKeyword(item)} className="border border-ink/10 px-3 py-1.5 text-xs text-ink/55 hover:border-gold-deep/40 hover:text-gold-deep">
-                        {item}
+                    {hotSearchTerms.map((item) => (
+                      <button key={item.label} type="button" onClick={() => setKeyword(item.keyword)} className="ui-badge hover:border-[var(--ui-line-strong)] hover:text-[var(--ui-text)]">
+                        {item.label}
                       </button>
                     ))}
                   </div>
                 </div>
-                <select value={sort} onChange={(e) => setSort(e.target.value as SortMode)} className="border border-ink/10 bg-ivory px-4 py-3 text-sm text-ink-deep outline-none">
+                <select aria-label="商品排序" value={sort} onChange={(e) => setSort(e.target.value as SortMode)} className="ui-field lg:w-44">
                   <option value="recommend">综合推荐</option>
                   <option value="price-asc">价格从低到高</option>
                   <option value="price-desc">价格从高到低</option>
@@ -157,37 +179,21 @@ export function ShopClient() {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-              <p className="text-[10px] uppercase tracking-[0.28em] text-ink/45">{filtered.length} 件商品</p>
-              <Link href="/test" className="border border-gold-deep/25 px-4 py-2 text-[10px] uppercase tracking-[0.22em] text-gold-deep hover:bg-gold-deep hover:text-ivory">
-                做 JMTI 推荐
-              </Link>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--ui-text-3)]">{filtered.length} 件商品</p>
+              {(material !== "all" || color !== "all" || price !== "all" || category !== "all" || keyword) && <button type="button" onClick={resetFilters} className="ui-button ui-button--ghost">清除筛选</button>}
             </div>
 
-            <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-6 grid gap-x-5 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
               {filtered.map((product) => (
-                <Link key={product.id} href={"/product/" + product.slug} className="group border border-ink/10 bg-white/80">
-                  <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
-                    <Image src={product.coverImage} alt={product.name} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 33vw" />
-                    <span className="absolute left-3 top-3 bg-ivory/90 px-2 py-1 text-[10px] text-ink/60">{categoryOptions.find((item) => item.value === product.category)?.label}</span>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-[9px] uppercase tracking-[0.28em] text-gold-deep">{product.tags.collectionName}</p>
-                    <h2 className="mt-2 font-serif text-2xl text-ink-deep">{product.name}</h2>
-                    <p className="mt-1 line-clamp-2 text-sm leading-6 text-ink/50">{product.subtitle}</p>
-                    <p className="mt-3 line-clamp-2 text-xs leading-5 text-ink/45">{product.material}</p>
-                    <div className="mt-5 flex items-center justify-between gap-4">
-                      <p className="font-serif text-lg text-ink">{"$" + product.price}</p>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-ink/40 group-hover:text-gold-deep">查看</span>
-                    </div>
-                  </div>
-                </Link>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
             {filtered.length === 0 && (
-              <div className="mt-8 border border-dashed border-ink/15 p-10 text-center">
-                <p className="font-serif text-2xl text-ink-deep">暂时没有匹配商品</p>
-                <p className="mt-3 text-sm text-ink/50">可以放宽材质、价格或色系筛选；后续上传更多珠宝后这里会自动扩展。</p>
+              <div className="ui-surface mt-8 border-dashed p-10 text-center">
+                <p className="ui-heading">暂时没有匹配商品</p>
+                <p className="ui-copy mt-3">可以清空关键词，或放宽材质、价格与色系筛选。</p>
+                <button type="button" onClick={resetFilters} className="ui-button ui-button--primary mt-6">重置全部筛选</button>
               </div>
             )}
           </section>
@@ -210,16 +216,17 @@ function FilterGroup<T extends string>({
 }) {
   return (
     <div>
-      <p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-ink/40">{title}</p>
+      <p className="mb-3 text-[10px] font-medium text-[var(--ui-text-3)]">{title}</p>
       <div className="grid gap-2">
         {options.map((item) => (
           <button
             key={item.value}
             type="button"
             onClick={() => onChange(item.value)}
-            className={"border px-4 py-2 text-left text-sm transition-colors " + (value === item.value ? "border-ink bg-ink text-ivory" : "border-ink/10 text-ink/55 hover:border-gold-deep/40")}
+            aria-pressed={value === item.value}
+            className={"flex min-h-11 items-center justify-between rounded px-3 text-left text-sm " + (value === item.value ? "bg-white/[.07] text-[var(--ui-text)]" : "text-[var(--ui-text-2)] hover:bg-[var(--ui-surface-hover)] hover:text-[var(--ui-text)]")}
           >
-            {item.label}
+            <span>{item.label}</span><span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full bg-[var(--ui-accent)] ${value === item.value ? "opacity-100" : "opacity-0"}`} />
           </button>
         ))}
       </div>

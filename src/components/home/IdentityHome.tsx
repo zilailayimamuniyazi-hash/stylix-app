@@ -2,170 +2,82 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 const paths = [
-  {
-    href: "/test",
-    label: "JMTI 测试",
-    title: "完成珠宝人格测试",
-    body: "用 L/O、M/T、A/S、D/G 四维度生成 16 型珠宝人格，并转成今日推荐卡。",
-  },
-  {
-    href: "/try-on",
-    label: "Try-On",
-    title: "上传照片试戴",
-    body: "选择珠宝并上传照片，预览佩戴效果；后续预留 VR 试戴入口。",
-  },
-  {
-    href: "/vip-atelier",
-    label: "VIP Atelier",
-    title: "提交高级定制预约",
-    body: "选择材质、宝石、故事和预算，后续由设计师协助确认定制方案。",
-  },
-  {
-    href: "/designers",
-    label: "设计师合作",
-    title: "进入合作店铺",
-    body: "设计师合作款会进入 JMTI 推荐系统，也可以直接在商城筛选购买。",
-  },
+  { href: "/test", step: "01", label: "理解风格", title: "珠宝人格测试", body: "用约四分钟建立个人审美坐标，减少无效浏览。", image: "/identity-portrait/jewelry/06-nova/cover.png" },
+  { href: "/try-on", step: "02", label: "验证选择", title: "真实佩戴预览", body: "上传照片，在自己的脸、颈部或手部查看比例与气质。", image: "/ai-stylist-gemini-dark.jpg" },
+  { href: "/bead-lab", step: "03", label: "完成作品", title: "珠宝设计工作室", body: "从款式、尺寸和材质开始，生成可供设计师确认的规格。", image: "/products/1961b5b431c6e985cd27e0b35696b561.png" },
 ];
 
-function StarChart() {
-  return (
-    <div className="relative mx-auto aspect-square w-full max-w-[520px]">
-      <div className="absolute inset-0 rounded-full border border-gold/20 bg-ink-soft/20 shadow-luxury" />
-      <div className="absolute inset-[7%] rounded-full border border-ivory/10" />
-      <div className="absolute inset-[18%] rounded-full border border-gold/20" />
-      <div className="absolute inset-[31%] rounded-full border border-ivory/10" />
-      <div className="absolute left-1/2 top-1/2 h-[68%] w-px -translate-x-1/2 -translate-y-1/2 rotate-[28deg] bg-gold/20" />
-      <div className="absolute left-1/2 top-1/2 h-[72%] w-px -translate-x-1/2 -translate-y-1/2 rotate-[112deg] bg-ivory/10" />
-      <div className="absolute left-[19%] top-[28%] h-2 w-2 rounded-full bg-gold shadow-[0_0_28px_rgba(201,169,98,0.9)]" />
-      <div className="absolute right-[24%] top-[18%] h-1.5 w-1.5 rounded-full bg-ivory/80" />
-      <div className="absolute bottom-[24%] left-[28%] h-1.5 w-1.5 rounded-full bg-rosegold" />
-      <div className="absolute bottom-[18%] right-[30%] h-2.5 w-2.5 rounded-full border border-gold/70" />
-      <div className="absolute inset-[39%] rounded-full bg-gold/10 blur-xl" />
-      <div className="absolute left-1/2 top-1/2 w-[46%] -translate-x-1/2 -translate-y-1/2 rotate-[-12deg]">
-        <Image src="/ring1.svg" alt="Daily jewelry orbit" width={360} height={360} className="h-auto w-full opacity-90 drop-shadow-[0_20px_60px_rgba(201,169,98,0.22)]" priority />
-      </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
-        <p className="text-[9px] uppercase tracking-[0.35em] text-gold/70">3D 星盘</p>
-        <p className="mt-1 font-serif text-lg text-ivory">今日身份启动</p>
-      </div>
-    </div>
-  );
-}
+const selected = [
+  { href: "/product/iris-spectrum-jewelry-set", image: "/products/微信图片_20260213144941_39_36.jpg", name: "Iris Spectrum", meta: "Jewelry Set" },
+  { href: "/product/dione-signet-ring", image: "/products/微信图片_20260214000203_40_36.jpg", name: "Dione Signet", meta: "22K Gold" },
+  { href: "/product/lyra-harp-ring", image: "/products/微信图片_20260214001257_41_36.jpg", name: "Lyra Harp", meta: "White Gold" },
+];
 
-function FirstVisitModal() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const key = "stylix_first_identity_prompt_closed";
-    if (!window.localStorage.getItem(key)) setVisible(true);
-  }, []);
-
-  function close() {
-    window.localStorage.setItem("stylix_first_identity_prompt_closed", "1");
-    setVisible(false);
-  }
-
-  if (!visible) return null;
-
-  return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center bg-ink-deep/70 px-4 pb-5 backdrop-blur-sm sm:items-center sm:pb-0">
-      <div className="w-full max-w-lg border border-gold/25 bg-ink-soft p-7 shadow-luxury sm:p-8">
-        <div className="flex items-start justify-between gap-5">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.35em] text-gold/70">新设备访问</p>
-            <h2 className="mt-3 font-serif text-3xl leading-tight text-ivory">先生成你的珠宝人格。</h2>
-          </div>
-          <button type="button" onClick={close} className="h-8 w-8 border border-ivory/15 text-ivory/50 transition-colors hover:border-gold/40 hover:text-gold" aria-label="Close">
-            ×
-          </button>
-        </div>
-        <p className="mt-5 text-sm leading-relaxed text-ivory/60">
-          首次访问建议先完成 JMTI 测试。测试后注册保存档案，系统会结合星座、场景、风格和预算生成今日珠宝推荐。
-        </p>
-        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-          <Link href="/test" onClick={close} className="inline-flex justify-center bg-gold px-7 py-3 text-[11px] font-medium uppercase tracking-[0.24em] text-ink-deep transition-colors hover:bg-gold-light">
-            开始测试
-          </Link>
-          <button type="button" onClick={close} className="border border-ivory/15 px-7 py-3 text-[11px] uppercase tracking-[0.24em] text-ivory/55 transition-colors hover:border-ivory/30 hover:text-ivory">
-            先逛逛
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+function Arrow() {
+  return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4 w-4"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
 export function IdentityHome() {
   return (
-    <>
-      <FirstVisitModal />
-      <section className="relative min-h-screen overflow-hidden bg-ink-deep pt-16">
-        <div className="absolute inset-0">
-          <Image src="/hero-editorial.jpg" alt="Stylix editorial jewelry" fill className="object-cover opacity-20" priority />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.96),rgba(5,5,5,0.78),rgba(5,5,5,0.94))]" />
-        </div>
-
-        <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-12 px-6 py-14 lg:grid-cols-[1fr_520px] lg:px-10">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.55em] text-gold/70">AI 珠宝身份系统</p>
-            <h1 className="mt-6 max-w-4xl font-serif text-5xl leading-[0.95] text-ivory sm:text-6xl lg:text-7xl">
-              把今日身份，翻译成一件珠宝。
-            </h1>
-            <p className="mt-7 max-w-2xl text-base leading-8 text-ivory/62">
-              Stylix 用 JMTI 珠宝人格、星盘、场景和预算生成每日身份卡，给出三档珠宝推荐，并直接进入试戴、购买或高级定制。
-            </p>
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-              <Link href="/test" className="inline-flex justify-center bg-gold px-8 py-4 text-[11px] font-medium uppercase tracking-[0.25em] text-ink-deep transition-colors hover:bg-gold-light">
-                生成今日身份
-              </Link>
-              <Link href="/daily" className="inline-flex justify-center border border-ivory/20 px-8 py-4 text-[11px] font-medium uppercase tracking-[0.25em] text-ivory/70 transition-colors hover:border-gold/50 hover:text-gold">
-                Daily 身份卡
-              </Link>
-            </div>
-            <div className="mt-12 grid gap-4 sm:grid-cols-3">
-              {[
-                ["16", "JMTI 珠宝人格"],
-                ["12", "星座信号"],
-                ["3", "推荐价格档"],
-              ].map(([value, label]) => (
-                <div key={label} className="border border-ivory/10 bg-ink-soft/35 px-5 py-4">
-                  <p className="font-serif text-3xl text-gold">{value}</p>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.24em] text-ivory/38">{label}</p>
-                </div>
-              ))}
+    <div className="bg-[var(--ui-bg)] text-[var(--ui-text)]">
+      <section className="relative min-h-[calc(100svh-1px)] overflow-hidden">
+        <video autoPlay muted loop playsInline poster="/hero-editorial.jpg" className="absolute inset-0 h-full w-full object-cover object-[62%_center]">
+          <source src="/hero-video.mp4.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,7,8,.9)_0%,rgba(6,7,8,.58)_46%,rgba(6,7,8,.12)_78%),linear-gradient(0deg,rgba(6,7,8,.7)_0%,transparent_45%)]" />
+        <div className="ui-container relative flex min-h-[100svh] items-end pb-16 pt-28 lg:items-center lg:pb-20">
+          <div className="max-w-[700px]">
+            <p className="ui-eyebrow">Jewelry intelligence for real life</p>
+            <h1 className="ui-display mt-6 max-w-[680px]">为你的风格，找到真正适合的珠宝。</h1>
+            <p className="ui-copy mt-6 max-w-lg text-[15px]">Stylix 把个人审美、佩戴场景和真实效果放在同一条路径中，让选择更少，却更准确。</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/test" className="ui-button ui-button--primary">开始珠宝人格测试 <Arrow /></Link>
+              <Link href="/shop" className="ui-button ui-button--secondary">浏览作品</Link>
             </div>
           </div>
-          <StarChart />
+          <div className="absolute inset-x-0 bottom-0 border-t border-white/15">
+            <div className="ui-container grid grid-cols-3 py-3 text-center sm:text-left">
+              {[["16", "珠宝人格"], ["5", "设计品类"], ["3D", "试戴与预览"]].map(([value, label]) => <div key={label} className="border-r border-white/10 px-3 last:border-0 sm:flex sm:items-baseline sm:gap-3"><strong className="font-serif text-lg font-normal text-white">{value}</strong><span className="block text-[9px] text-white/55 sm:inline">{label}</span></div>)}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="bg-ivory py-20 text-ink-deep">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="flex flex-col justify-between gap-8 border-b border-ink/10 pb-10 md:flex-row md:items-end">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.45em] text-gold-deep">四个主入口</p>
-              <h2 className="mt-4 font-serif text-4xl text-ink-deep sm:text-5xl">从测试到推荐，再到试戴和定制。</h2>
-            </div>
-            <Link href="/shop" className="text-[11px] uppercase tracking-[0.25em] text-ink/60 transition-colors hover:text-gold-deep">
-              浏览商城
-            </Link>
+      <section className="ui-section">
+        <div className="ui-container">
+          <div className="grid gap-6 border-b border-[var(--ui-line)] pb-8 lg:grid-cols-[.65fr_1.35fr] lg:items-end">
+            <p className="ui-eyebrow">A clearer way to choose</p>
+            <div><h2 className="ui-title max-w-3xl">从认识自己，到确认一件作品。</h2><p className="ui-copy mt-5 max-w-2xl">每个工具只解决一个问题，结果会带到下一步，不让用户反复填写偏好。</p></div>
           </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-8 grid gap-px overflow-hidden rounded-lg bg-[var(--ui-line)] lg:grid-cols-3">
             {paths.map((item) => (
-              <Link key={item.href} href={item.href} className="group border border-ink/10 bg-white/55 p-6 transition-colors hover:border-gold/50">
-                <p className="text-[9px] uppercase tracking-[0.35em] text-gold-deep">{item.label}</p>
-                <h3 className="mt-5 font-serif text-2xl text-ink-deep">{item.title}</h3>
-                <p className="mt-4 text-sm leading-6 text-ink/58">{item.body}</p>
-                <p className="mt-7 text-[10px] uppercase tracking-[0.25em] text-ink/45 transition-colors group-hover:text-gold-deep">进入</p>
+              <Link href={item.href} key={item.href} className="group relative min-h-[480px] overflow-hidden bg-[var(--ui-surface)]">
+                <Image src={item.image} alt="" fill sizes="(max-width:1024px) 100vw, 33vw" className="object-cover opacity-62 transition duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.025] group-hover:opacity-78" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-7">
+                  <p className="text-[9px] uppercase tracking-[.18em] text-white/55">{item.step} · {item.label}</p>
+                  <div className="mt-3 flex items-end justify-between gap-5"><div><h3 className="font-serif text-3xl">{item.title}</h3><p className="mt-3 max-w-sm text-sm leading-6 text-white/62">{item.body}</p></div><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 group-hover:border-white"><Arrow /></span></div>
+                </div>
               </Link>
             ))}
           </div>
         </div>
       </section>
-    </>
+
+      <section className="ui-section border-y border-[var(--ui-line)] bg-[#efede7] text-[#18191b]" data-theme="light">
+        <div className="ui-container">
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="ui-eyebrow">Selected objects</p><h2 className="ui-title mt-4">本周甄选</h2></div><Link href="/shop" className="ui-button ui-button--secondary">查看全部 <Arrow /></Link></div>
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {selected.map((item) => <Link href={item.href} key={item.name} className="group"><div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-[#dedbd4]"><Image src={item.image} alt={item.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-cover transition duration-700 group-hover:scale-[1.025]" /></div><div className="mt-4 flex items-start justify-between border-t border-black/15 pt-4"><div><h3 className="font-serif text-2xl">{item.name}</h3><p className="mt-1 text-[9px] uppercase tracking-[.16em] text-black/50">{item.meta}</p></div><Arrow /></div></Link>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="ui-section">
+        <div className="ui-container grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end"><div><p className="ui-eyebrow">Private atelier</p><h2 className="ui-title mt-4 max-w-3xl">已经有明确想法？把它整理成一份设计师能直接理解的委托。</h2></div><Link href="/vip-atelier" className="ui-button ui-button--primary">开始高级定制 <Arrow /></Link></div>
+      </section>
+    </div>
   );
 }

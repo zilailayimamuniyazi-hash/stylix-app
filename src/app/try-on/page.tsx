@@ -1,13 +1,19 @@
-import { TryOnWaitlistGate } from "./TryOnWaitlistGate";
+import { TryOnClient } from "./TryOnClient";
 
 export const metadata = {
-  title: "Virtual Try-On Early Access — Stylix",
+  title: "Virtual Try-On — Stylix",
 };
 
-export default function TryOnPage() {
+export default async function TryOnPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ piece?: string }>;
+}) {
+  const { piece } = await searchParams;
+
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
-      <TryOnWaitlistGate />
+    <div className="ui-page">
+      <TryOnClient piece={piece} />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { EVENTS } from "@/lib/analytics/events";
 import { useI18n } from "@/lib/i18n/context";
 import type { Locale } from "@/lib/i18n/types";
 import type { DbOrder } from "@/lib/types/database";
+import { dbOrderToHistoryItem, saveOrderToStorage } from "@/lib/order/orderHistory";
 
 function formatDate(iso: string, locale: Locale) {
   return new Date(iso).toLocaleDateString(locale, {
@@ -178,8 +179,15 @@ export function SuccessView({ order: initialOrder, sessionId }: SuccessViewProps
     }
   }, [order, clearCart]);
 
+  // Keep a local receipt available if the account order service is temporarily unavailable.
+  useEffect(() => {
+    if (order) {
+      saveOrderToStorage(dbOrderToHistoryItem(order));
+    }
+  }, [order]);
+
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
+    <div className="ui-page">
       <div className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-10">

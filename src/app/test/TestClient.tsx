@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import {
   evaluateJmti,
@@ -17,6 +17,26 @@ import {
 import type { OccasionTag, StyleTag } from "@/lib/types/product";
 
 type AnswerChoice = "A" | "B";
+
+const TEST_PROGRESS_KEY = "stylix-jmti-test-progress";
+
+type StoredTestProgress = {
+  step: number;
+  responses: Record<number, AnswerChoice>;
+};
+
+function loadStoredProgress(): StoredTestProgress | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(TEST_PROGRESS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredTestProgress;
+    if (typeof parsed.step !== "number" || typeof parsed.responses !== "object" || parsed.responses === null) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
 
 const steps: { dimension: JmtiDimension; label: string; title: string; note: string }[] = [
   { dimension: "LO", label: "理性 / 情绪", title: "你买珠宝时更看重价值，还是心动？", note: "第 1-8 题，判断 L 理性保值或 O 情绪审美。" },
@@ -48,7 +68,8 @@ function OptionButton({ active, children, onClick }: { active: boolean; children
     <button
       type="button"
       onClick={onClick}
-      className={"border px-4 py-3 text-left transition-colors " + (active ? "border-gold bg-gold/10 text-gold" : "border-ivory/12 bg-ivory/[0.03] text-ivory/62 hover:border-gold/35 hover:text-ivory")}
+      aria-pressed={active}
+      className={"relative min-h-[78px] rounded border px-5 py-4 text-left " + (active ? "border-[var(--ui-accent)] bg-[rgba(199,170,112,.1)] text-[var(--ui-text)]" : "border-[var(--ui-line)] bg-[rgba(255,255,255,.018)] text-[var(--ui-text-2)] hover:border-[var(--ui-line-strong)] hover:bg-[var(--ui-surface-hover)] hover:text-[var(--ui-text)]")}
     >
       {children}
     </button>
@@ -58,8 +79,8 @@ function OptionButton({ active, children, onClick }: { active: boolean; children
 export function TestClient() {
   const router = useRouter();
   const { user, register } = useAuth();
-  const [step, setStep] = useState(0);
-  const [responses, setResponses] = useState<Record<number, AnswerChoice>>({});
+  const [step, setStep] = useState(() => loadStoredProgress()?.step ?? 0);
+  const [responses, setResponses] = useState<Record<number, AnswerChoice>>(() => loadStoredProgress()?.responses ?? {});
   const [zodiac, setZodiac] = useState<ZodiacSign>("Pisces");
   const [occasion, setOccasion] = useState<OccasionTag>("date night");
   const [style, setStyle] = useState<StyleTag>("elegant");
@@ -68,7 +89,9 @@ export function TestClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authNotice, setAuthNotice] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState(false);
+  const [registrationSkipped, setRegistrationSkipped] = useState(false);
 
   const activeStep = steps[step];
   const activeQuestions = useMemo(
@@ -77,8 +100,12 @@ export function TestClient() {
   );
   const answeredInStep = activeQuestions.filter((question) => responses[question.id]).length;
   const stepComplete = answeredInStep === activeQuestions.length;
-  const needsRegistration = step === 0 && stepComplete && !user;
+  const needsRegistration = step === 0 && stepComplete && !user && !registrationSkipped;
   const answeredTotal = Object.keys(responses).length;
+
+  useEffect(() => {
+    sessionStorage.setItem(TEST_PROGRESS_KEY, JSON.stringify({ step, responses }));
+  }, [step, responses]);
 
   function choose(questionId: number, answer: AnswerChoice) {
     setResponses((current) => ({ ...current, [questionId]: answer }));
@@ -88,12 +115,19 @@ export function TestClient() {
     e.preventDefault();
     setAuthLoading(true);
     setAuthError(null);
+    setAuthNotice(null);
     const result = await register(email, password, name || "Stylix Member");
     setAuthLoading(false);
     if (!result.ok) {
       setAuthError("请输入有效邮箱，并设置至少 6 位密码。");
       return;
     }
+    if (result.requiresConfirmation) setAuthNotice("验证邮件已发送。你可以继续测试，验证后档案会自动同步。");
+    setStep(1);
+  }
+
+  function skipRegistration() {
+    setRegistrationSkipped(true);
     setStep(1);
   }
 
@@ -116,50 +150,58 @@ export function TestClient() {
       email: user?.email ?? email,
       name: user?.name ?? name,
     };
+    sessionStorage.removeItem(TEST_PROGRESS_KEY);
     storeIdentityAnswers(answers);
     router.push("/result");
   }
 
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
-      <div className="mx-auto max-w-7xl px-6 py-14 lg:px-10">
-        <div className="grid gap-10 lg:grid-cols-[340px_1fr]">
-          <aside className="border border-ivory/10 bg-ink-soft/25 p-6 lg:sticky lg:top-24 lg:h-fit">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-gold/70">JMTI 珠宝人格测试</p>
-            <h1 className="mt-4 font-serif text-4xl leading-tight text-ivory">生成你的今日珠宝身份。</h1>
-            <div className="mt-8 space-y-4">
-              {steps.map((item, index) => (
-                <button key={item.dimension} type="button" onClick={() => setStep(index)} className="flex w-full items-center gap-3 text-left">
-                  <span className={"flex h-7 w-7 items-center justify-center border text-[10px] " + (step >= index ? "border-gold text-gold" : "border-ivory/15 text-ivory/30")}>{index + 1}</span>
-                  <span className={step >= index ? "text-sm text-ivory" : "text-sm text-ivory/35"}>{item.label}</span>
-                </button>
-              ))}
+    <div className="ui-page">
+      <header className="border-b border-[var(--ui-line)]">
+        <div className="ui-container py-10"><div className="flex min-w-0 flex-col justify-between gap-6 md:flex-row md:items-end"><div className="min-w-0 max-w-full"><p className="ui-eyebrow">JMTI · Jewelry identity index</p><h1 className="ui-title mt-4">用直觉选择，建立你的珠宝风格坐标。</h1></div><p className="ui-copy max-w-sm">30 个直觉选择，约 4 分钟。没有正确答案，只需选择更接近你的那一项。</p></div><div className="mt-8 h-px bg-[var(--ui-line)]"><div className="h-px bg-[var(--ui-accent)] transition-all duration-500" style={{ width: `${(answeredTotal / jmtiQuestions.length) * 100}%` }} /></div></div>
+      </header>
+      <div className="ui-container py-10 lg:py-14">
+        <div className="grid gap-8 lg:grid-cols-[280px_1fr] xl:gap-12">
+          <aside className="min-w-0 border-b border-[var(--ui-line)] pb-7 lg:sticky lg:top-24 lg:h-fit lg:border-b-0 lg:pb-0 lg:pr-6">
+            <p className="ui-eyebrow">测试进度 · {answeredTotal}/30</p>
+            <h2 className="ui-heading mt-4">四种维度，构成你的身份坐标。</h2>
+            <div className="mt-7 grid min-w-0 grid-cols-2 gap-2 overflow-hidden sm:grid-cols-4 lg:block lg:space-y-4 lg:overflow-visible">
+              {steps.map((item, index) => {
+                const isFutureStep = index > step;
+                return (
+                  <button
+                    key={item.dimension}
+                    type="button"
+                    disabled={isFutureStep}
+                    onClick={() => setStep(index)}
+                    className={"flex min-w-0 flex-col items-center gap-2 border-b border-white/8 py-2 text-center lg:w-full lg:flex-row lg:gap-3 lg:text-left " + (isFutureStep ? "cursor-not-allowed opacity-35" : "cursor-pointer")}
+                  >
+                    <span className={"flex h-7 w-7 items-center justify-center border text-[10px] " + (step >= index ? "border-gold text-gold" : "border-ivory/15 text-ivory/30")}>{index + 1}</span>
+                    <span className={(step >= index ? "text-ivory" : "text-ivory/35") + " text-[10px] lg:text-sm"}>{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
-            <div className="mt-8 border-t border-ivory/10 pt-6">
-              <p className="text-[10px] uppercase tracking-[0.32em] text-gold/70">测试依据</p>
-              <div className="mt-4 space-y-3 text-xs leading-6 text-ivory/55">
-                {jmtiBasis.map((item) => (
-                  <p key={item}>{item}</p>
-                ))}
-              </div>
+            <div className="mt-6 border-t border-ivory/10 pt-5 lg:mt-8 lg:pt-6">
+              <details className="group"><summary className="cursor-pointer list-none text-[10px] uppercase tracking-[0.28em] text-white/42 hover:text-[#c8a96b]">了解测试方法 <span className="ml-2 group-open:hidden">+</span><span className="ml-2 hidden group-open:inline">−</span></summary><div className="mt-4 space-y-3 text-xs leading-6 text-white/42">{jmtiBasis.map((item) => <p key={item}>{item}</p>)}</div></details>
             </div>
           </aside>
 
-          <main className="min-h-[620px] border border-ivory/10 bg-ink-soft/20 p-6 sm:p-8 lg:p-10">
+          <main className="ui-surface min-h-[620px] p-6 sm:p-8 lg:p-10 xl:p-12">
             <section>
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-gold/70">Part {step + 1}</p>
-                  <h2 className="mt-3 font-serif text-3xl text-ivory">{activeStep.title}</h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-7 text-ivory/55">{activeStep.note}</p>
+                  <p className="ui-eyebrow">Part {step + 1}</p>
+                  <h2 className="ui-heading mt-3 max-w-3xl">{activeStep.title}</h2>
+                  <p className="ui-copy mt-3 max-w-2xl">{activeStep.note}</p>
                 </div>
                 <p className="text-sm text-ivory/45">{answeredInStep} / {activeQuestions.length}</p>
               </div>
 
               <div className="mt-8 grid gap-4">
                 {activeQuestions.map((question) => (
-                  <article key={question.id} className="border border-ivory/10 bg-ink-deep/35 p-4">
-                    <p className="text-sm leading-6 text-ivory">{question.id}. {question.prompt}</p>
+                  <article key={question.id} className="border-b border-[var(--ui-line)] py-6 first:pt-0">
+                    <p className="font-serif text-lg leading-6 text-white"><span className="mr-3 text-sm text-[#c8a96b]">{String(question.id).padStart(2, "0")}</span>{question.prompt}</p>
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       <OptionButton active={responses[question.id] === "A"} onClick={() => choose(question.id, "A")}>
                         <p className="text-xs text-current/45">A</p>
@@ -177,22 +219,33 @@ export function TestClient() {
               {needsRegistration && (
                 <form onSubmit={createProfile} className="mt-10 max-w-xl border border-gold/20 bg-gold/5 p-6">
                   <p className="text-[10px] uppercase tracking-[0.35em] text-gold/70">保存身份档案</p>
-                  <h3 className="mt-2 font-serif text-2xl text-ivory">注册后继续完成 JMTI 测试。</h3>
-                  <p className="mt-3 text-sm leading-6 text-ivory/55">档案会保存你的测试结果、预算和推荐记录，后续可用于每日邮件推荐。</p>
+                  <h3 className="mt-2 font-serif text-2xl text-ivory">注册后可保存 JMTI 档案（可选）。</h3>
+                  <p className="mt-3 text-sm leading-6 text-ivory/55">档案会保存测试结果、预算与推荐偏好，并在登录设备间同步。你也可以跳过注册，直接继续测试。</p>
                   <div className="mt-5 grid gap-3">
-                    <input value={name} onChange={(e) => setName(e.target.value)} placeholder="昵称" className="border border-ivory/12 bg-ink-deep px-4 py-3 text-sm text-ivory outline-none focus:border-gold/50" />
-                    <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="邮箱" className="border border-ivory/12 bg-ink-deep px-4 py-3 text-sm text-ivory outline-none focus:border-gold/50" />
-                    <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={6} required placeholder="密码" className="border border-ivory/12 bg-ink-deep px-4 py-3 text-sm text-ivory outline-none focus:border-gold/50" />
+                    <input value={name} onChange={(e) => setName(e.target.value)} placeholder="昵称" className="ui-field" />
+                    <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="邮箱" className="ui-field" />
+                    <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={6} required placeholder="密码" className="ui-field" />
                   </div>
                   {authError && <p className="mt-3 text-xs text-red-400">{authError}</p>}
-                  <button disabled={authLoading} className="mt-5 bg-gold px-7 py-3 text-[11px] uppercase tracking-[0.23em] text-ink-deep disabled:opacity-50">
-                    {authLoading ? "创建中..." : "创建档案"}
-                  </button>
+                  {authNotice && <p className="mt-3 text-xs text-gold">{authNotice}</p>}
+                  <div className="mt-5 flex flex-wrap items-center gap-4">
+                    <button disabled={authLoading} className="ui-button ui-button--primary">
+                      {authLoading ? "创建中..." : "创建档案"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={skipRegistration}
+                      disabled={authLoading}
+                      className="text-[11px] uppercase tracking-[0.23em] text-ivory/55 underline-offset-4 hover:text-gold hover:underline disabled:opacity-50"
+                    >
+                      跳过，继续测试
+                    </button>
+                  </div>
                 </form>
               )}
 
               {!needsRegistration && step < steps.length - 1 && (
-                <button type="button" disabled={!stepComplete} onClick={nextStep} className="mt-8 bg-gold px-8 py-4 text-[11px] uppercase tracking-[0.25em] text-ink-deep disabled:opacity-40">
+                <button type="button" disabled={!stepComplete} onClick={nextStep} className="ui-button ui-button--primary mt-8">
                   继续下一部分
                 </button>
               )}
@@ -233,7 +286,7 @@ export function TestClient() {
                       <input type="range" min={150} max={2500} step={25} value={budgetMax} onChange={(e) => setBudgetMax(Number(e.target.value))} className="mt-5 w-full accent-[#C9A962]" />
                     </div>
                   </div>
-                  <button type="button" disabled={!stepComplete} onClick={finish} className="mt-8 bg-gold px-8 py-4 text-[11px] uppercase tracking-[0.25em] text-ink-deep disabled:opacity-40">
+                  <button type="button" disabled={!stepComplete} onClick={finish} className="ui-button ui-button--primary mt-8">
                     生成今日身份卡
                   </button>
                 </div>

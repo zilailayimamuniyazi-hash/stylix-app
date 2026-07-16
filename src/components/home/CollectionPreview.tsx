@@ -43,7 +43,11 @@ export function CollectionPreview() {
       description: cp.celestialDesc,
       href: "/collection?tab=celestial-essentials",
       cta: cp.celestialCta,
-      products: null,
+      products: [
+        { name: "Aurora Celestial Band", image: "/products/gold-ring.jpg", href: "/product/aurora-celestial-band" },
+        { name: "Selene Moon Ring", image: "/products/微信图片_20260212130431_2_2.jpg", href: "/product/selene-moon-ring" },
+        { name: "Eros Duo Stack", image: "/products/1961b5b431c6e985cd27e0b35696b561.png", href: "/product/eros-duo-stack-rings" },
+      ],
     },
   ];
 
@@ -86,7 +90,7 @@ export function CollectionPreview() {
                 </Link>
               </div>
 
-              {/* Right: product grid or coming soon */}
+              {/* Right: curated product grid */}
               {col.products ? (
                 <div className="grid grid-cols-3 gap-4">
                   {col.products.map((p) => (
@@ -106,25 +110,7 @@ export function CollectionPreview() {
                     </Link>
                   ))}
                 </div>
-              ) : (
-                <div className="flex items-center justify-center border border-dashed border-ivory/10 aspect-[16/7]">
-                  <div className="text-center px-8">
-                    <p className="text-[10px] uppercase tracking-[0.4em] text-gold/40 mb-3">
-                      {cp.celestialEyebrow}
-                    </p>
-                    <p className="font-serif text-xl text-ivory/30">{cp.celestialName}</p>
-                    <p className="mt-3 text-xs text-ivory/40 max-w-xs mx-auto">
-                      {cp.celestialPlaceholderDesc}
-                    </p>
-                    <Link
-                      href={col.href}
-                      className="mt-6 inline-flex border border-ivory/10 px-6 py-2.5 text-[9px] uppercase tracking-[0.3em] text-ivory/30 transition-colors hover:border-gold/30 hover:text-gold/60"
-                    >
-                      {cp.explore}
-                    </Link>
-                  </div>
-                </div>
-              )}
+              ) : null}
             </div>
           ))}
         </div>

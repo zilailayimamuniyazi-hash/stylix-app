@@ -9,7 +9,7 @@ import { EVENTS } from "@/lib/analytics/events";
 import { useI18n } from "@/lib/i18n/context";
 
 const SHIPPING_THRESHOLD = 500;
-const ESTIMATED_TAX_RATE = 0.08875; // NYC rate placeholder
+const STANDARD_SHIPPING = 15;
 
 export function BagClient() {
   const { t } = useI18n();
@@ -20,8 +20,8 @@ export function BagClient() {
   }, []);
 
   const shippingFree = subtotal >= SHIPPING_THRESHOLD;
-  const estimatedTax = subtotal * ESTIMATED_TAX_RATE;
-  const estimatedTotal = subtotal + estimatedTax;
+  const shippingCost = shippingFree ? 0 : STANDARD_SHIPPING;
+  const estimatedTotal = subtotal + shippingCost;
 
   const header = (
     <div className="border-b border-ivory/10 py-14">
@@ -39,7 +39,7 @@ export function BagClient() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-ink-deep pt-16">
+      <div className="ui-page">
         {header}
         <div className="mx-auto max-w-7xl px-6 py-32 lg:px-10 text-center">
         <p className="font-serif text-2xl text-ivory/30">{t.bag.emptyTitle}</p>
@@ -58,7 +58,7 @@ export function BagClient() {
   }
 
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
+    <div className="ui-page">
       {header}
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
       <div className="grid gap-12 lg:grid-cols-[1fr_360px]">
@@ -167,7 +167,7 @@ export function BagClient() {
               <div className="flex justify-between">
                 <span className="text-ivory/60">{t.bag.shipping}</span>
                 <span className={shippingFree ? "text-gold/80" : "text-ivory/60"}>
-                  {shippingFree ? t.bag.complimentary : t.bag.calculatedAtCheckout}
+                  {shippingFree ? t.bag.complimentary : `$${STANDARD_SHIPPING.toFixed(2)}`}
                 </span>
               </div>
               {!shippingFree && (
@@ -177,7 +177,7 @@ export function BagClient() {
               )}
               <div className="flex justify-between">
                 <span className="text-ivory/60">{t.bag.estimatedTax}</span>
-                <span className="text-ivory/60">${estimatedTax.toFixed(2)}</span>
+                <span className="text-ivory/60">{t.bag.calculatedAtCheckout}</span>
               </div>
             </div>
 

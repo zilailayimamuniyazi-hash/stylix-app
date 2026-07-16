@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { timingSafeEqual } from "node:crypto";
 import { EVENTS } from "@/lib/analytics/events";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { hasAdminSession } from "@/lib/admin/session";
 
 const PAGE_SIZE = 1000;
 const ANALYTICS_SELECT =
-  "id, event_name, page_url, product_id, tool_name, timestamp, anonymous_user_id, session_id, device_type, browser, traffic_source, referrer, country, region";
+  "id, event_name, page_url, product_id, tool_name, timestamp, anonymous_user_id, session_id, device_type, referrer, country";
 
 type AnalyticsRange = "today" | "7d" | "30d" | "90d" | "6m" | "12m" | "all";
 
@@ -136,19 +136,7 @@ async function fetchAnalyticsEvents(
 }
 
 export async function GET(req: NextRequest) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminPassword) {
-    return NextResponse.json({ error: "Service unavailable." }, { status: 503 });
-  }
-
-  const auth = req.headers.get("authorization") ?? "";
-  const token = auth.replace("Bearer ", "").trim();
-
-  const tokenBuf = Buffer.from(token);
-  const passwordBuf = Buffer.from(adminPassword);
-  if (tokenBuf.length !== passwordBuf.length || !timingSafeEqual(tokenBuf, passwordBuf)) {
-    return unauthorized();
-  }
+  if (!(await hasAdminSession(req))) return unauthorized();
 
   const { searchParams } = new URL(req.url);
   const range = getRange(searchParams.get("range"));

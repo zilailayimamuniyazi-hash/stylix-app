@@ -17,7 +17,14 @@ export function LanguageSwitcher() {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, []);
 
   function handleSelect(l: Locale) {
@@ -36,7 +43,7 @@ export function LanguageSwitcher() {
       <button
         type="button"
         onClick={handleToggle}
-        className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.22em] text-ivory-dim transition-colors hover:text-gold cursor-pointer select-none"
+        className="flex min-h-11 items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-[var(--ui-text-3)] hover:text-[var(--ui-text)] cursor-pointer select-none"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
@@ -54,7 +61,7 @@ export function LanguageSwitcher() {
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 top-full mt-2 min-w-[9rem] rounded border border-ivory/10 bg-ink-deep py-1 shadow-xl z-[70]"
+          className="glass-panel absolute right-0 top-full z-[70] mt-2 min-w-[10rem] rounded-lg border border-[var(--ui-line)] py-1"
         >
           {LOCALES.map((l) => (
             <button
@@ -67,8 +74,8 @@ export function LanguageSwitcher() {
                 e.stopPropagation();
                 handleSelect(l);
               }}
-              className={`w-full px-4 py-2 text-left text-[11px] tracking-[0.18em] transition-colors hover:bg-ivory/5 hover:text-gold cursor-pointer ${
-                l === locale ? "text-gold" : "text-ivory-dim"
+              className={`min-h-11 w-full px-4 text-left text-[11px] tracking-[0.08em] hover:bg-white/5 cursor-pointer ${
+                l === locale ? "text-[var(--ui-accent)]" : "text-[var(--ui-text-2)]"
               }`}
             >
               <span className="mr-2 font-mono opacity-50">{LOCALE_SHORT_LABELS[l]}</span>

@@ -207,3 +207,48 @@ create index if not exists idx_atelier_leads_email on public.atelier_leads(email
 create index if not exists idx_atelier_leads_created_at on public.atelier_leads(created_at desc);
 
 alter table public.atelier_leads enable row level security;
+
+-- Public user image assets used by the styling advisor. Uploads are performed
+-- only by the server service role after MIME, signature, size and rate checks.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('user-uploads', 'user-uploads', true, 5242880, array['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Public read user uploads" on storage.objects;
+create policy "Public read user uploads"
+on storage.objects for select
+using (bucket_id = 'user-uploads');
+
+-- 15. Account-synced wishlist. The item snapshot keeps the page usable even
+-- when the merchandising catalog is served from the application bundle.
+create table if not exists public.user_wishlist (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  product_id text not null,
+  item_json jsonb not null,
+  created_at timestamptz not null default now(),
+  primary key (user_id, product_id)
+);
+
+alter table public.user_wishlist enable row level security;
+drop policy if exists "Users manage own wishlist" on public.user_wishlist;
+create policy "Users manage own wishlist"
+on public.user_wishlist for all
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
+
+-- 16. Cross-device JMTI identity profile.
+create table if not exists public.identity_profiles (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  answers_json jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.identity_profiles enable row level security;
+drop policy if exists "Users manage own identity profile" on public.identity_profiles;
+create policy "Users manage own identity profile"
+on public.identity_profiles for all
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);

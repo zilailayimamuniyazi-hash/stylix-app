@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { runAdvisor } from "@/lib/services/advisor-orchestrator";
+import { PairingRecommendations } from "@/components/product/PairingRecommendations";
 import type { AdvisorInput } from "@/lib/engine/recommendation";
 import type { JewelryCategory, MoodTag, OccasionTag, StyleTag } from "@/lib/types/product";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/lib/i18n/context";
 import { uploadImage } from "@/lib/utils/upload";
@@ -124,7 +124,7 @@ const materialSuggestions: Record<StyleTag, string> = {
 };
 
 export function AdvisorClient() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const a = t.advisor;
 
   const [occasion, setOccasion] = useState<OccasionTag>("date night");
@@ -160,13 +160,19 @@ export function AdvisorClient() {
   const identityArchetype = result ? getIdentityArchetype(style, mood) : null;
   const suggestedMaterial = result ? (materialSuggestions[style] ?? materialSuggestions.elegant) : null;
 
+  const advisorOwnedProducts = useMemo(
+    () => result?.recommendations.map((r) => r.product) ?? [],
+    [result]
+  );
+
   return (
-    <div className="pt-24">
+    <div className="ui-page pt-24">
       {/* ── Page header ──────────────────────────────────────────────── */}
       <div className="border-b border-ivory/10 py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <SectionHeading eyebrow={a.eyebrow} title={a.title} />
-          <p className="mt-6 max-w-2xl text-sm leading-relaxed text-ivory-dim">
+          <p className="ui-eyebrow">{a.eyebrow}</p>
+          <h1 className="ui-title mt-4">{a.title}</h1>
+          <p className="ui-copy mt-6 max-w-2xl">
             {a.subtitle}
           </p>
         </div>
@@ -180,9 +186,10 @@ export function AdvisorClient() {
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-gold">{a.zodiacLabel}</label>
             <select
+              aria-label={a.zodiacLabel}
               value={zodiac}
               onChange={(e) => setZodiac(e.target.value)}
-              className="mt-3 w-full border border-ivory/15 bg-ink-deep px-4 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
+              className="ui-field mt-3"
             >
               <option value="">{a.zodiacNone}</option>
               {a.zodiacSigns.map((sign) => (
@@ -195,9 +202,10 @@ export function AdvisorClient() {
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-gold">{a.occasionLabel}</label>
             <select
+              aria-label={a.occasionLabel}
               value={occasion}
               onChange={(e) => setOccasion(e.target.value as OccasionTag)}
-              className="mt-3 w-full border border-ivory/15 bg-ink-deep px-4 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
+              className="ui-field mt-3"
             >
               {occasions.map((o) => (
                 <option key={o} value={o}>{a.occasionLabels[o] ?? o}</option>
@@ -209,9 +217,10 @@ export function AdvisorClient() {
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-gold">{a.styleLabel}</label>
             <select
+              aria-label={a.styleLabel}
               value={style}
               onChange={(e) => setStyle(e.target.value as StyleTag)}
-              className="mt-3 w-full border border-ivory/15 bg-ink-deep px-4 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
+              className="ui-field mt-3"
             >
               {styles.map((s) => (
                 <option key={s} value={s}>{a.styleLabels[s] ?? s}</option>
@@ -223,9 +232,10 @@ export function AdvisorClient() {
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-gold">{a.moodLabel}</label>
             <select
+              aria-label={a.moodLabel}
               value={mood}
               onChange={(e) => setMood(e.target.value as MoodTag)}
-              className="mt-3 w-full border border-ivory/15 bg-ink-deep px-4 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
+              className="ui-field mt-3"
             >
               {moods.map((m) => (
                 <option key={m} value={m}>{a.moodLabels[m] ?? m}</option>
@@ -237,12 +247,13 @@ export function AdvisorClient() {
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-gold">{a.budgetLabel}</label>
             <select
+              aria-label={a.budgetLabel}
               value={budgetTier ?? ""}
               onChange={(e) => {
                 const v = e.target.value;
                 setBudgetTier(v === "" ? undefined : (Number(v) as 1 | 2 | 3 | 4));
               }}
-              className="mt-3 w-full border border-ivory/15 bg-ink-deep px-4 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
+              className="ui-field mt-3"
             >
               <option value="">{a.noPreference}</option>
               {budgetTiers.map((tier, i) => (
@@ -255,9 +266,10 @@ export function AdvisorClient() {
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-gold">{a.categoryLabel}</label>
             <select
+              aria-label={a.categoryLabel}
               value={jewelryCategory}
               onChange={(e) => setJewelryCategory(e.target.value as JewelryCategory | "all")}
-              className="mt-3 w-full border border-ivory/15 bg-ink-deep px-4 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
+              className="ui-field mt-3"
             >
               {categoryKeys.map((c) => (
                 <option key={c} value={c}>
@@ -271,6 +283,7 @@ export function AdvisorClient() {
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-gold">{a.outfitLabel}</label>
             <input
+              aria-label={a.outfitLabel}
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={async (e) => {
@@ -453,6 +466,17 @@ export function AdvisorClient() {
                   </div>
                 )}
               </div>
+
+              <PairingRecommendations
+                ownedProducts={advisorOwnedProducts}
+                title={
+                  locale === "zh"
+                    ? "与您的选择完美搭配"
+                    : "Also pairs well with your selections"
+                }
+                eyebrow={locale === "zh" ? "完整造型" : "Complete the Look"}
+                className="border-t-0 pt-0"
+              />
 
               {/* ── Symbolic Styling Note ──────────────────────────────── */}
               <div className="border-t border-ivory/10 pt-8">

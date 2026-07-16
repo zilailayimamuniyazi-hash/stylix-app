@@ -11,18 +11,26 @@ function getStripe() {
 }
 
 async function handleSessionCompleted(session: Stripe.Checkout.Session) {
+  if (session.payment_status !== "paid") {
+    console.log("[webhook] session completed but not paid, skipping:", session.id);
+    return;
+  }
+
   const meta = session.metadata ?? {};
 
+  const itemsPayload = meta.items_json_parts
+    ? Array.from({ length: Number(meta.items_json_parts) }, (_, index) => meta[`items_json_${index}`] ?? "").join("")
+    : meta.items_json ?? "[]";
   const itemsJson: Array<{ id: string; name: string; price: number; qty: number }> = (() => {
     try {
-      return JSON.parse(meta.items_json ?? "[]");
+      return JSON.parse(itemsPayload);
     } catch {
       return [];
     }
   })();
 
   const subtotalCents = parseInt(meta.subtotal_cents ?? "0", 10);
-  const taxCents = parseInt(meta.tax_cents ?? "0", 10);
+  const taxCents = session.total_details?.amount_tax ?? parseInt(meta.tax_cents ?? "0", 10);
   // Use Stripe's authoritative total (may differ if promo applied)
   const totalCents = session.amount_total ?? subtotalCents + taxCents;
 

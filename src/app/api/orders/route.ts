@@ -28,7 +28,9 @@ export async function GET(req: NextRequest) {
     const { data, error } = await db
       .schema("public")
       .from("orders")
-      .select("order_id, status, total_cents, currency, items, created_at")
+      .select(
+        "order_id, placed_at, status, items_json, subtotal_cents, shipping_free, tax_cents, total_cents, first_name, last_name, shipping_address1, shipping_address2, shipping_city, shipping_state, shipping_zip, shipping_country, email"
+      )
       .eq("stripe_session_id", sessionId)
       .single();
 

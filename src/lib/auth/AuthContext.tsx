@@ -9,6 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 export interface User {
   id: string;
@@ -22,17 +24,25 @@ interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
-  register: (email: string, password: string, name: string) => Promise<{ ok: boolean; error?: string }>;
+  register: (email: string, password: string, name: string) => Promise<{ ok: boolean; error?: string; requiresConfirmation?: boolean }>;
   logout: () => void;
   updateProfile: (updates: Partial<Pick<User, "name" | "avatar">>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const STORAGE_KEY = "stylix-auth-user";
-
-function generateId() {
-  return `user_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+function mapUser(value: SupabaseUser | null): User | null {
+  if (!value?.email) return null;
+  const metadata = value.user_metadata ?? {};
+  return {
+    id: value.id,
+    email: value.email,
+    name: typeof metadata.full_name === "string" && metadata.full_name.trim()
+      ? metadata.full_name.trim()
+      : value.email.split("@")[0],
+    avatar: typeof metadata.avatar_url === "string" ? metadata.avatar_url : undefined,
+    createdAt: value.created_at,
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -40,67 +50,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setUser(JSON.parse(saved));
-      }
-    } catch { /* ignore */ }
-    setIsLoading(false);
+    const client = getSupabaseClient();
+    let active = true;
+    client.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      setUser(mapUser(data.session?.user ?? null));
+      setIsLoading(false);
+    });
+    const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
+      setUser(mapUser(session?.user ?? null));
+      setIsLoading(false);
+    });
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [user]);
-
-  const login = useCallback(async (email: string, _password: string): Promise<{ ok: boolean; error?: string }> => {
-    await new Promise((r) => setTimeout(r, 600));
-
-    if (!email.includes("@")) {
-      return { ok: false, error: "invalid_email" };
-    }
-
-    const existing = localStorage.getItem(`stylix-users-${email}`);
-    if (existing) {
-      const u = JSON.parse(existing) as User;
-      setUser(u);
-      return { ok: true };
-    }
-
-    const u: User = {
-      id: generateId(),
-      email,
-      name: email.split("@")[0],
-      createdAt: new Date().toISOString(),
-    };
-    localStorage.setItem(`stylix-users-${email}`, JSON.stringify(u));
-    setUser(u);
+  const login = useCallback(async (email: string, password: string): Promise<{ ok: boolean; error?: string }> => {
+    if (!/^\S+@\S+\.\S+$/.test(email)) return { ok: false, error: "invalid_email" };
+    const { data, error } = await getSupabaseClient().auth.signInWithPassword({ email: email.trim(), password });
+    if (error) return { ok: false, error: error.message };
+    setUser(mapUser(data.user));
     return { ok: true };
   }, []);
 
-  const register = useCallback(async (email: string, _password: string, name: string): Promise<{ ok: boolean; error?: string }> => {
-    await new Promise((r) => setTimeout(r, 600));
-
-    if (!email.includes("@")) {
-      return { ok: false, error: "invalid_email" };
-    }
-
-    const u: User = {
-      id: generateId(),
-      email,
-      name,
-      createdAt: new Date().toISOString(),
-    };
-    localStorage.setItem(`stylix-users-${email}`, JSON.stringify(u));
-    setUser(u);
+  const register = useCallback(async (email: string, password: string, name: string): Promise<{ ok: boolean; error?: string; requiresConfirmation?: boolean }> => {
+    if (!/^\S+@\S+\.\S+$/.test(email)) return { ok: false, error: "invalid_email" };
+    const { data, error } = await getSupabaseClient().auth.signUp({
+      email: email.trim(),
+      password,
+      options: { data: { full_name: name.trim() } },
+    });
+    if (error) return { ok: false, error: error.message };
+    if (!data.session) return { ok: true, requiresConfirmation: true };
+    setUser(mapUser(data.session.user));
     return { ok: true };
   }, []);
 
   const logout = useCallback(() => {
+    void getSupabaseClient().auth.signOut();
     setUser(null);
   }, []);
 
@@ -108,7 +97,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser((prev) => {
       if (!prev) return prev;
       const updated = { ...prev, ...updates };
-      localStorage.setItem(`stylix-users-${prev.email}`, JSON.stringify(updated));
+      void getSupabaseClient().auth.updateUser({ data: {
+        full_name: updates.name ?? prev.name,
+        avatar_url: updates.avatar ?? prev.avatar,
+      } });
       return updated;
     });
   }, []);

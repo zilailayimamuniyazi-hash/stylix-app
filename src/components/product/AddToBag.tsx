@@ -27,14 +27,14 @@ export function AddToBag({ product }: { product: Product }) {
       <button
         type="button"
         onClick={handleAdd}
-        className="inline-flex items-center justify-center px-10 py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 bg-gold/90 text-ink-deep hover:bg-gold"
+        className="ui-button ui-button--primary"
       >
         {added ? t.product.addedToBag : inCart ? t.product.addAnother : t.product.addToBag}
       </button>
       {inCart && (
         <Link
           href="/bag"
-          className="inline-flex items-center justify-center px-10 py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 border border-gold/40 text-gold hover:border-gold"
+          className="ui-button ui-button--secondary"
         >
           {t.product.viewBag}
         </Link>

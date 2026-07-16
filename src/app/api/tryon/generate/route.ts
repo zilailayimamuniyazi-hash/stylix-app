@@ -17,6 +17,18 @@ const NECKLACE_MAP: Record<string, {
       "Do not change the person's identity or alter the clothing except where the necklace naturally overlaps.",
   },
 };
+const generationBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const bucket = generationBuckets.get(ip);
+  if (!bucket || now > bucket.resetAt) {
+    generationBuckets.set(ip, { count: 1, resetAt: now + 10 * 60_000 });
+    return false;
+  }
+  bucket.count += 1;
+  return bucket.count > 3;
+}
 
 function isTimeoutError(err: unknown): boolean {
   if (!(err instanceof Error)) return false;
@@ -31,21 +43,20 @@ function isTimeoutError(err: unknown): boolean {
 }
 
 export async function POST(req: NextRequest) {
-  console.log("[tryon/generate] route hit");
-
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(ip)) return NextResponse.json({ error: "Too many generations. Try again later." }, { status: 429 });
   const apiKey = process.env.OPENAI_API_KEY;
-  console.log("[tryon/generate] hasOpenAIKey:", !!apiKey);
 
   try {
     const formData = await req.formData();
     const file = formData.get("image") as File | null;
     const necklaceId = formData.get("necklaceId") as string | null;
 
-    console.log("[tryon/generate] necklaceId:", necklaceId);
-    console.log("[tryon/generate] image received:", !!file, file ? `${file.name} | ${(file.size / 1024).toFixed(1)} KB | type: ${file.type}` : "none");
-
     if (!file || !necklaceId) {
       return NextResponse.json({ error: "Missing image or necklaceId" }, { status: 400 });
+    }
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: "Upload a JPG, PNG or WEBP image under 10MB." }, { status: 415 });
     }
 
     const necklace = NECKLACE_MAP[necklaceId];
@@ -54,22 +65,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (!apiKey) {
-      console.log("[tryon/generate] No API key — demo mode");
-      return NextResponse.json({
-        demo: true,
-        demoReason: "no-key",
-        message: "Demo mode: OpenAI API key is not connected yet.",
-        resultImage: necklace.wornReferenceImage,
-        necklace,
-      });
+      return NextResponse.json({ error: "AI try-on is temporarily unavailable." }, { status: 503 });
     }
 
     const imageBuffer = Buffer.from(await file.arrayBuffer());
     const imageFile = new File([imageBuffer], file.name, { type: file.type });
-
-    console.log(`[tryon/generate] payload — model: gpt-image-1 | 1 image | ${(imageBuffer.byteLength / 1024).toFixed(1)} KB | necklace: ${necklaceId}`);
-    console.log("[tryon/generate] prompt:", necklace.prompt.slice(0, 80) + "…");
-    console.log("[tryon/generate] OpenAI API call started — timeout: 180s");
 
     const { default: OpenAI } = await import("openai");
     const openai = new OpenAI({ apiKey, timeout: 180_000, maxRetries: 0 });
@@ -83,57 +83,26 @@ export async function POST(req: NextRequest) {
         n: 1,
         size: "1024x1024",
       });
-      console.log("[tryon/generate] OpenAI API success — data length:", response.data?.length);
     } catch (openaiErr: unknown) {
-      const msg = openaiErr instanceof Error ? openaiErr.message : String(openaiErr);
       const timedOut = isTimeoutError(openaiErr);
-      console.error(`[tryon/generate] OpenAI ${timedOut ? "TIMEOUT" : "error"}:`, msg);
-      return NextResponse.json({
-        demo: true,
-        demoReason: timedOut ? "timeout" : "openai-error",
-        message: timedOut ? "Generation timed out. Try a smaller photo." : `OpenAI error: ${msg}`,
-        resultImage: necklace.wornReferenceImage,
-        necklace,
-      });
+      console.error("[tryon/generate] provider request failed", { timedOut });
+      return NextResponse.json({ error: timedOut ? "Generation timed out. Try a smaller photo." : "Generation failed. Try again later." }, { status: 502 });
     }
 
     const result = response.data?.[0];
     if (!result) {
-      console.error("[tryon/generate] No image in OpenAI response");
-      return NextResponse.json({
-        demo: true,
-        demoReason: "empty-response",
-        message: "OpenAI returned no image data.",
-        resultImage: necklace.wornReferenceImage,
-        necklace,
-      });
+      return NextResponse.json({ error: "No image was generated." }, { status: 502 });
     }
 
     const resultImage = result.url ?? (result.b64_json ? `data:image/png;base64,${result.b64_json}` : null);
     if (!resultImage) {
-      console.error("[tryon/generate] No URL or base64 in result");
-      return NextResponse.json({
-        demo: true,
-        demoReason: "no-image-data",
-        message: "OpenAI response contained no image URL or base64.",
-        resultImage: necklace.wornReferenceImage,
-        necklace,
-      });
+      return NextResponse.json({ error: "No image was generated." }, { status: 502 });
     }
 
-    console.log("[tryon/generate] Success — returning generated image");
     return NextResponse.json({ demo: false, resultImage, necklace });
 
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error("[tryon/generate] Unexpected error:", msg);
-    const necklace = NECKLACE_MAP["aurora-necklace"];
-    return NextResponse.json({
-      demo: true,
-      demoReason: "unexpected-error",
-      message: `Unexpected error: ${msg}`,
-      resultImage: necklace.wornReferenceImage,
-      necklace,
-    });
+    console.error("[tryon/generate] unexpected error", err);
+    return NextResponse.json({ error: "AI try-on is temporarily unavailable." }, { status: 500 });
   }
 }

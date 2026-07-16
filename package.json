@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "qa:commercial": "node scripts/qa-commercial.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",

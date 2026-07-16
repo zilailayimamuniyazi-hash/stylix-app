@@ -4,10 +4,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { useCart } from "@/lib/cart/CartContext";
 import { useI18n } from "@/lib/i18n/context";
+import { AuthModal } from "@/components/auth/AuthModal";
+import {
+  loadOrdersFromStorage,
+  mergeOrderLists,
+  normalizeOrderStatus,
+  statusBadgeClass,
+  timelineStepIndex,
+  type OrderHistoryItem,
+} from "@/lib/order/orderHistory";
 
-type Tab = "cart" | "jewelry" | "portrait";
+type Tab = "cart" | "orders" | "jewelry" | "portrait";
 
 export function ProfileClient() {
   const { user } = useAuth();
@@ -15,13 +25,16 @@ export function ProfileClient() {
   const p = t.profile;
   const { items } = useCart();
   const [activeTab, setActiveTab] = useState<Tab>("cart");
+  const [authOpen, setAuthOpen] = useState(false);
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-ink-deep pt-16 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="font-serif text-2xl text-ivory">{t.auth.loginTitle}</p>
+      <div className="ui-page flex items-center justify-center">
+        <div className="glass-panel mx-6 max-w-md border border-white/10 p-8 text-center backdrop-blur-[20px]">
+          <h1 className="font-serif text-3xl text-ivory">{t.auth.loginTitle}</h1>
           <p className="text-sm text-ivory/50">{t.auth.loginSubtitle}</p>
+          <button type="button" onClick={() => setAuthOpen(true)} className="ui-button ui-button--primary mt-7">登录 / 注册</button>
+          <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
         </div>
       </div>
     );
@@ -29,12 +42,13 @@ export function ProfileClient() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "cart", label: p.tabs.cart },
+    { key: "orders", label: p.tabs.orders },
     { key: "jewelry", label: p.tabs.jewelry },
     { key: "portrait", label: p.tabs.portrait },
   ];
 
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
+    <div className="ui-page">
       {/* Profile header */}
       <div className="border-b border-ivory/10 py-10 px-6 lg:px-10">
         <div className="mx-auto max-w-5xl flex items-center gap-5">
@@ -75,9 +89,247 @@ export function ProfileClient() {
       {/* Tab content */}
       <div className="mx-auto max-w-5xl px-6 py-12 lg:px-10">
         {activeTab === "cart" && <CartTab />}
+        {activeTab === "orders" && <OrdersTab email={user.email} />}
         {activeTab === "jewelry" && <JewelryTab />}
         {activeTab === "portrait" && <PortraitTab />}
       </div>
+    </div>
+  );
+}
+
+function formatCents(cents: number) {
+  return (cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 });
+}
+
+function OrdersTab({ email }: { email: string }) {
+  const { t, locale } = useI18n();
+  const o = t.profile.orders;
+  const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      try {
+        const { data: sessionData } = await getSupabaseClient().auth.getSession();
+        const token = sessionData.session?.access_token;
+        const res = token
+          ? await fetch("/api/orders/history", { headers: { Authorization: `Bearer ${token}` } })
+          : null;
+        const remote: OrderHistoryItem[] = res?.ok
+          ? ((await res.json()).orders ?? [])
+          : [];
+        const local = loadOrdersFromStorage(email);
+        if (!cancelled) {
+          setOrders(mergeOrderLists(remote, local));
+        }
+      } catch {
+        if (!cancelled) {
+          setOrders(loadOrdersFromStorage(email));
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [email]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="flex gap-2 mb-4">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="h-1.5 w-1.5 rounded-full bg-gold/50 animate-pulse"
+              style={{ animationDelay: `${i * 200}ms` }}
+            />
+          ))}
+        </div>
+        <p className="text-sm text-ivory/40">{o.loading}</p>
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <EmptyState
+        title={o.empty}
+        subtitle={o.emptySub}
+        ctaLabel={o.shopNow}
+        ctaHref="/shop"
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {orders.map((order) => {
+        const expanded = expandedId === order.order_id;
+        const status = normalizeOrderStatus(order.status);
+        const statusLabel = o.status[status];
+        const itemSummary = order.items_json
+          .map((item) => `${item.name}${item.qty > 1 ? ` ×${item.qty}` : ""}`)
+          .join(", ");
+        const progress = timelineStepIndex(order.status);
+        const timelineSteps = [
+          o.timeline.ordered,
+          o.timeline.confirmed,
+          o.timeline.shipped,
+          o.timeline.delivered,
+        ];
+
+        return (
+          <div
+            key={order.order_id}
+            className="border border-ivory/10 bg-ink-soft/30 overflow-hidden"
+          >
+            <button
+              type="button"
+              onClick={() => setExpandedId(expanded ? null : order.order_id)}
+              className="w-full text-left px-5 py-5 hover:bg-ivory/[0.02] transition-colors"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <p className="font-serif text-sm text-ivory">
+                      {o.orderId} {order.order_id}
+                    </p>
+                    <span
+                      className={`text-[10px] uppercase tracking-[0.2em] ${statusBadgeClass(order.status)}`}
+                    >
+                      {statusLabel}
+                    </span>
+                  </div>
+                  <p className="text-xs text-ivory/40">
+                    {o.placed}{" "}
+                    {new Date(order.placed_at).toLocaleDateString(locale, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <p className="text-xs text-ivory/50 mt-2 truncate">{itemSummary}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[9px] uppercase tracking-[0.25em] text-ivory/30 mb-1">
+                    {o.total}
+                  </p>
+                  <p className="font-serif text-base text-ivory">
+                    ${formatCents(order.total_cents)}
+                  </p>
+                  <svg
+                    className={`mt-3 ml-auto h-4 w-4 text-ivory/30 transition-transform ${expanded ? "rotate-180" : ""}`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+            </button>
+
+            {expanded && (
+              <div className="border-t border-ivory/10 px-5 py-6 space-y-8">
+                {/* Line items */}
+                <div>
+                  <p className="text-[9px] uppercase tracking-[0.35em] text-gold/60 mb-4">
+                    {o.items}
+                  </p>
+                  <div className="space-y-3">
+                    {order.items_json.map((item, i) => (
+                      <div
+                        key={`${item.id}-${i}`}
+                        className="flex items-start justify-between gap-4 text-sm"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-ivory">{item.name}</p>
+                          {item.qty > 1 && (
+                            <p className="text-[10px] text-ivory/35 mt-0.5">
+                              {o.qty} {item.qty}
+                            </p>
+                          )}
+                        </div>
+                        <p className="shrink-0 font-serif text-ivory">
+                          ${(item.price * item.qty).toLocaleString()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shipping address */}
+                {order.shipping_address1 && (
+                  <div>
+                    <p className="text-[9px] uppercase tracking-[0.35em] text-gold/60 mb-3">
+                      {o.shippingAddress}
+                    </p>
+                    <div className="text-sm text-ivory/60 space-y-0.5">
+                      {(order.first_name || order.last_name) && (
+                        <p className="text-ivory">
+                          {order.first_name} {order.last_name}
+                        </p>
+                      )}
+                      <p>{order.shipping_address1}</p>
+                      {order.shipping_address2 && <p>{order.shipping_address2}</p>}
+                      <p>
+                        {order.shipping_city}, {order.shipping_state} {order.shipping_zip}
+                      </p>
+                      <p>{order.shipping_country}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status timeline */}
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    {timelineSteps.map((label, i) => {
+                      const completed = i <= progress;
+                      return (
+                        <div key={label} className="flex flex-1 flex-col items-center gap-2">
+                          <div className="flex w-full items-center">
+                            {i > 0 && (
+                              <div
+                                className={`h-px flex-1 ${i <= progress ? "bg-gold/40" : "bg-ivory/10"}`}
+                              />
+                            )}
+                            <div
+                              className={`h-2.5 w-2.5 shrink-0 rounded-full ${
+                                completed ? "bg-gold" : "bg-ivory/20"
+                              }`}
+                            />
+                            {i < timelineSteps.length - 1 && (
+                              <div
+                                className={`h-px flex-1 ${i < progress ? "bg-gold/40" : "bg-ivory/10"}`}
+                              />
+                            )}
+                          </div>
+                          <p
+                            className={`text-[9px] uppercase tracking-[0.15em] text-center ${
+                              completed ? "text-ivory/70" : "text-ivory/25"
+                            }`}
+                          >
+                            {label}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

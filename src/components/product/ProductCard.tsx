@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/types/product";
-import { ButtonLink } from "@/components/ui/Button";
+import { WishlistHeartButton } from "@/components/product/WishlistHeartButton";
 import { useI18n } from "@/lib/i18n/context";
 
 export function ProductCard({ product, compact }: { product: Product; compact?: boolean }) {
@@ -12,68 +12,65 @@ export function ProductCard({ product, compact }: { product: Product; compact?: 
   const isDesigner = product.tags.collectionCategory === "designer-capsule";
 
   return (
-    <article
-      className={`group flex flex-col border border-stone-100 bg-white shadow-sm transition-all hover:border-stone-300 hover:shadow-md ${
-        compact ? "" : ""
-      }`}
-    >
-      <Link href={`/product/${product.slug}`} className="relative aspect-[4/5] overflow-hidden bg-stone-50">
-        <Image
-          src={product.coverImage}
-          alt={product.name}
-          fill
-          className={`object-cover transition-transform duration-700 group-hover:scale-105 ${
-            isArchive ? "opacity-80" : ""
-          }`}
-          sizes="(max-width:768px) 100vw, 33vw"
-        />
-        {isArchive && (
-          <div className="absolute top-3 left-3">
-            <span className="bg-stone-800/70 px-2 py-1 text-[8px] uppercase tracking-[0.25em] text-stone-200">
-              {t.product.conceptArchive}
-            </span>
-          </div>
-        )}
-        {isDesigner && product.collaboratorName && (
-          <div className="absolute top-3 left-3">
-            <span className="bg-amber-900/80 px-2 py-1 text-[8px] uppercase tracking-[0.25em] text-amber-100">
-              {t.product.selectedByStylix}
-            </span>
-          </div>
-        )}
-      </Link>
-      <div className="flex flex-1 flex-col p-6">
+    <article className="group flex min-w-0 flex-col">
+      <div className={`relative overflow-hidden rounded-lg bg-[#e6e3dc] ${compact ? "aspect-square" : "aspect-[4/5]"}`}>
+        <div className="absolute right-2 top-2 z-10">
+          <WishlistHeartButton product={product} className="border border-black/10 bg-white/85 text-black/55 backdrop-blur-sm" />
+        </div>
+        <Link href={`/product/${product.slug}`} className="relative block h-full w-full">
+          <Image
+            src={product.coverImage}
+            alt={product.name}
+            fill
+            className={`object-cover transition-transform duration-[700ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.025] ${
+              isArchive ? "opacity-80" : ""
+            }`}
+            sizes="(max-width:768px) 100vw, 33vw"
+          />
+          {isArchive && (
+            <div className="absolute top-3 left-3">
+              <span className="rounded-full bg-black/65 px-2.5 py-1 text-[8px] uppercase tracking-[0.18em] text-white/80 backdrop-blur-sm">
+                {t.product.conceptArchive}
+              </span>
+            </div>
+          )}
+          {isDesigner && product.collaboratorName && (
+            <div className="absolute top-3 left-3">
+              <span className="rounded-full bg-black/65 px-2.5 py-1 text-[8px] uppercase tracking-[0.18em] text-white/80 backdrop-blur-sm">
+                {t.product.selectedByStylix}
+              </span>
+            </div>
+          )}
+        </Link>
+      </div>
+      <div className="flex flex-1 flex-col px-1 py-4">
         {isDesigner && product.collaboratorName ? (
-          <p className="text-[10px] uppercase tracking-[0.2em] text-amber-700/80">
+          <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ui-accent)]">
             {product.collaboratorName} · {t.product.designerCapsule}
           </p>
         ) : (
-          <p className="text-[10px] uppercase tracking-[0.2em] text-stone-400">{product.category}</p>
+          <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ui-text-3)]">{product.category}</p>
         )}
-        <h3 className="mt-2 font-serif text-xl text-stone-900">{product.name}</h3>
-        <p className="mt-1 text-sm text-stone-500">{product.subtitle}</p>
+        <Link href={`/product/${product.slug}`} className="mt-2 font-serif text-xl leading-tight text-[var(--ui-text)] hover:text-[var(--ui-accent-hover)]">{product.name}</Link>
+        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--ui-text-3)]">{product.subtitle}</p>
         {isArchive ? (
-          <p className="mt-4 text-xs text-stone-400 italic">{t.product.conceptPieceArchive}</p>
+          <p className="mt-4 text-xs italic text-[var(--ui-text-3)]">{t.product.conceptPieceArchive}</p>
         ) : (
-          <p className="mt-4 font-sans text-sm text-stone-700">
+          <p className="mt-4 text-sm font-medium text-[var(--ui-text-2)]">
             {product.priceLabel ?? `$${product.price.toLocaleString()}`}
           </p>
         )}
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {product.tags.styleTags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="border border-stone-200 px-2 py-0.5 text-[10px] uppercase tracking-wider text-stone-400"
+              className="ui-badge"
             >
               {tag}
             </span>
           ))}
         </div>
-        <div className="mt-6">
-          <ButtonLink href={`/product/${product.slug}`} variant="outline" className="w-full py-2.5">
-            {t.product.viewDetails}
-          </ButtonLink>
-        </div>
+        <Link href={`/product/${product.slug}`} className="mt-5 inline-flex min-h-11 items-center justify-between border-t border-[var(--ui-line)] pt-3 text-[10px] font-medium uppercase tracking-[.12em] text-[var(--ui-text-2)] hover:text-[var(--ui-text)]"><span>{t.product.viewDetails}</span><span aria-hidden="true">→</span></Link>
       </div>
     </article>
   );

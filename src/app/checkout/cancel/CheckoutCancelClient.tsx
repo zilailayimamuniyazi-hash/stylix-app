@@ -7,7 +7,7 @@ export function CheckoutCancelClient() {
   const { t } = useI18n();
 
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
+    <div className="ui-page">
       <div className="border-b border-ivory/10 py-14">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="flex items-center gap-3 mb-6">

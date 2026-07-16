@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 const ALLOWED_MIME_TYPES = [
   "image/jpeg",
   "image/jpg",
   "image/png",
   "image/webp",
-  "image/gif",
 ];
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -23,6 +24,13 @@ function isUploadRateLimited(ip: string): boolean {
   }
   bucket.count++;
   return bucket.count > UPLOAD_RATE_MAX;
+}
+
+function hasValidImageSignature(bytes: Uint8Array, type: string) {
+  if (type === "image/jpeg" || type === "image/jpg") return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  if (type === "image/png") return bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
+  if (type === "image/webp") return String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP";
+  return false;
 }
 
 export async function POST(req: NextRequest) {
@@ -74,38 +82,44 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("[upload] Accepted file:", file.name, file.type, `${(file.size / 1024).toFixed(1)} KB`);
+    const buffer = new Uint8Array(await file.arrayBuffer());
+    if (!hasValidImageSignature(buffer, file.type)) {
+      return NextResponse.json({ error: "The uploaded file is not a valid image." }, { status: 415 });
+    }
 
-    // ── Supabase Storage (uncomment when credentials are set) ─────────────────
-    // const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    // const supabaseKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    // if (supabaseUrl && supabaseKey) {
-    //   const { createClient } = await import("@supabase/supabase-js");
-    //   const supabase = createClient(supabaseUrl, supabaseKey);
-    //   const ext = file.name.split(".").pop() ?? "jpg";
-    //   const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    //   const bytes = await file.arrayBuffer();
-    //   const { error } = await supabase.storage
-    //     .from("user-uploads")              // bucket name — must be public
-    //     .upload(path, bytes, { contentType: file.type, upsert: false });
-    //   if (error) {
-    //     console.error("[upload] Supabase storage error:", error.message);
-    //     return NextResponse.json({ error: error.message }, { status: 500 });
-    //   }
-    //   const { data } = supabase.storage.from("user-uploads").getPublicUrl(path);
-    //   console.log("[upload] Supabase public URL:", data.publicUrl);
-    //   return NextResponse.json({ url: data.publicUrl });
-    // }
-    // ─────────────────────────────────────────────────────────────────────────
+    const db = getSupabaseAdmin();
+    const bucket = "user-uploads";
+    const ext = file.type.includes("png") ? "png" : file.type.includes("webp") ? "webp" : "jpg";
+    const month = new Date().toISOString().slice(0, 7);
+    const path = `${month}/${randomUUID()}.${ext}`;
+    let result = await db.storage.from(bucket).upload(path, buffer, {
+      contentType: file.type,
+      cacheControl: "31536000",
+      upsert: false,
+    });
 
-    // Local fallback: echo back a data URL so the client can preview immediately.
-    // In production replace this with the Supabase block above.
-    const bytes = await file.arrayBuffer();
-    const base64 = Buffer.from(bytes).toString("base64");
-    const dataUrl = `data:${file.type};base64,${base64}`;
+    if (result.error?.message.toLowerCase().includes("bucket")) {
+      const created = await db.storage.createBucket(bucket, {
+        public: true,
+        fileSizeLimit: MAX_FILE_SIZE_BYTES,
+        allowedMimeTypes: ALLOWED_MIME_TYPES,
+      });
+      if (!created.error || created.error.message.toLowerCase().includes("already")) {
+        result = await db.storage.from(bucket).upload(path, buffer, {
+          contentType: file.type,
+          cacheControl: "31536000",
+          upsert: false,
+        });
+      }
+    }
 
-    console.log("[upload] Returning local data URL for preview (no Supabase configured)");
-    return NextResponse.json({ url: dataUrl });
+    if (result.error) {
+      console.error("[upload] storage failed", { message: result.error.message });
+      return NextResponse.json({ error: "Image storage is temporarily unavailable." }, { status: 503 });
+    }
+
+    const { data } = db.storage.from(bucket).getPublicUrl(path);
+    return NextResponse.json({ url: data.publicUrl });
   } catch (err) {
     console.error("[upload] Unexpected error:", err);
     return NextResponse.json({ error: "Internal server error during upload." }, { status: 500 });

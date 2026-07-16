@@ -52,6 +52,7 @@ export interface Translations {
     title: string;
     tabs: {
       cart: string;
+      orders: string;
       jewelry: string;
       portrait: string;
     };
@@ -79,6 +80,30 @@ export interface Translations {
       goToPortrait: string;
       generatedOn: string;
       viewDetails: string;
+    };
+    orders: {
+      empty: string;
+      emptySub: string;
+      shopNow: string;
+      loading: string;
+      orderId: string;
+      placed: string;
+      total: string;
+      items: string;
+      qty: string;
+      shippingAddress: string;
+      timeline: {
+        ordered: string;
+        confirmed: string;
+        shipped: string;
+        delivered: string;
+      };
+      status: {
+        confirmed: string;
+        processing: string;
+        shipped: string;
+        delivered: string;
+      };
     };
     memberSince: string;
   };

@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { products } from "@/lib/data/products";
@@ -9,6 +7,7 @@ import type { JewelryCategory, CollectionCategory } from "@/lib/types/product";
 import { track } from "@/lib/analytics/tracker";
 import { EVENTS } from "@/lib/analytics/events";
 import { useI18n } from "@/lib/i18n/context";
+import { ProductCard } from "@/components/product/ProductCard";
 
 // ── Collection tabs ──────────────────────────────────────────────────────────
 
@@ -30,69 +29,6 @@ const categoryKeys: (JewelryCategory | "all")[] = [
   "bracelets",
   "earrings",
 ];
-
-// ── Product card ──────────────────────────────────────────────────────────────
-
-function CollectionProductCard({ product }: { product: (typeof products)[0] }) {
-  const { t } = useI18n();
-  const isArchive = product.tags.collectionCategory === "ai-concept-archive";
-  const isDesigner = product.tags.collectionCategory === "designer-capsule";
-
-  return (
-    <article className="group">
-      <Link href={`/product/${product.slug}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden bg-stone-50">
-          <Image
-            src={product.coverImage}
-            alt={product.name}
-            fill
-            className={`object-cover transition-transform duration-700 group-hover:scale-[1.04] ${
-              isArchive ? "opacity-85" : ""
-            }`}
-            sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
-          />
-          {isArchive && (
-            <div className="absolute top-3 left-3">
-              <span className="bg-stone-900/70 px-2 py-1 text-[8px] uppercase tracking-[0.25em] text-stone-300">
-                {t.collectionPage.badges.conceptArchive}
-              </span>
-            </div>
-          )}
-          {isDesigner && product.collaboratorName && (
-            <div className="absolute top-3 left-3">
-              <span className="bg-stone-800/80 px-2 py-1 text-[8px] uppercase tracking-[0.25em] text-stone-200">
-                {t.collectionPage.badges.selectedByStylix}
-              </span>
-            </div>
-          )}
-        </div>
-        <div className="pt-5 pb-8">
-          {isDesigner && product.collaboratorName && (
-            <p className="text-[9px] uppercase tracking-[0.3em] text-stone-400 mb-1">
-              {product.collaboratorName} · {t.collectionPage.collaboratorCapsule}
-            </p>
-          )}
-          {!isDesigner && product.zodiacAffinity && product.zodiacAffinity.length > 0 && (
-            <p className="text-[9px] uppercase tracking-[0.3em] text-stone-400/80 mb-2">
-              {product.zodiacAffinity.slice(0, 3).join(" · ")}
-            </p>
-          )}
-          <h3 className="font-serif text-lg text-stone-800 group-hover:text-stone-600 transition-colors duration-300">
-            {product.name}
-          </h3>
-          <p className="mt-1 text-sm text-stone-500">{product.subtitle}</p>
-          {isArchive ? (
-            <p className="mt-3 text-xs text-stone-400 italic">{t.collectionPage.conceptPieceArchive}</p>
-          ) : (
-            <p className="mt-3 text-sm font-medium text-stone-700">
-              {product.priceLabel ?? `$${product.price.toLocaleString()}`}
-            </p>
-          )}
-        </div>
-      </Link>
-    </article>
-  );
-}
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -147,25 +83,25 @@ export function CollectionView() {
   }, [activeTab, cat]);
 
   return (
-    <div className="min-h-screen bg-white pt-16">
+    <div className="ui-page">
       {/* ── Page header ──────────────────────────────────────────────────── */}
-      <div className="border-b border-stone-200 bg-white py-14">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <p className="text-[10px] uppercase tracking-[0.5em] text-stone-400">
+      <header className="border-b border-[var(--ui-line)] py-14 lg:py-20">
+        <div className="ui-container">
+          <p className="ui-eyebrow">
             {t.collectionPage.pageEyebrow}
           </p>
-          <h1 className="mt-4 font-serif text-4xl text-stone-800 sm:text-5xl">
+          <h1 className="ui-title mt-4">
             {t.collectionPage.pageTitle}
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-stone-400">
+          <p className="ui-copy mt-4 max-w-xl">
             {t.collectionPage.pageSubtitle}
           </p>
         </div>
-      </div>
+      </header>
 
       {/* ── Collection tabs ───────────────────────────────────────────────── */}
-      <div className="sticky top-16 z-30 border-b border-stone-200 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="sticky top-16 z-30 border-b border-[var(--ui-line)] bg-[rgba(11,12,14,.88)] backdrop-blur-xl">
+        <div className="ui-container">
           <div className="flex gap-0 overflow-x-auto">
             {tabKeyMap.map((key) => (
               <button
@@ -174,8 +110,8 @@ export function CollectionView() {
                 onClick={() => setTab(key)}
                 className={`shrink-0 border-b-2 px-5 py-4 text-[11px] uppercase tracking-[0.2em] transition-colors ${
                   activeTab === key
-                    ? "border-stone-900 text-stone-900"
-                    : "border-transparent text-stone-400 hover:text-stone-600"
+                    ? "border-[var(--ui-accent)] text-[var(--ui-text)]"
+                    : "border-transparent text-[var(--ui-text-3)] hover:text-[var(--ui-text)]"
                 }`}
               >
                 {t.collectionPage.tabs[tabTranslationKey[key]].label}
@@ -185,22 +121,22 @@ export function CollectionView() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
+      <div className="ui-container py-12">
         {/* ── Collection description ─────────────────────────────────────── */}
         <div className="mb-10 max-w-2xl">
-          <p className="text-[9px] uppercase tracking-[0.4em] text-stone-400 mb-2">
+          <p className="ui-eyebrow mb-2">
             {t.collectionPage.tabs[tabTranslationKey[activeTab]].eyebrow}
           </p>
-          <p className="text-sm leading-relaxed text-stone-500">
+          <p className="ui-copy">
             {t.collectionPage.tabs[tabTranslationKey[activeTab]].description}
           </p>
           {activeTab === "designer-capsule" && (
-            <p className="mt-3 text-sm leading-relaxed text-stone-400">
+            <p className="ui-copy mt-3">
               {t.collectionPage.designerCapsuleNote}
             </p>
           )}
           {activeTab === "ai-concept-archive" && (
-            <p className="mt-3 text-sm leading-relaxed text-stone-400">
+            <p className="ui-copy mt-3">
               {t.collectionPage.archiveNote}
             </p>
           )}
@@ -213,10 +149,10 @@ export function CollectionView() {
               key={key}
               type="button"
               onClick={() => setCat(key)}
-              className={`border px-4 py-2 text-[10px] uppercase tracking-[0.15em] transition-colors ${
+              className={`min-h-11 rounded px-4 text-[10px] uppercase tracking-[0.12em] ${
                 cat === key
-                  ? "border-stone-900 bg-stone-900 text-white"
-                  : "border-stone-200 text-stone-500 hover:border-stone-400 hover:text-stone-700"
+                  ? "bg-[var(--ui-action)] text-[var(--ui-action-text)]"
+                  : "text-[var(--ui-text-3)] hover:bg-[var(--ui-surface)] hover:text-[var(--ui-text)]"
               }`}
             >
               {t.collection.categoryLabels[key] ?? key}
@@ -225,40 +161,40 @@ export function CollectionView() {
         </div>
 
         {/* ── Count ────────────────────────────────────────────────── */}
-        <p className="mb-8 text-xs text-stone-400 uppercase tracking-[0.2em]">
+        <p className="mb-8 text-xs uppercase tracking-[0.14em] text-[var(--ui-text-3)]">
           {filtered.length} {filtered.length === 1 ? t.collection.piece : t.collection.pieces}
           {activeTab === "all" && (
-            <span className="ml-2 text-stone-300">{t.collectionPage.allTabArchiveHint}</span>
+            <span className="ml-2 text-[var(--ui-text-3)]">{t.collectionPage.allTabArchiveHint}</span>
           )}
         </p>
 
         {/* ── Product grid ─────────────────────────────────────────── */}
         {filtered.length > 0 ? (
-          <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((p) => (
-              <CollectionProductCard key={p.id} product={p} />
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center border border-dashed border-stone-200 py-20 text-center">
-            <p className="font-serif text-2xl text-stone-300">{t.collectionPage.emptyTitle}</p>
-            <p className="mt-3 text-sm text-stone-400">{t.collectionPage.emptyBody}</p>
+          <div className="ui-surface flex flex-col items-center justify-center border-dashed py-20 text-center">
+            <p className="ui-heading">{t.collectionPage.emptyTitle}</p>
+            <p className="ui-copy mt-3">{t.collectionPage.emptyBody}</p>
           </div>
         )}
 
         {/* ── Archive CTA ───────────────────────────────────────────── */}
         {activeTab === "all" && (
-          <div className="mt-16 border-t border-stone-100 pt-12 text-center">
-            <p className="text-[9px] uppercase tracking-[0.4em] text-stone-400 mb-3">
+          <div className="mt-16 border-t border-[var(--ui-line)] pt-12 text-center">
+            <p className="ui-eyebrow mb-3">
               {t.collectionPage.archiveCta.eyebrow}
             </p>
-            <p className="text-sm text-stone-500 max-w-md mx-auto">
+            <p className="ui-copy mx-auto max-w-md">
               {t.collectionPage.archiveCta.description}
             </p>
             <button
               type="button"
               onClick={() => setTab("ai-concept-archive")}
-              className="mt-6 border border-stone-300 px-8 py-3 text-[10px] uppercase tracking-[0.3em] text-stone-600 transition-colors hover:border-stone-900 hover:text-stone-900"
+              className="ui-button ui-button--secondary mt-6"
             >
               {t.collectionPage.archiveCta.button}
             </button>

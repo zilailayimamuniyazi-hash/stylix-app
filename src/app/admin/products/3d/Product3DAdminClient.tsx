@@ -39,7 +39,6 @@ function createInitialFields(products: Product3DItem[]): FieldState {
 }
 
 export function Product3DAdminClient({ initialProducts }: Product3DAdminClientProps) {
-  const [password, setPassword] = useState("");
   const [products, setProducts] = useState(initialProducts);
   const [fields, setFields] = useState<FieldState>(() => createInitialFields(initialProducts));
   const [status, setStatus] = useState<StatusState>({});
@@ -58,14 +57,6 @@ export function Product3DAdminClient({ initialProducts }: Product3DAdminClientPr
     const productFields = fields[productId];
     const imageUrl = productFields?.imageUrl.trim();
     const model3dUrl = productFields?.model3dUrl.trim();
-
-    if (!password.trim()) {
-      setStatus((current) => ({
-        ...current,
-        [productId]: { error: "Enter the admin password first." },
-      }));
-      return;
-    }
 
     if (!imageUrl) {
       setStatus((current) => ({
@@ -93,7 +84,6 @@ export function Product3DAdminClient({ initialProducts }: Product3DAdminClientPr
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${password.trim()}`,
         },
         body: JSON.stringify({
           productId,
@@ -138,7 +128,7 @@ export function Product3DAdminClient({ initialProducts }: Product3DAdminClientPr
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div data-theme="light" className="min-h-screen bg-[var(--ui-bg)] text-[var(--ui-text)]">
       <div className="border-b border-gray-200 bg-white">
         <div className="mx-auto max-w-6xl px-6 py-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-amber-600">Stylix Admin</p>
@@ -146,16 +136,6 @@ export function Product3DAdminClient({ initialProducts }: Product3DAdminClientPr
           <p className="mt-2 max-w-2xl text-sm text-gray-500">
             Generate a GLB from a product image or attach an existing GLB URL. Provider keys stay server-side.
           </p>
-          <label className="mt-5 block max-w-sm">
-            <span className="mb-1 block text-xs font-medium text-gray-600">Admin password</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-200"
-              placeholder="Required for generation"
-            />
-          </label>
         </div>
       </div>
 

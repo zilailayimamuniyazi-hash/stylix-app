@@ -27,12 +27,18 @@ export function IdentityPortraitClient() {
   const [selectedMood, setSelectedMood] = useState<MoodId | null>(null);
   const [generationPhase, setGenerationPhase] = useState(0);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ─── Handlers ──────────────────────────────────────────────────────────────
 
   const handleFile = useCallback((file: File) => {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      setGenerationError("请上传不超过 10MB 的 JPG、PNG 或 WEBP 图片。");
+      return;
+    }
+    setGenerationError(null);
     setPhotoFile(file);
     const url = URL.createObjectURL(file);
     setPhotoPreview((prev) => {
@@ -77,6 +83,7 @@ export function IdentityPortraitClient() {
   const handleGenerate = async (mood: MoodId) => {
     if (!photoFile || !selectedIdentity) return;
     setSelectedMood(mood);
+    setGenerationError(null);
     setStep("generating");
 
     let currentPhase = 0;
@@ -102,10 +109,17 @@ export function IdentityPortraitClient() {
       });
       const data = await res.json();
       clearInterval(interval);
+      if (!res.ok || !data.resultImage) {
+        setGenerationError(data.error || ip.resultUnavailable);
+        setResultImage(null);
+        setStep("result");
+        return;
+      }
       setResultImage(data.resultImage || null);
       setStep("result");
     } catch {
       clearInterval(interval);
+      setGenerationError("网络连接异常，请稍后重试。");
       setStep("result");
     }
   };
@@ -121,6 +135,7 @@ export function IdentityPortraitClient() {
     setSelectedJewelry(null);
     setSelectedMood(null);
     setResultImage(null);
+    setGenerationError(null);
   };
 
   const handleRegenerateWith = (identity: JewelryIdentity) => {
@@ -220,7 +235,7 @@ export function IdentityPortraitClient() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-ink-deep relative overflow-hidden pt-16">
+    <div className="ui-page relative overflow-hidden">
 
       {/* Step indicator (visible on steps 1-4, not during generating/result) */}
       {currentStepIndex >= 0 && (
@@ -289,6 +304,7 @@ export function IdentityPortraitClient() {
 
             <input
               ref={fileInputRef}
+              aria-label="上传身份画像照片"
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={onFileChange}
@@ -551,14 +567,17 @@ export function IdentityPortraitClient() {
               {/* Portrait */}
               <div className="rounded-2xl overflow-hidden bg-ink-soft border border-ivory/5">
                 {resultImage ? (
-                  <img
+                  <Image
                     src={resultImage}
                     alt={`${selectedIdentity.nameEn} Portrait`}
-                    className="w-full aspect-square object-cover"
+                    width={1024}
+                    height={1024}
+                    unoptimized
+                    className="aspect-square w-full object-cover"
                   />
                 ) : (
                   <div className="w-full aspect-square flex items-center justify-center">
-                    <p className="text-ivory/40 text-sm">{ip.resultUnavailable}</p>
+                    <div className="max-w-xs px-6 text-center"><p className="text-ivory/60 text-sm">{generationError || ip.resultUnavailable}</p><button type="button" onClick={() => setStep("mood")} className="mt-5 border border-gold/30 px-5 py-2 text-[10px] tracking-[0.2em] text-gold">重新生成</button></div>
                   </div>
                 )}
               </div>

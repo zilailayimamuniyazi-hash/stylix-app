@@ -12,7 +12,7 @@ export interface UploadError {
 
 /**
  * Validates, creates a local preview URL, and POSTs to /api/upload.
- * Returns { url } from the server (data URL locally, Supabase public URL in production)
+ * Returns a stable Supabase Storage URL from the server
  * and a localPreview objectURL for instant display before the server responds.
  */
 export async function uploadImage(

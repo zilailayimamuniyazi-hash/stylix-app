@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 115" fill="none">
+  <defs>
+    <linearGradient id="geminiChain" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7a5a1e"/>
+      <stop offset="50%" stop-color="#e8c878"/>
+      <stop offset="100%" stop-color="#7a5a1e"/>
+    </linearGradient>
+  </defs>
+  <path d="M 18 32 Q 190 92 362 32" stroke="url(#geminiChain)" stroke-width="2.2" fill="none"/>
+  <path d="M 175 78 L 190 52 L 205 78" stroke="#c9a962" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="155" cy="68" r="8" fill="#f0d080" stroke="#c9a962" stroke-width="1"/>
+  <polygon points="155,60 157,66 163,66 158,69 160,75 155,71 150,75 152,69 147,66 153,66" fill="#fff8e0" opacity="0.9"/>
+  <circle cx="225" cy="68" r="8" fill="#f0d080" stroke="#c9a962" stroke-width="1"/>
+  <polygon points="225,60 227,66 233,66 228,69 230,75 225,71 220,75 222,69 217,66 223,66" fill="#fff8e0" opacity="0.9"/>
+</svg>

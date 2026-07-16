@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 110" fill="none">
+  <defs>
+    <linearGradient id="constChain" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8d6b2c"/>
+      <stop offset="50%" stop-color="#f0d080"/>
+      <stop offset="100%" stop-color="#8d6b2c"/>
+    </linearGradient>
+  </defs>
+  <path d="M 15 28 Q 210 88 405 28" stroke="url(#constChain)" stroke-width="2" fill="none"/>
+  <g fill="#f8e89a" stroke="#c9a962" stroke-width="0.6">
+    <polygon points="80,58 82,62 86,62 83,65 84,69 80,66 76,69 77,65 74,62 78,62"/>
+    <polygon points="130,72 132,76 136,76 133,79 134,83 130,80 126,83 127,79 124,76 128,76"/>
+    <polygon points="180,80 182,84 186,84 183,87 184,91 180,88 176,91 177,87 174,84 178,84"/>
+    <polygon points="230,80 232,84 236,84 233,87 234,91 230,88 226,91 227,87 224,84 228,84"/>
+    <polygon points="280,72 282,76 286,76 283,79 284,83 280,80 276,83 277,79 274,76 278,76"/>
+    <polygon points="330,58 332,62 336,62 333,65 334,69 330,66 326,69 327,65 324,62 328,62"/>
+  </g>
+</svg>

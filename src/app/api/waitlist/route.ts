@@ -1,11 +1,6 @@
-import { timingSafeEqual as cryptoTimingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  return cryptoTimingSafeEqual(Buffer.from(a), Buffer.from(b));
-}
+import { hasAdminSession } from "@/lib/admin/session";
 
 type Gender = "female" | "male" | "non-binary" | "prefer-not-to-say";
 
@@ -104,16 +99,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get("authorization") ?? "";
-  const token = auth.replace("Bearer ", "").trim();
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminPassword) {
-    return NextResponse.json({ error: "Service unavailable." }, { status: 503 });
-  }
-
-  if (!token || token.length !== adminPassword.length || !timingSafeEqual(token, adminPassword)) {
-    return unauthorized();
-  }
+  if (!(await hasAdminSession(req))) return unauthorized();
 
   try {
     const db = getSupabaseAdmin();

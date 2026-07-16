@@ -6,8 +6,10 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { I18nProvider } from "@/lib/i18n/context";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { CartProvider } from "@/lib/cart/CartContext";
+import { WishlistProvider } from "@/lib/wishlist/WishlistContext";
 import { OrderProvider } from "@/lib/order/OrderContext";
 import { AnalyticsPageView } from "@/lib/analytics/AnalyticsPageView";
+import { IdentityProfileSync } from "@/lib/identity/IdentityProfileSync";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
@@ -67,17 +69,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable} ${serifCn.variable} ${sansCn.variable}`}>
+    <html lang="zh" className={`${serif.variable} ${sans.variable} ${serifCn.variable} ${sansCn.variable}`}>
       <body className="min-h-screen font-sans">
         <I18nProvider>
           <AuthProvider>
           <CartProvider>
-            <OrderProvider>
-              <AnalyticsPageView />
-              <SiteHeader />
-              <main>{children}</main>
-              <SiteFooter />
-            </OrderProvider>
+            <WishlistProvider>
+              <OrderProvider>
+                <AnalyticsPageView />
+                <IdentityProfileSync />
+                <SiteHeader />
+                <main className="site-main">{children}</main>
+                <SiteFooter />
+              </OrderProvider>
+            </WishlistProvider>
           </CartProvider>
           </AuthProvider>
         </I18nProvider>

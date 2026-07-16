@@ -226,7 +226,7 @@ export function VipClient() {
   const isStep6 = step === 6;
 
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
+    <div className="ui-page">
       {/* ── Top chrome ─────────────────────────────────────────────────── */}
       <div className="border-b border-ivory/10 py-10 px-6 lg:px-10">
         <div className="mx-auto max-w-5xl">

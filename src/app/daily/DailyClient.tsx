@@ -53,7 +53,7 @@ export function DailyClient() {
   }
 
   return (
-    <div className="min-h-screen bg-ink-deep pt-16">
+    <div className="ui-page">
       <div className="mx-auto max-w-7xl px-6 py-14 lg:px-10">
         <div className="grid gap-8 lg:grid-cols-[1fr_420px]">
           <section className="border border-gold/20 bg-ink-soft/30 p-7 shadow-luxury">

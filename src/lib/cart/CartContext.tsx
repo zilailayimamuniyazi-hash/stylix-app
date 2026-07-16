@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from "react";
 import type { Product } from "@/lib/types/product";
@@ -82,30 +83,50 @@ function reducer(state: CartState, action: CartAction): CartState {
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "stylix_cart";
 
+function isValidCartItem(value: unknown): value is CartItem {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Record<string, unknown>;
+  const product = item.product;
+  if (!product || typeof product !== "object") return false;
+  const p = product as Record<string, unknown>;
+  return (
+    typeof p.id === "string" &&
+    typeof p.price === "number" &&
+    typeof item.quantity === "number" &&
+    item.quantity >= 1
+  );
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, { items: [] });
+  const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate from sessionStorage on mount
+  // Keep the bag across tabs and browser restarts.
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as CartItem[];
-        if (Array.isArray(parsed)) dispatch({ type: "HYDRATE", items: parsed });
+        const parsed: unknown = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          const validItems = parsed.filter(isValidCartItem);
+          dispatch({ type: "HYDRATE", items: validItems });
+        }
       }
     } catch {
       // ignore
     }
+    setHydrated(true);
   }, []);
 
   // Persist on every change
   useEffect(() => {
+    if (!hydrated) return;
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
     } catch {
       // ignore
     }
-  }, [state.items]);
+  }, [state.items, hydrated]);
 
   const addItem = useCallback((product: Product) => dispatch({ type: "ADD", product }), []);
   const removeItem = useCallback((productId: string) => dispatch({ type: "REMOVE", productId }), []);

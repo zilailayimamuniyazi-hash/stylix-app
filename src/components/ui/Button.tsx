@@ -3,14 +3,12 @@ import type { ReactNode } from "react";
 
 type Variant = "primary" | "ghost" | "outline";
 
-const base =
-  "inline-flex items-center justify-center px-10 py-4 text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-500";
+const base = "ui-button";
 
 const variants: Record<Variant, string> = {
-  primary:
-    "bg-ink text-ivory hover:bg-ink-soft",
-  ghost: "text-gold-muted hover:text-gold",
-  outline: "border border-ink/20 text-ink hover:bg-ink hover:text-ivory hover:border-ink",
+  primary: "ui-button--primary",
+  ghost: "ui-button--ghost",
+  outline: "ui-button--secondary",
 };
 
 export function ButtonLink({
@@ -51,7 +49,7 @@ export function Button({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`${base} ${variants[variant]} ${disabled ? "opacity-40 pointer-events-none" : ""} ${className}`}
+      className={`${base} ${variants[variant]} ${className}`}
     >
       {children}
     </button>

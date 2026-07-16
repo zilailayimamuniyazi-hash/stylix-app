@@ -2,7 +2,7 @@ import { products } from "@/lib/data/products";
 import type { MoodTag, OccasionTag, Product, StyleTag } from "@/lib/types/product";
 
 export type JmtiCode =
-  | "LMSD" | "LMSG" | "LMTD" | "LMTG"
+  | "LMSD" | "LMSG" | "LTSD" | "LTSG"
   | "LMAD" | "LMAG" | "LTAD" | "LTAG"
   | "OMSD" | "OMSG" | "OTSD" | "OTSG"
   | "OMAD" | "OMAG" | "OTAD" | "OTAG";
@@ -102,11 +102,11 @@ export const jmtiTypes: Record<JmtiCode, JmtiProfile> = {
     colorTerms: ["white", "silver"],
     recommendationAngle: "优先推荐高亮度石材、日常可戴但存在感明确的款式。",
   },
-  LMTD: {
-    code: "LMTD",
+  LTSD: {
+    code: "LTSD",
     alias: "WARM",
     nameCn: "暖金客",
-    nickname: "理性、日常、仪式、低调",
+    nickname: "理性、仪式、经典、低调",
     description: "在日常里保留一点仪式感，偏好金色、暖调、细节克制的作品。",
     keywords: ["暖调", "稳定", "仪式感", "质感"],
     style: "classic",
@@ -117,11 +117,11 @@ export const jmtiTypes: Record<JmtiCode, JmtiProfile> = {
     colorTerms: ["gold", "yellow", "warm"],
     recommendationAngle: "优先推荐暖金属、低饱和光泽和可重复搭配的款式。",
   },
-  LMTG: {
-    code: "LMTG",
+  LTSG: {
+    code: "LTSG",
     alias: "GOLD",
     nameCn: "素圈控",
-    nickname: "理性、日常、仪式、亮眼",
+    nickname: "理性、仪式、经典、亮眼",
     description: "喜欢一眼看出质感的简洁珠宝，线条越纯粹，越能体现判断力。",
     keywords: ["素圈", "金属重量", "清晰轮廓", "高级日常"],
     style: "minimal",
@@ -384,6 +384,11 @@ export function emptyJmtiScores(): JmtiScores {
   return { L: 0, O: 0, M: 0, T: 0, A: 0, S: 0, D: 0, G: 0 };
 }
 
+/** Safe profile lookup — falls back to a valid profile if the code is missing/corrupt. */
+function resolveJmtiProfile(code: JmtiCode): JmtiProfile {
+  return jmtiTypes[code] ?? jmtiTypes.LMSD;
+}
+
 export function evaluateJmti(responses: Record<number, "A" | "B">) {
   const scores = emptyJmtiScores();
 
@@ -415,7 +420,7 @@ export function evaluateJmti(responses: Record<number, "A" | "B">) {
 }
 
 function scoreProduct(product: Product, answers: IdentityAnswers) {
-  const profile = jmtiTypes[answers.jmtiCode];
+  const profile = resolveJmtiProfile(answers.jmtiCode);
   const searchable = [
     product.name,
     product.subtitle,
@@ -457,7 +462,7 @@ function pickByTier(sorted: Product[], budgetMax: number) {
 }
 
 export function buildDailyIdentityCard(answers: IdentityAnswers): DailyIdentityCard {
-  const profile = jmtiTypes[answers.jmtiCode];
+  const profile = resolveJmtiProfile(answers.jmtiCode);
   const zodiac = answers.zodiac ? zodiacGem[answers.zodiac] : null;
   const sorted = [...products].sort((a, b) => scoreProduct(b, answers) - scoreProduct(a, answers));
   const selected = pickByTier(sorted, answers.budgetMax);
@@ -490,6 +495,7 @@ export function getStoredIdentityAnswers(): IdentityAnswers | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<IdentityAnswers> & { mbti?: string };
     if (!parsed.jmtiCode || parsed.mbti) return null;
+    if (!(parsed.jmtiCode in jmtiTypes)) return null;
     return parsed as IdentityAnswers;
   } catch {
     return null;

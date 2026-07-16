@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { getIdentityById, MOODS } from "@/lib/data/jewelry-identities";
 import { JEWELRY_ITEMS } from "@/lib/data/jewelry-items";
 
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const generationBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const bucket = generationBuckets.get(ip);
+  if (!bucket || now > bucket.resetAt) {
+    generationBuckets.set(ip, { count: 1, resetAt: now + 10 * 60_000 });
+    return false;
+  }
+  bucket.count += 1;
+  return bucket.count > 3;
+}
+
 function buildPrompt(identityId: string, mood: string, intensity: string, jewelryId?: string): string {
   const identity = getIdentityById(identityId);
   if (!identity) return "";
@@ -60,6 +75,8 @@ function isTimeoutError(err: unknown): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(ip)) return NextResponse.json({ error: "生成次数过多，请稍后再试。" }, { status: 429 });
   const apiKey = process.env.OPENAI_API_KEY;
 
   try {
@@ -76,6 +93,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (!ALLOWED_IMAGE_TYPES.has(file.type) || file.size > MAX_IMAGE_BYTES) {
+      return NextResponse.json({ error: "请上传不超过 10MB 的 JPG、PNG 或 WEBP 图片。" }, { status: 415 });
+    }
 
     const identity = getIdentityById(identityId);
     if (!identity) {
@@ -88,14 +108,7 @@ export async function POST(req: NextRequest) {
     const prompt = buildPrompt(identityId, mood, intensity, jewelryId);
 
     if (!apiKey) {
-      return NextResponse.json({
-        demo: true,
-        demoReason: "no-key",
-        message: "Demo mode: OpenAI API key not configured.",
-        resultImage: null,
-        identity,
-        prompt,
-      });
+      return NextResponse.json({ error: "身份肖像服务暂时不可用。" }, { status: 503 });
     }
 
     const imageBuffer = Buffer.from(await file.arrayBuffer());
@@ -114,30 +127,14 @@ export async function POST(req: NextRequest) {
         size: "1024x1024",
       });
     } catch (openaiErr: unknown) {
-      const msg = openaiErr instanceof Error ? openaiErr.message : String(openaiErr);
       const timedOut = isTimeoutError(openaiErr);
-      return NextResponse.json({
-        demo: true,
-        demoReason: timedOut ? "timeout" : "openai-error",
-        message: timedOut
-          ? "Generation timed out. Try a smaller photo."
-          : `OpenAI error: ${msg}`,
-        resultImage: null,
-        identity,
-        prompt,
-      });
+      console.error("[identity-portrait] generation failed", { timedOut });
+      return NextResponse.json({ error: timedOut ? "生成超时，请压缩图片后重试。" : "生成失败，请稍后重试。" }, { status: 502 });
     }
 
     const result = response.data?.[0];
     if (!result) {
-      return NextResponse.json({
-        demo: true,
-        demoReason: "empty-response",
-        message: "No image returned from AI.",
-        resultImage: null,
-        identity,
-        prompt,
-      });
+      return NextResponse.json({ error: "未生成有效图片，请重新尝试。" }, { status: 502 });
     }
 
     const resultImage =
@@ -151,14 +148,7 @@ export async function POST(req: NextRequest) {
       prompt,
     });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({
-      demo: true,
-      demoReason: "unexpected-error",
-      message: `Unexpected error: ${msg}`,
-      resultImage: null,
-      identity: null,
-      prompt: null,
-    });
+    console.error("[identity-portrait] unexpected error", err);
+    return NextResponse.json({ error: "服务暂时不可用，请稍后重试。" }, { status: 500 });
   }
 }

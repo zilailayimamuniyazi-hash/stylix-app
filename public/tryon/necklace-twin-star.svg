@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <defs>
+    <linearGradient id="chainGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7a5a1e"/>
+      <stop offset="50%" stop-color="#f0d080"/>
+      <stop offset="100%" stop-color="#7a5a1e"/>
+    </linearGradient>
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#c9a962" stop-opacity="0.6"/>
+    </radialGradient>
+  </defs>
+  <path d="M 20 30 Q 200 95 380 30" stroke="url(#chainGold)" stroke-width="2.5" fill="none"/>
+  <circle cx="130" cy="72" r="10" fill="url(#starGlow)" stroke="#c9a962" stroke-width="1"/>
+  <polygon points="130,64 133,70 139,70 134,74 136,80 130,76 124,80 126,74 121,70 127,70" fill="#f8e89a" opacity="0.9"/>
+  <circle cx="270" cy="72" r="10" fill="url(#starGlow)" stroke="#c9a962" stroke-width="1"/>
+  <polygon points="270,64 273,70 279,70 274,74 276,80 270,76 264,80 266,74 261,70 267,70" fill="#f8e89a" opacity="0.9"/>
+  <circle cx="200" cy="88" r="6" fill="#e8dcc8" stroke="#c9a962" stroke-width="0.8" opacity="0.85"/>
+</svg>
