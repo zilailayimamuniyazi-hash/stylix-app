@@ -142,8 +142,11 @@ create table if not exists public.analytics_events (
   anonymous_user_id text,
   session_id text,
   device_type text,
+  browser text,
+  traffic_source text,
   referrer text,
   country text,
+  region text,
   created_at timestamptz default now()
 );
 
@@ -152,6 +155,8 @@ create index if not exists idx_analytics_events_timestamp on public.analytics_ev
 create index if not exists idx_analytics_events_session on public.analytics_events(session_id);
 create index if not exists idx_analytics_events_anonymous_user on public.analytics_events(anonymous_user_id);
 create index if not exists idx_analytics_events_product on public.analytics_events(product_id);
+create index if not exists idx_analytics_events_traffic_source on public.analytics_events(traffic_source);
+create index if not exists idx_analytics_events_country_region on public.analytics_events(country, region);
 
 -- 13. orders
 create table if not exists public.orders (
