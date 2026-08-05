@@ -84,13 +84,23 @@ export const es: Translations = {
   },
   nav: {
     collection: "Colección",
-    advisor: "AI Luxury Styling",
-    tryOn: "Virtual Try-On",
-    arTryOn: "AR Virtual Try-On",
-    identityPortrait: "Identity Portrait",
-    designerCapsule: "Designer Capsule",
-    vip: "Private Atelier",
-    bag: "Bag",
+    advisor: "Estilismo IA",
+    tryOn: "Prueba virtual",
+    arTryOn: "Prueba AR",
+    identityPortrait: "Retrato de identidad",
+    designerCapsule: "Cápsula de diseñador",
+    vip: "Atelier privado",
+    bag: "Bolsa",
+    openNavigation: "Abrir navegación",
+    closeNavigation: "Cerrar navegación",
+    loginRegister: "Iniciar sesión",
+    member: "Miembro",
+    wishlist: "Lista de deseos",
+    daily: "Identidad diaria",
+    shop: "Joyería",
+    designers: "Diseñadores",
+    beadLab: "Estudio de diseño",
+    test: "Lectura de identidad",
   },
   hero: {
     eyebrow: "Stylix",
@@ -441,6 +451,11 @@ export const es: Translations = {
     statusUpload: "— modo carga · compuesto sobre tu foto.",
   },
   footer: {
+    description: "De la lectura de identidad a la prueba, selección y personalización: joyas elegidas con contexto.",
+    experience: "Experiencia",
+    service: "Servicio",
+    customerEmail: "Atención al cliente",
+    rights: "Todos los derechos reservados.",
     tagline:
       "Una plataforma de estilo de joyería impulsada por IA — presentación editorial, combinación inteligente y Virtual Try-On en un solo lugar.",
     collectionsLabel: "Colecciones",
@@ -571,6 +586,159 @@ export const es: Translations = {
       success: "You are on the waitlist. We will be in touch when private access opens.",
       error: "Unable to join the waitlist right now.",
     },
+    redesign: {
+          "hero": {
+                "eyebrow": "Sistema de identidad de joyería con IA",
+                "title": "Joyas elegidas para quien eres.",
+                "subtitle": "MBTI, zodiaco, estilo personal y contexto real se convierten en recomendación precisa, prueba virtual y personalización privada.",
+                "primaryCta": "Comenzar lectura",
+                "secondaryCta": "Explorar joyas",
+                "modelLabel": "Estudio zodiacal de joyería",
+                "modelNote": "Un GLB real de joya responde suavemente al cursor y al desplazamiento."
+          },
+          "identityInput": {
+                "eyebrow": "Entrada de identidad",
+                "title": "Seis señales dan forma a la recomendación.",
+                "subtitle": "Stylix reduce la colección con gusto, proporción y contexto. Pasa el cursor por cada señal para ver su efecto.",
+                "hint": "Explora las facetas",
+                "facets": [
+                      {
+                            "label": "MBTI",
+                            "value": "INTJ / ENFP / ISFP",
+                            "effect": "Define decisión, tolerancia ornamental y nivel de presencia."
+                      },
+                      {
+                            "label": "Zodiaco",
+                            "value": "Signo solar + elemento",
+                            "effect": "Añade material simbólico, motivo y color de suerte."
+                      },
+                      {
+                            "label": "Ánimo",
+                            "value": "Poderoso / Suave / Luminoso",
+                            "effect": "Ajusta escala, brillo y temperatura emocional."
+                      },
+                      {
+                            "label": "Ocasión",
+                            "value": "Diario / Ceremonia / Regalo",
+                            "effect": "Filtra uso, presencia e inversión."
+                      },
+                      {
+                            "label": "Gusto",
+                            "value": "Minimal / Romántico / Audaz",
+                            "effect": "Elige silueta y referencias de maison."
+                      },
+                      {
+                            "label": "Proporción",
+                            "value": "Rostro, mano, escote",
+                            "effect": "Guía largo, ancho, caída y ajuste de prueba."
+                      }
+                ]
+          },
+          "processing": {
+                "eyebrow": "Procesamiento IA",
+                "title": "Las entradas forman un perfil ADN de identidad.",
+                "subtitle": "Visualización de producto: señales personales interpretadas, ponderadas y conectadas con joyas reales.",
+                "disclaimer": "Visualización de producto, no prueba científica.",
+                "steps": [
+                      {
+                            "label": "Entrada",
+                            "title": "Señales personales",
+                            "body": "MBTI, zodiaco, ánimo, ocasión, gusto y proporción."
+                      },
+                      {
+                            "label": "Interpretación",
+                            "title": "Perfil de identidad",
+                            "body": "Stylix traduce los datos en material, silueta y prioridades de estilo."
+                      },
+                      {
+                            "label": "Match",
+                            "title": "Recomendación",
+                            "body": "Una edición más breve, prueba virtual y dirección de personalización."
+                      }
+                ]
+          },
+          "result": {
+                "eyebrow": "Resultado personalizado",
+                "title": "Una tarjeta de identidad de muestra antes de la lectura completa.",
+                "profileLabel": "Perfil",
+                "profileName": "Arquitecta lunar",
+                "luckyElementLabel": "Elemento de suerte",
+                "luckyElement": "Oro champán · Perla · Verde profundo",
+                "categoryLabel": "Categoría",
+                "category": "Collar medallón + anillo escultórico",
+                "reasonLabel": "Razón",
+                "reason": "Equilibra estructura serena y foco celestial, fuerte para la noche y suave para diario.",
+                "occasionLabel": "Ocasión",
+                "occasion": "Cena privada, presentación, regalo significativo",
+                "cta": "Iniciar el test real"
+          },
+          "tryOn": {
+                "eyebrow": "Prueba virtual",
+                "title": "Previsualiza la escala antes del sí final.",
+                "body": "Usa la prueba existente para revisar colocación sobre tu foto. Stylix muestra proporción y styling sin prometer AR en vivo fuera de la experiencia actual.",
+                "cta": "Abrir prueba virtual",
+                "note": "Usa la ruta y activos actuales.",
+                "labels": [
+                      "Escote",
+                      "Caída del colgante",
+                      "Luz sobre la piel"
+                ]
+          },
+          "jewelry": {
+                "eyebrow": "Joyería seleccionada",
+                "title": "Piezas reales, editadas por identidad.",
+                "cta": "Ver toda la joyería",
+                "revealLabel": "Pasa el cursor para ver relevancia",
+                "viewObject": "Ver pieza",
+                "pieces": [
+                      {
+                            "name": "Iris Spectrum",
+                            "meta": "Conjunto cromático",
+                            "relevance": "Para perfiles expresivos que llevan contraste y color.",
+                            "price": "Desde 680 $"
+                      },
+                      {
+                            "name": "Dione Signet",
+                            "meta": "Anillo de oro 22K",
+                            "relevance": "Para perfiles tierra y fuego con autoridad tranquila.",
+                            "price": "Desde 420 $"
+                      },
+                      {
+                            "name": "Lyra Harp",
+                            "meta": "Anillo de oro blanco",
+                            "relevance": "Para perfiles aire atraídos por línea y contención.",
+                            "price": "Desde 390 $"
+                      }
+                ]
+          },
+          "atelier": {
+                "eyebrow": "Atelier privado",
+                "title": "Personaliza la pieza con un diseñador.",
+                "body": "Cuando la recomendación está cerca pero no final, Stylix convierte tu perfil en brief de metal, piedra, grabado, talla y colaboración.",
+                "cta": "Iniciar atelier privado",
+                "points": [
+                      "Brief para diseñador",
+                      "Dirección de material y gema",
+                      "Ruta de consulta VIP"
+                ]
+          },
+          "daily": {
+                "eyebrow": "Identidad diaria",
+                "title": "Vuelve por el color, joya y nota del día.",
+                "body": "Daily Identity continúa la relación tras la primera lectura con color de suerte, dirección de joya y check-in personal.",
+                "cta": "Abrir Daily Identity",
+                "luckyColorLabel": "Color",
+                "luckyColor": "Marfil profundo",
+                "luckyJewelryLabel": "Joya",
+                "luckyJewelry": "Colgante de perla"
+          },
+          "shared": {
+                "continue": "Continuar",
+                "input": "Entrada",
+                "interpretation": "Interpretación",
+                "match": "Match de joya"
+          }
+    }
   },
   collectionPage: {
     pageEyebrow: "Stylix · AI Luxury Styling Platform",

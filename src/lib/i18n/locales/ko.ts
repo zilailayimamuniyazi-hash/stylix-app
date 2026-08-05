@@ -84,13 +84,23 @@ export const ko: Translations = {
   },
   nav: {
     collection: "컬렉션",
-    advisor: "AI Luxury Styling",
-    tryOn: "Virtual Try-On",
-    arTryOn: "AR Virtual Try-On",
-    identityPortrait: "Identity Portrait",
-    designerCapsule: "Designer Capsule",
-    vip: "Private Atelier",
-    bag: "Bag",
+    advisor: "AI 스타일링",
+    tryOn: "가상 착용",
+    arTryOn: "AR 착용",
+    identityPortrait: "아이덴티티 포트레이트",
+    designerCapsule: "디자이너 캡슐",
+    vip: "프라이빗 아틀리에",
+    bag: "백",
+    openNavigation: "내비게이션 열기",
+    closeNavigation: "내비게이션 닫기",
+    loginRegister: "로그인",
+    member: "멤버",
+    wishlist: "위시리스트",
+    daily: "데일리 아이덴티티",
+    shop: "주얼리",
+    designers: "디자이너",
+    beadLab: "디자인 스튜디오",
+    test: "아이덴티티 리딩",
   },
   hero: {
     eyebrow: "Stylix",
@@ -441,6 +451,11 @@ export const ko: Translations = {
     statusUpload: "— 업로드 모드 · 사진에 합성됨.",
   },
   footer: {
+    description: "아이덴티티 리딩부터 착용, 선택, 커스터마이징까지 맥락으로 선택되는 주얼리.",
+    experience: "경험",
+    service: "서비스",
+    customerEmail: "고객 지원",
+    rights: "모든 권리 보유.",
     tagline:
       "AI 기반 주얼리 스타일링 플랫폼 — 에디토리얼 프레젠테이션, 스마트 매칭, Virtual Try-On을 한 곳에서.",
     collectionsLabel: "컬렉션",
@@ -571,6 +586,159 @@ export const ko: Translations = {
       success: "You are on the waitlist. We will be in touch when private access opens.",
       error: "Unable to join the waitlist right now.",
     },
+    redesign: {
+          "hero": {
+                "eyebrow": "AI 럭셔리 주얼리 아이덴티티 시스템",
+                "title": "당신을 위해 선택되는 주얼리.",
+                "subtitle": "MBTI, 별자리, 개인 스타일과 실제 맥락이 정교한 추천, 가상 착용, 프라이빗 커스터마이징 여정으로 이어집니다.",
+                "primaryCta": "아이덴티티 리딩 시작",
+                "secondaryCta": "주얼리 둘러보기",
+                "modelLabel": "조디악 주얼리 스터디",
+                "modelNote": "실제 주얼리 GLB가 커서와 스크롤에 섬세하게 반응합니다."
+          },
+          "identityInput": {
+                "eyebrow": "아이덴티티 입력",
+                "title": "여섯 가지 신호가 추천을 만듭니다.",
+                "subtitle": "Stylix는 취향, 비율, 맥락으로 컬렉션을 정리합니다. 각 신호에 마우스를 올려 영향을 확인하세요.",
+                "hint": "패싯을 살펴보세요",
+                "facets": [
+                      {
+                            "label": "MBTI",
+                            "value": "INTJ / ENFP / ISFP",
+                            "effect": "결정 방식, 장식 허용도, 존재감을 설정합니다."
+                      },
+                      {
+                            "label": "별자리",
+                            "value": "태양 별자리 + 원소",
+                            "effect": "상징 소재, 모티프, 행운의 색을 제안합니다."
+                      },
+                      {
+                            "label": "무드",
+                            "value": "강한 / 부드러운 / 빛나는",
+                            "effect": "스케일, 광택, 감정 온도를 조정합니다."
+                      },
+                      {
+                            "label": "상황",
+                            "value": "데일리 / 세리머니 / 선물",
+                            "effect": "착용성, 존재감, 투자 범위를 걸러냅니다."
+                      },
+                      {
+                            "label": "취향",
+                            "value": "미니멀 / 로맨틱 / 볼드",
+                            "effect": "실루엣 언어와 하우스 레퍼런스를 선택합니다."
+                      },
+                      {
+                            "label": "비율",
+                            "value": "얼굴, 손, 네크라인",
+                            "effect": "귀걸이 길이, 반지 폭, 목걸이 드롭과 착용감을 안내합니다."
+                      }
+                ]
+          },
+          "processing": {
+                "eyebrow": "AI 프로세싱",
+                "title": "입력은 아이덴티티 DNA 프로필이 됩니다.",
+                "subtitle": "개인 신호를 해석하고 가중해 실제 주얼리 선택과 연결하는 제품 로직의 시각화입니다.",
+                "disclaimer": "제품 시각화이며 과학적 증명은 아닙니다.",
+                "steps": [
+                      {
+                            "label": "입력",
+                            "title": "개인 신호",
+                            "body": "MBTI, 별자리, 무드, 상황, 취향, 비율을 모읍니다."
+                      },
+                      {
+                            "label": "해석",
+                            "title": "아이덴티티 프로필",
+                            "body": "소재, 실루엣, 스타일 우선순위로 번역합니다."
+                      },
+                      {
+                            "label": "매치",
+                            "title": "추천",
+                            "body": "더 작은 에디트, 착용 경로, 커스터마이징 방향이 됩니다."
+                      }
+                ]
+          },
+          "result": {
+                "eyebrow": "개인화 결과",
+                "title": "전체 리딩 전 확인하는 샘플 아이덴티티 카드.",
+                "profileLabel": "프로필",
+                "profileName": "루나 아키텍트",
+                "luckyElementLabel": "행운 요소",
+                "luckyElement": "샴페인 골드 · 진주 · 딥 그린",
+                "categoryLabel": "카테고리",
+                "category": "메달리온 네크리스 + 조형적 링",
+                "reasonLabel": "추천 이유",
+                "reason": "조용한 구조와 천체적 포인트를 균형 있게 담아 이브닝과 데일리 모두에 어울립니다.",
+                "occasionLabel": "상황 매치",
+                "occasion": "프라이빗 디너, 업무 발표, 의미 있는 선물",
+                "cta": "실제 테스트 시작"
+          },
+          "tryOn": {
+                "eyebrow": "가상 착용",
+                "title": "최종 선택 전 비율을 확인하세요.",
+                "body": "현재 착용 도구로 내 사진 위 배치를 확인합니다. Stylix는 현재 경험 이상의 실시간 AR을 암시하지 않습니다.",
+                "cta": "가상 착용 열기",
+                "note": "현재 try-on 경로와 에셋을 사용합니다.",
+                "labels": [
+                      "네크라인",
+                      "펜던트 드롭",
+                      "피부 위 빛"
+                ]
+          },
+          "jewelry": {
+                "eyebrow": "셀렉티드 주얼리",
+                "title": "실제 제품을 아이덴티티 관점으로 편집합니다.",
+                "cta": "전체 주얼리 보기",
+                "revealLabel": "호버해 관련성 보기",
+                "viewObject": "제품 보기",
+                "pieces": [
+                      {
+                            "name": "Iris Spectrum",
+                            "meta": "크로매틱 세트",
+                            "relevance": "대비와 컬러를 소화하는 표현형 프로필에.",
+                            "price": "680달러부터"
+                      },
+                      {
+                            "name": "Dione Signet",
+                            "meta": "22K 골드 링",
+                            "relevance": "조용한 권위를 원하는 흙과 불의 프로필에.",
+                            "price": "420달러부터"
+                      },
+                      {
+                            "name": "Lyra Harp",
+                            "meta": "화이트 골드 링",
+                            "relevance": "선, 명료함, 절제를 선호하는 공기 프로필에.",
+                            "price": "390달러부터"
+                      }
+                ]
+          },
+          "atelier": {
+                "eyebrow": "프라이빗 아틀리에",
+                "title": "디자이너와 함께 작품을 맞춤화하세요.",
+                "body": "추천이 가깝지만 최종은 아닐 때, Stylix는 프로필을 금속, 스톤, 각인, 사이즈와 협업 브리프로 바꿉니다.",
+                "cta": "프라이빗 아틀리에 시작",
+                "points": [
+                      "디자이너용 브리프",
+                      "소재와 보석 방향",
+                      "VIP 상담 경로"
+                ]
+          },
+          "daily": {
+                "eyebrow": "데일리 아이덴티티",
+                "title": "오늘의 색, 주얼리, 스타일 노트를 확인하세요.",
+                "body": "Daily Identity는 첫 리딩 이후 행운의 색, 주얼리 방향, 개인 체크인으로 관계를 이어갑니다.",
+                "cta": "Daily Identity 열기",
+                "luckyColorLabel": "행운의 색",
+                "luckyColor": "딥 아이보리",
+                "luckyJewelryLabel": "행운의 주얼리",
+                "luckyJewelry": "진주 펜던트"
+          },
+          "shared": {
+                "continue": "계속",
+                "input": "입력",
+                "interpretation": "해석",
+                "match": "주얼리 매치"
+          }
+    }
   },
   collectionPage: {
     pageEyebrow: "Stylix · AI Luxury Styling Platform",

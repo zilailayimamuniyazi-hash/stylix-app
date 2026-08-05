@@ -8,15 +8,7 @@ import { useCart } from "@/lib/cart/CartContext";
 import { useWishlist } from "@/lib/wishlist/WishlistContext";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
-
-const nav = [
-  { href: "/test", label: "JMTI 测试" },
-  { href: "/try-on", label: "Try-On" },
-  { href: "/bead-lab", label: "设计工作室" },
-  { href: "/vip-atelier", label: "高级定制" },
-  { href: "/designers", label: "设计师合作" },
-  { href: "/shop", label: "商城" },
-];
+import { useI18n } from "@/lib/i18n/context";
 
 function isActive(pathname: string, href: string) {
   if (href === "/test") return pathname === "/test" || pathname === "/result" || pathname === "/daily";
@@ -25,6 +17,7 @@ function isActive(pathname: string, href: string) {
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -32,6 +25,14 @@ export function SiteHeader() {
   const { items: wishlistItems } = useWishlist();
   const { user, logout } = useAuth();
   const isHome = pathname === "/";
+  const nav = [
+    { href: "/test", label: t.nav.test },
+    { href: "/try-on", label: t.nav.tryOn },
+    { href: "/bead-lab", label: t.nav.beadLab },
+    { href: "/vip-atelier", label: t.nav.vip },
+    { href: "/designers", label: t.nav.designers },
+    { href: "/shop", label: t.nav.shop },
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -63,12 +64,12 @@ export function SiteHeader() {
         <div className="hidden items-center gap-3 xl:flex">
           <LanguageSwitcher />
           <Link href="/daily" className="text-[10px] uppercase tracking-[0.12em] text-[var(--ui-text-3)] hover:text-[var(--ui-text)]">
-            Daily
+            {t.nav.daily}
           </Link>
           <Link
             href="/wishlist"
             className="relative flex min-h-11 min-w-11 items-center justify-center text-[var(--ui-text-3)] hover:text-[var(--ui-text)]"
-            aria-label="Wishlist"
+            aria-label={t.nav.wishlist}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4" aria-hidden="true">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -78,7 +79,7 @@ export function SiteHeader() {
             )}
           </Link>
           <Link href="/bag" className="relative inline-flex min-h-11 items-center text-[10px] uppercase tracking-[0.12em] text-[var(--ui-text-3)] hover:text-[var(--ui-text)]">
-            购物袋
+            {t.nav.bag}
             {mounted && itemCount > 0 && <span className="ml-1 text-gold">({itemCount})</span>}
           </Link>
           {user ? (
@@ -87,11 +88,11 @@ export function SiteHeader() {
                 {user.name.charAt(0).toUpperCase()}
               </Link>
               <button type="button" onClick={logout} className="min-h-11 text-[10px] uppercase tracking-[0.12em] text-[var(--ui-text-3)] hover:text-[var(--ui-text)]">
-                退出
+                {t.auth.logout}
               </button>
             </div>
           ) : (
-            <button type="button" onClick={() => setAuthOpen(true)} className="ui-button ui-button--secondary min-h-9 px-4 text-[10px]">登录</button>
+            <button type="button" onClick={() => setAuthOpen(true)} className="ui-button ui-button--secondary min-h-9 px-4 text-[10px]">{t.nav.loginRegister}</button>
           )}
         </div>
 
@@ -99,7 +100,7 @@ export function SiteHeader() {
           type="button"
           onClick={() => setOpen((value) => !value)}
           className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 xl:hidden"
-          aria-label={open ? "关闭导航" : "打开导航"}
+          aria-label={open ? t.nav.closeNavigation : t.nav.openNavigation}
           aria-expanded={open}
         >
           <span className={`h-px w-5 bg-[var(--ui-text)] transition-transform ${open ? "translate-y-1 rotate-45" : ""}`} />
@@ -116,23 +117,23 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link href="/daily" onClick={() => setOpen(false)} className="text-sm uppercase tracking-widest text-ivory-soft">
-              Daily
+              {t.nav.daily}
             </Link>
             <Link href="/member" onClick={() => setOpen(false)} className="text-sm uppercase tracking-widest text-ivory-soft">
-              会员中心
+              {t.nav.member}
             </Link>
             <Link href="/wishlist" onClick={() => setOpen(false)} className="text-sm uppercase tracking-widest text-ivory-soft">
-              心愿单 {mounted && wishlistItems.length > 0 && "(" + wishlistItems.length + ")"}
+              {t.nav.wishlist} {mounted && wishlistItems.length > 0 && "(" + wishlistItems.length + ")"}
             </Link>
             <Link href="/bag" onClick={() => setOpen(false)} className="text-sm uppercase tracking-widest text-ivory-soft">
-              购物袋 {mounted && itemCount > 0 && "(" + itemCount + ")"}
+              {t.nav.bag} {mounted && itemCount > 0 && "(" + itemCount + ")"}
             </Link>
             {user && (
               <button type="button" onClick={() => { logout(); setOpen(false); }} className="text-left text-sm uppercase tracking-widest text-ivory-soft">
-                退出
+                {t.auth.logout}
               </button>
             )}
-            {!user && <button type="button" onClick={() => { setAuthOpen(true); setOpen(false); }} className="text-left text-sm uppercase tracking-widest text-gold">登录 / 注册</button>}
+            {!user && <button type="button" onClick={() => { setAuthOpen(true); setOpen(false); }} className="text-left text-sm uppercase tracking-widest text-gold">{t.nav.loginRegister}</button>}
             <div className="pt-2">
               <LanguageSwitcher />
             </div>

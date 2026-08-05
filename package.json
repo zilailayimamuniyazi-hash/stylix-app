@@ -17,6 +17,7 @@
     "@stripe/react-stripe-js": "^6.3.0",
     "@stripe/stripe-js": "^9.4.0",
     "@supabase/supabase-js": "^2.49.4",
+    "framer-motion": "^12.42.2",
     "next": "^15.1.0",
     "openai": "^6.38.0",
     "react": "^19.0.0",
