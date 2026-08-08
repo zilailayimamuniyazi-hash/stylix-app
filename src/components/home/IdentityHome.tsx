@@ -799,450 +799,299 @@ function ObjectPedestal({ variant, label, active = false }: { variant: StageVari
   );
 }
 
-function HeroSection({ copy }: { copy: ReturnType<typeof useI18n>["t"]["home"]["redesign"] }) {
-  const { x, y } = useMouseParallax(22);
-  const targetRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: targetRef, offset: ["start start", "end start"] });
-  const roomY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
-  const objectScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const objectOpacity = useTransform(scrollYProgress, [0, 0.82], [1, 0.3]);
+const atelierNav = [
+  { label: "Our Process", href: "/test" },
+  { label: "Materials", href: "/shop" },
+  { label: "Journal", href: "/daily" },
+  { label: "About", href: "/designers" },
+];
 
+const contactNav = [
+  { label: "Private Consultation", href: "/vip-atelier" },
+  { label: "Custom Orders", href: "/bead-lab" },
+  { label: "Virtual Try-On", href: "/try-on" },
+  { label: "Client Profile", href: "/member" },
+];
+
+function EditorialShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <section ref={targetRef} className="relative min-h-[100svh] overflow-hidden bg-[#070809]">
-      <motion.div
-        aria-hidden="true"
-        style={{ y: roomY }}
-        className="absolute inset-[-8%] bg-[radial-gradient(circle_at_72%_42%,rgba(210,178,116,.22),transparent_28%),radial-gradient(circle_at_28%_24%,rgba(255,244,224,.08),transparent_24%),linear-gradient(125deg,#050607_0%,#0b0c0d_46%,#15120d_100%)]"
+    <section className={["relative bg-[#fbfaf8] text-[#05050a]", className].join(" ")}>
+      <div className="mx-auto w-full max-w-[1510px] px-6 sm:px-12 lg:px-[96px]">{children}</div>
+    </section>
+  );
+}
+
+function Kicker({ children }: { children: React.ReactNode }) {
+  return <p className="text-[11px] font-medium uppercase tracking-[0.46em] text-[#070816] sm:text-sm">{children}</p>;
+}
+
+function EditorialArrowLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-4 border-b border-[#070816] pb-3 text-[11px] font-medium uppercase tracking-[0.42em] text-[#070816] outline-none transition duration-500 hover:gap-6 focus-visible:ring-2 focus-visible:ring-[#d8ccb7] sm:text-sm"
+    >
+      <span>{children}</span>
+      <Arrow />
+    </Link>
+  );
+}
+
+function HeroSection() {
+  return (
+    <section className="relative min-h-[100svh] overflow-hidden bg-[#050505] text-white">
+      <video
+        className="absolute inset-0 h-full w-full object-cover"
+        src="/hero-video.mp4.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster="/hero-editorial.jpg"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,6,7,.98)_0%,rgba(5,6,7,.9)_42%,rgba(5,6,7,.24)_72%,rgba(5,6,7,.72)_100%),linear-gradient(0deg,rgba(7,8,9,.98)_0%,transparent_42%,rgba(7,8,9,.38)_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-[-10vw] top-[7vh] h-[48svh] sm:inset-x-auto sm:right-[-10vw] sm:top-[8vh] sm:h-[78svh] sm:w-[70vw] lg:right-[-5vw] lg:w-[64vw]"
-        style={{ x, y, scale: objectScale, opacity: objectOpacity }}
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_55%_48%,rgba(199,170,112,.2),transparent_52%)] blur-2xl" />
-        <HeroRingStage mouseX={x} mouseY={y} scrollProgress={scrollYProgress} />
-      </motion.div>
-
-      <div className="ui-container relative z-10 flex min-h-[100svh] items-end pb-20 pt-[48svh] sm:pt-28 lg:items-center lg:pb-20">
-        <motion.div className="max-w-[820px]" variants={stagger} initial="hidden" animate="show">
-          <motion.p variants={reveal} className="ui-eyebrow text-gold/80">{copy.hero.eyebrow}</motion.p>
-          <motion.h1 variants={reveal} className="mt-7 max-w-[800px] font-serif text-[clamp(3.2rem,7.6vw,8.2rem)] font-normal leading-[.9] text-[#f6f1e8]">
-            {copy.hero.title}
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.42)),linear-gradient(90deg,rgba(0,0,0,.58),rgba(0,0,0,.08)_54%,rgba(0,0,0,.5))]" />
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1510px] flex-col justify-between px-6 py-9 sm:px-12 lg:px-[96px]">
+        <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.42em]">
+          <Link href="/" className="outline-none focus-visible:ring-2 focus-visible:ring-white/40">STYLIX</Link>
+          <Link href="/vip-atelier" className="hidden text-white/72 outline-none transition hover:text-white focus-visible:ring-2 focus-visible:ring-white/40 sm:block">Atelier</Link>
+        </div>
+        <div className="pb-12">
+          <motion.h1 className="max-w-[1040px] font-serif text-[clamp(4.2rem,11.5vw,12.5rem)] font-normal leading-[.82] tracking-[-0.02em]" variants={stagger} initial="hidden" animate="show">
+            <motion.span variants={reveal} className="block">Your identity.</motion.span>
+            <motion.em variants={reveal} className="block font-serif italic">Your jewel.</motion.em>
           </motion.h1>
-          <motion.p variants={reveal} className="mt-8 max-w-[620px] text-[15px] leading-8 text-white/64 sm:text-base">
-            {copy.hero.subtitle}
+          <motion.p variants={reveal} initial="hidden" animate="show" className="mt-8 max-w-[620px] text-[18px] leading-9 tracking-[0.08em] text-white/74">
+            A private atelier for bespoke jewellery, authored by artificial intelligence and made precious by the person who wears it.
           </motion.p>
-          <motion.div variants={reveal} className="mt-10 flex flex-wrap gap-3">
-            <Link href="/test" className="group inline-flex min-h-12 items-center justify-center gap-3 bg-[#f5f1e8] px-7 text-[11px] font-semibold uppercase tracking-[0.14em] text-black outline-none transition duration-500 hover:bg-white focus-visible:ring-2 focus-visible:ring-gold/50">
-              {copy.hero.primaryCta}
-              <span className="transition duration-500 group-hover:translate-x-1"><Arrow /></span>
-            </Link>
-            <PremiumLink href="/shop">{copy.hero.secondaryCta}</PremiumLink>
+          <motion.div variants={reveal} initial="hidden" animate="show" className="mt-10 flex flex-wrap items-center gap-8">
+            <EditorialArrowLink href="/test">Begin your reading</EditorialArrowLink>
+            <Link href="/try-on" className="text-[11px] uppercase tracking-[0.42em] text-white/74 transition hover:text-white sm:text-sm">Virtual try-on</Link>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
-
-      <motion.div className="pointer-events-none absolute bottom-8 right-8 z-10 hidden max-w-[280px] border-t border-white/18 pt-4 text-right lg:block" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 0.9, ease }}>
-        <p className="text-[10px] uppercase tracking-[0.22em] text-white/42">{copy.hero.modelLabel}</p>
-        <p className="mt-2 text-sm leading-6 text-white/56">{copy.hero.modelNote}</p>
-      </motion.div>
     </section>
   );
 }
 
-function IdentityInputSection({ copy }: { copy: ReturnType<typeof useI18n>["t"]["home"]["redesign"] }) {
-  const [active, setActive] = useState(0);
-  const objectMap: StageVariant[] = ["pendant", "ring", "leaf", "charm", "signature", "hero"];
-
+function SignalInputSection() {
   return (
-    <RoomShell className="py-24 lg:py-32">
-      <div className="ui-container relative z-10">
-        <motion.div className="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-end" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }}>
-          <div>
-            <motion.p variants={reveal} className="ui-eyebrow">{copy.identityInput.eyebrow}</motion.p>
-            <motion.h2 variants={reveal} className="mt-6 max-w-2xl font-serif text-[clamp(2.5rem,5vw,5.8rem)] font-normal leading-[.98]">
-              {copy.identityInput.title}
-            </motion.h2>
-          </div>
-          <motion.p variants={reveal} className="max-w-xl text-[15px] leading-8 text-white/56">
-            {copy.identityInput.subtitle}
-          </motion.p>
-        </motion.div>
-
-        <div className="mt-14 grid gap-6 lg:grid-cols-[.92fr_1.08fr] lg:items-stretch">
-          <motion.div
-            className="relative min-h-[640px] overflow-hidden border border-white/12 bg-[#0b0c0e]"
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-120px" }}
-            transition={{ duration: 0.85, ease }}
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(199,170,112,.22),transparent_38%)]" />
-            <ThreeStage variant={objectMap[active]} />
-            <div aria-hidden="true" className="pointer-events-none absolute inset-8 hidden rounded-full border border-gold/20 sm:block">
-              {copy.identityInput.facets.map((facet, index) => {
-                const angle = (index / copy.identityInput.facets.length) * Math.PI * 2 - Math.PI / 2;
-                const left = 50 + Math.cos(angle) * 43;
-                const top = 50 + Math.sin(angle) * 43;
-                return (
-                  <motion.span
-                    key={facet.label}
-                    className="absolute h-2 w-2 rounded-full bg-gold/80 shadow-[0_0_24px_rgba(199,170,112,.75)]"
-                    style={{ left: `${left}%`, top: `${top}%` }}
-                    animate={{ scale: active === index ? 1.65 : 1, opacity: active === index ? 1 : 0.42 }}
-                    transition={{ duration: 0.65, ease }}
-                  />
-                );
-              })}
-            </div>
-            <div className="absolute left-7 right-7 top-7 flex items-center justify-between border-b border-white/14 pb-5">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-white/48">{copy.identityInput.hint}</p>
-              <p className="font-serif text-2xl text-gold/90">0{active + 1}</p>
-            </div>
-            <motion.div
-              key={copy.identityInput.facets[active].label}
-              className="absolute bottom-7 left-7 right-7"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, ease }}
-            >
-              <p className="text-[10px] uppercase tracking-[0.22em] text-gold/68">{copy.identityInput.facets[active].label}</p>
-              <p className="mt-4 font-serif text-[clamp(2.2rem,4.8vw,5.2rem)] leading-none text-white">{copy.identityInput.facets[active].value}</p>
-              <p className="mt-5 max-w-md text-sm leading-7 text-white/56">{copy.identityInput.facets[active].effect}</p>
-            </motion.div>
-          </motion.div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            {copy.identityInput.facets.map((facet, index) => (
-              <motion.button
-                key={facet.label}
-                type="button"
-                onMouseEnter={() => setActive(index)}
-                onFocus={() => setActive(index)}
-                onClick={() => setActive(index)}
-                className={"group relative min-h-[188px] overflow-hidden border p-6 text-left outline-none transition duration-500 focus-visible:ring-2 focus-visible:ring-gold/50 " + (active === index ? "border-gold/48 bg-[#171411]" : "border-white/10 bg-white/[0.035] hover:border-white/24 hover:bg-white/[0.06]")}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.7, delay: index * 0.04, ease }}
-              >
-                <span className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(199,170,112,.16),transparent_34%)] opacity-0 transition duration-700 group-hover:opacity-100" />
-                <span className="text-[10px] uppercase tracking-[0.2em] text-gold/62">{facet.label}</span>
-                <span className="mt-5 block font-serif text-2xl text-white">{facet.value}</span>
-                <span className="mt-5 block text-sm leading-6 text-white/44">{facet.effect}</span>
-                <span className={"absolute bottom-5 right-5 h-2 w-2 rounded-full transition duration-500 " + (active === index ? "bg-gold shadow-[0_0_24px_rgba(199,170,112,.8)]" : "bg-white/22")} />
-              </motion.button>
-            ))}
-          </div>
+    <EditorialShell className="py-16 sm:py-20 lg:py-24">
+      <div className="space-y-24">
+        <div>
+          <p className="text-[24px] leading-none text-[#b8b2aa] sm:text-[30px]">A feeling, a memory, a gesture</p>
+          <div className="mt-10 h-px bg-[#e5dac9]" />
         </div>
-      </div>
-    </RoomShell>
-  );
-}
-
-function ProcessingSection({ copy }: { copy: ReturnType<typeof useI18n>["t"]["home"]["redesign"] }) {
-  const variants: StageVariant[] = ["charm", "leaf", "ring"];
-
-  return (
-    <RoomShell className="py-24 lg:py-32">
-      <div className="ui-container relative z-10">
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-20 hidden h-44 w-44 -translate-x-1/2 rounded-full border border-gold/18 md:block"
-          initial={{ opacity: 0, scale: 0.78 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-120px" }}
-          transition={{ duration: 1.2, ease }}
+        <div>
+          <Kicker>A place that feels like home</Kicker>
+          <p className="mt-20 text-[26px] text-[#b8b2aa] sm:text-[32px]">Real or imagined</p>
+          <div className="mt-8 h-px bg-[#e5dac9]" />
+        </div>
+        <div>
+          <Kicker>Your most personal word</Kicker>
+          <p className="mt-20 text-[26px] text-[#b8b2aa] sm:text-[32px]">One word only</p>
+          <div className="mt-8 h-px bg-[#e5dac9]" />
+        </div>
+        <Link
+          href="/test"
+          className="inline-flex min-h-[110px] min-w-[310px] items-center justify-center gap-6 border border-[#e1d5c3] px-10 text-[12px] uppercase tracking-[0.44em] text-[#05050a] outline-none transition duration-500 hover:border-[#05050a] focus-visible:ring-2 focus-visible:ring-[#d8ccb7] sm:min-w-[386px] sm:text-sm"
         >
-          <span className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-gold/70" />
-          <span className="absolute bottom-0 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white/45" />
-          <span className="absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-white/35" />
-          <span className="absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-gold/55" />
-        </motion.div>
-        <motion.div className="mx-auto max-w-3xl text-center" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }}>
-          <motion.p variants={reveal} className="ui-eyebrow">{copy.processing.eyebrow}</motion.p>
-          <motion.h2 variants={reveal} className="mt-6 font-serif text-[clamp(2.45rem,5vw,5.8rem)] font-normal leading-[.98]">{copy.processing.title}</motion.h2>
-          <motion.p variants={reveal} className="mx-auto mt-7 max-w-2xl text-[15px] leading-8 text-white/56">{copy.processing.subtitle}</motion.p>
-        </motion.div>
-        <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-3">
-          {copy.processing.steps.map((step, index) => (
-            <motion.article
-              key={step.label}
-              className="group relative min-h-[520px] overflow-hidden border border-white/12 bg-black/24"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.75, delay: index * 0.1, ease }}
-              whileHover={{ y: -10 }}
+          Continue <Arrow />
+        </Link>
+      </div>
+    </EditorialShell>
+  );
+}
+
+function VoiceSection() {
+  const voices = [
+    { number: "01", title: "Minimal", body: "" },
+    { number: "02", title: "Romantic", body: "Softness held in precious metal. A feeling made permanent." },
+    { number: "03", title: "Bold", body: "" },
+  ];
+
+  return (
+    <EditorialShell className="py-16 sm:py-20 lg:py-24">
+      <div className="min-h-[920px]">
+        <Kicker>02 — Voice</Kicker>
+        <p className="mt-12 text-[24px] leading-9 tracking-[0.08em] text-[#727286] sm:text-[30px]">Choose the aesthetic language of your jewel.</p>
+        <div className="mt-36 border-y border-[#ece3d6]">
+          {voices.map((voice) => (
+            <Link
+              key={voice.number}
+              href="/test"
+              className="grid min-h-[218px] grid-cols-[80px_1fr] items-center border-b border-[#ece3d6] outline-none last:border-b-0 focus-visible:ring-2 focus-visible:ring-[#d8ccb7] sm:grid-cols-[120px_1fr_.75fr]"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(199,170,112,.22),transparent_34%)] opacity-70 transition duration-700 group-hover:opacity-100" />
-              <ThreeStage variant={variants[index]} />
-              <div className="absolute left-6 right-6 top-6 flex items-center justify-between border-b border-white/14 pb-4">
-                <p className="text-[10px] uppercase tracking-[0.22em] text-gold/68">{step.label}</p>
-                <p className="font-serif text-3xl text-white/32">0{index + 1}</p>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#08090a] via-[#08090a]/88 to-transparent p-6 pt-28">
-                <h3 className="font-serif text-[clamp(2rem,3vw,3.6rem)] font-normal leading-none">{step.title}</h3>
-                <p className="mt-5 text-sm leading-7 text-white/54">{step.body}</p>
-                <motion.div className="mt-7 h-px bg-gradient-to-r from-gold/80 to-transparent" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.25 + index * 0.12, ease }} style={{ transformOrigin: "left" }} />
-              </div>
-            </motion.article>
-          ))}
-        </div>
-        <p className="mt-8 text-center text-[10px] uppercase tracking-[0.18em] text-white/32">{copy.processing.disclaimer}</p>
-      </div>
-    </RoomShell>
-  );
-}
-
-function ResultAndTryOnSection({ copy }: { copy: ReturnType<typeof useI18n>["t"]["home"]["redesign"] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
-  const objectX = useTransform(scrollYProgress, [0, 1], ["-5%", "6%"]);
-
-  return (
-    <RoomShell tone="light" className="py-24 lg:py-32">
-      <div ref={ref} className="ui-container relative z-10 grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
-        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }} className="relative z-10">
-          <motion.p variants={reveal} className="ui-eyebrow text-[#8a7144]">{copy.result.eyebrow}</motion.p>
-          <motion.h2 variants={reveal} className="mt-6 font-serif text-[clamp(2.5rem,4.8vw,5.6rem)] font-normal leading-[.98]">{copy.result.title}</motion.h2>
-          <motion.div variants={reveal} className="mt-9 space-y-3">
-            {[
-              [copy.result.profileLabel, copy.result.profileName],
-              [copy.result.luckyElementLabel, copy.result.luckyElement],
-              [copy.result.categoryLabel, copy.result.category],
-              [copy.result.reasonLabel, copy.result.reason],
-              [copy.result.occasionLabel, copy.result.occasion],
-            ].map(([label, value]) => (
-              <motion.div
-                key={label}
-                className="group flex items-baseline justify-between gap-6 border-t border-black/14 py-4"
-                whileHover={{ x: 8 }}
-                transition={{ duration: 0.5, ease }}
-              >
-                <p className="text-[10px] uppercase tracking-[0.18em] text-black/42">{label}</p>
-                <p className="max-w-[62%] text-right font-serif text-2xl leading-tight transition duration-500 group-hover:text-[#8a7144]">{value}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-          <motion.div variants={reveal} className="mt-8">
-            <PremiumLink href="/test" variant="light">{copy.result.cta}</PremiumLink>
-          </motion.div>
-        </motion.div>
-
-        <motion.div className="relative overflow-hidden bg-[#111316] text-white" initial={{ opacity: 0, y: 34 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-120px" }} transition={{ duration: 0.85, ease }}>
-          <div className="relative aspect-[4/5] min-h-[520px]">
-            <motion.div className="absolute inset-0" style={{ y: imageY }}>
-              <Image src="/tryon/aurora-necklace/worn-reference.png" alt="" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-74" />
-            </motion.div>
-            <motion.div aria-hidden="true" className="absolute right-[-12%] top-[6%] h-[48%] w-[58%]" style={{ x: objectX }}>
-              <ThreeStage variant="pendant" />
-            </motion.div>
-            <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,9,10,.86),transparent_45%)]" />
-            <div className="absolute bottom-0 left-0 right-0 p-7">
-              <p className="ui-eyebrow">{copy.tryOn.eyebrow}</p>
-              <h3 className="mt-4 font-serif text-[clamp(2rem,3.2vw,3.8rem)] leading-tight">{copy.tryOn.title}</h3>
-              <p className="mt-5 max-w-lg text-sm leading-7 text-white/62">{copy.tryOn.body}</p>
-              <div className="mt-6 flex flex-wrap gap-2">
-                {copy.tryOn.labels.map((label) => (
-                  <span key={label} className="border border-white/18 px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-white/60">{label}</span>
-                ))}
-              </div>
-              <div className="mt-7 flex flex-wrap items-center gap-5">
-                <PremiumLink href="/try-on">{copy.tryOn.cta}</PremiumLink>
-                <span className="text-xs text-white/38">{copy.tryOn.note}</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </RoomShell>
-  );
-}
-
-function ObjectStudySection({ copy }: { copy: ReturnType<typeof useI18n>["t"]["home"]["redesign"] }) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.92, 1.04, 0.96]);
-  const recommendedPiece = copy.jewelry.pieces[1];
-
-  return (
-    <section ref={sectionRef} className="relative min-h-screen overflow-hidden bg-[#0b0c0e] text-[#f4f0e8]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_64%_44%,rgba(199,170,112,.2),transparent_32%),linear-gradient(180deg,#0b0c0e_0%,#15120d_52%,#070809_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-      <div className="ui-container relative grid min-h-screen items-center gap-10 py-20 lg:grid-cols-[.82fr_1.18fr]">
-        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }} className="z-10 max-w-xl">
-          <motion.p variants={reveal} className="ui-eyebrow text-gold/78">{copy.hero.modelLabel}</motion.p>
-          <motion.h2 variants={reveal} className="mt-6 font-serif text-[clamp(2.8rem,5.6vw,6.6rem)] font-normal leading-[.92]">{copy.processing.steps[2].title}</motion.h2>
-          <motion.div variants={reveal} className="mt-9 border-y border-white/14 py-7">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-white/38">{recommendedPiece.meta}</p>
-            <h3 className="mt-4 font-serif text-[clamp(2.1rem,3.4vw,4rem)] leading-none">{recommendedPiece.name}</h3>
-            <p className="mt-5 text-[15px] leading-8 text-white/58">{recommendedPiece.relevance}</p>
-          </motion.div>
-          <motion.div variants={reveal} className="mt-8 flex flex-wrap gap-3">
-            <PremiumLink href="/try-on">{copy.tryOn.cta}</PremiumLink>
-            <PremiumLink href={productAssets[1].href}>{copy.jewelry.viewObject}</PremiumLink>
-          </motion.div>
-        </motion.div>
-        <motion.div style={{ y, scale }} className="relative min-h-[520px] overflow-hidden border border-white/12 bg-[#0b0c0e] lg:min-h-[720px]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(199,170,112,.2),transparent_38%)]" />
-          <RecommendationStage />
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function JewelrySection({ copy }: { copy: ReturnType<typeof useI18n>["t"]["home"]["redesign"] }) {
-  return (
-    <RoomShell className="py-24 lg:py-32">
-      <div className="ui-container relative z-10">
-        <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-          <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }}>
-            <motion.p variants={reveal} className="ui-eyebrow">{copy.jewelry.eyebrow}</motion.p>
-            <motion.h2 variants={reveal} className="mt-5 font-serif text-[clamp(2.55rem,4.6vw,5.4rem)] font-normal leading-[.96]">{copy.jewelry.title}</motion.h2>
-          </motion.div>
-          <PremiumLink href="/shop">{copy.jewelry.cta}</PremiumLink>
-        </div>
-        <div className="mt-12 grid gap-7 md:grid-cols-3">
-          {copy.jewelry.pieces.map((piece, index) => (
-            <motion.div key={piece.name} initial={{ opacity: 0, y: 34 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, delay: index * 0.08, ease }}>
-              <Link href={productAssets[index].href} className="group block outline-none focus-visible:ring-2 focus-visible:ring-gold/50">
-                <motion.div
-                  className="relative min-h-[620px] overflow-hidden border border-white/12 bg-[#0b0c0e]"
-                  whileHover={{ y: -12, scale: 1.012 }}
-                  transition={{ duration: 0.6, ease }}
-                >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(199,170,112,.22),transparent_38%),linear-gradient(180deg,transparent,rgba(0,0,0,.92))]" />
-                  <ThreeStage variant={productAssets[index].variant} />
-                  <div className="absolute left-6 right-6 top-6 flex items-start justify-between border-b border-white/14 pb-5">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-white/38">{piece.meta}</p>
-                      <h3 className="mt-3 font-serif text-[clamp(2rem,3vw,3.5rem)] font-normal leading-none">{piece.name}</h3>
-                    </div>
-                    <span className="mt-2 transition duration-500 group-hover:translate-x-1"><Arrow /></span>
-                  </div>
-                  <div className="absolute bottom-6 left-6 right-6 translate-y-4 border-t border-white/14 pt-5 opacity-76 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-gold/72">{copy.jewelry.revealLabel}</p>
-                    <p className="mt-4 text-sm leading-7 text-white/68">{piece.relevance}</p>
-                    <div className="mt-5 flex items-end justify-between gap-5">
-                      <p className="font-serif text-2xl">{piece.price}</p>
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-gold/70">{copy.jewelry.viewObject}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              </Link>
-            </motion.div>
+              <span className="text-[18px] tracking-[0.32em] text-[#747486]">{voice.number}</span>
+              <span className={["font-serif text-[clamp(4.4rem,9vw,8.4rem)] leading-none", voice.body ? "text-[#040414] italic" : "text-[#f7f4ef]"].join(" ")}>
+                {voice.title}
+              </span>
+              <span className="hidden max-w-[560px] text-right text-[24px] leading-10 tracking-[0.06em] text-[#747486] sm:block">{voice.body}</span>
+            </Link>
           ))}
         </div>
       </div>
-    </RoomShell>
+    </EditorialShell>
   );
 }
 
-function AtelierDailySection({ copy }: { copy: ReturnType<typeof useI18n>["t"]["home"]["redesign"] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const portraitY = useTransform(scrollYProgress, [0, 1], ["-6%", "8%"]);
+function MaterialLanguageSection() {
+  return (
+    <EditorialShell className="flex min-h-[100svh] items-center justify-center py-24">
+      <div className="text-center">
+        <h2 className="font-serif text-[clamp(4.6rem,10vw,11rem)] font-normal leading-[.82] tracking-[-0.025em]">
+          Identity becomes
+          <br />
+          <em className="italic">a material language.</em>
+        </h2>
+        <p className="mt-24 text-[18px] tracking-[0.36em] text-[#747486] sm:text-2xl">A Stylix ring is not purchased. It is authored.</p>
+      </div>
+    </EditorialShell>
+  );
+}
+
+function ProcessSection() {
+  const steps = [
+    {
+      numeral: "I",
+      title: "Personal symbols",
+      body: "We begin where language ends. Your memories, textures, zodiac, lifestyle and private references become the grammar of your ring.",
+    },
+    {
+      numeral: "II",
+      title: "Identity made visible",
+      body: "The AI Jewelry Stylist and GPT conversation transform what you carry inside into precise form — proportion, stone, finish, weight.",
+    },
+  ];
 
   return (
-    <RoomShell tone="light" className="py-24 lg:py-32">
-      <div ref={ref} className="ui-container relative z-10 grid gap-8 lg:grid-cols-[1.04fr_.96fr] lg:items-stretch">
-        <motion.div className="relative min-h-[700px] overflow-hidden border border-black/12 bg-[#f6f1e8] p-8 lg:p-12" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-120px" }} transition={{ duration: 0.8, ease }}>
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_30%,rgba(199,170,112,.2),transparent_32%)]" />
-          <div className="absolute right-[-8%] top-[5%] h-[46%] w-[58%] opacity-80">
-            <ThreeStage variant="signature" />
-          </div>
-          <div className="relative z-10 flex min-h-[620px] max-w-xl flex-col justify-end">
-          <p className="ui-eyebrow text-[#8a7144]">{copy.atelier.eyebrow}</p>
-          <h2 className="mt-6 font-serif text-[clamp(2.4rem,4.4vw,5rem)] font-normal leading-[.98]">{copy.atelier.title}</h2>
-          <p className="mt-7 max-w-xl text-[15px] leading-8 text-black/58">{copy.atelier.body}</p>
-          <div className="mt-8 grid gap-3">
-            {copy.atelier.points.map((point) => (
-              <motion.p key={point} className="border-t border-black/14 pt-3 text-sm text-black/64" whileHover={{ x: 8, color: "#8a7144" }} transition={{ duration: 0.45, ease }}>{point}</motion.p>
-            ))}
-          </div>
-          <div className="mt-9">
-            <PremiumLink href="/vip-atelier" variant="light">{copy.atelier.cta}</PremiumLink>
-          </div>
-          </div>
-        </motion.div>
-        <motion.div className="relative min-h-[700px] overflow-hidden border border-black/12 bg-[#111316] p-8 text-white lg:p-12" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-120px" }} transition={{ duration: 0.8, delay: 0.08, ease }}>
-          <motion.div className="absolute inset-0" style={{ y: portraitY }}>
-            <Image src="/identity-portrait/jewelry/09-moonlight/cover.png" alt="" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover opacity-42" />
-          </motion.div>
-          <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(8,9,10,.92),rgba(8,9,10,.34))]" />
-          <div className="absolute right-[-18%] top-[-4%] h-[44%] w-[64%] opacity-80">
-            <ThreeStage variant="leaf" />
-          </div>
-          <div className="relative z-10 flex h-full flex-col justify-end">
-            <p className="ui-eyebrow">{copy.daily.eyebrow}</p>
-            <h2 className="mt-6 font-serif text-[clamp(2.2rem,4vw,4.8rem)] font-normal leading-[.98]">{copy.daily.title}</h2>
-            <p className="mt-7 max-w-xl text-[15px] leading-8 text-white/60">{copy.daily.body}</p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <motion.div className="border border-white/14 p-4 backdrop-blur-[1px]" whileHover={{ y: -6, borderColor: "rgba(199,170,112,.55)" }} transition={{ duration: 0.45, ease }}>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-white/38">{copy.daily.luckyColorLabel}</p>
-                <p className="mt-2 font-serif text-2xl">{copy.daily.luckyColor}</p>
-              </motion.div>
-              <motion.div className="border border-white/14 p-4 backdrop-blur-[1px]" whileHover={{ y: -6, borderColor: "rgba(199,170,112,.55)" }} transition={{ duration: 0.45, ease }}>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-white/38">{copy.daily.luckyJewelryLabel}</p>
-                <p className="mt-2 font-serif text-2xl">{copy.daily.luckyJewelry}</p>
-              </motion.div>
+    <EditorialShell className="py-20 lg:py-28">
+      <div className="divide-y divide-[#ece3d6] border-y border-[#ece3d6]">
+        {steps.map((step) => (
+          <article key={step.numeral} className="grid min-h-[420px] content-center gap-14 py-16">
+            <p className="font-serif text-2xl">{step.numeral}</p>
+            <div>
+              <h3 className="font-serif text-[clamp(3.2rem,5vw,5.2rem)] leading-none">{step.title}</h3>
+              <p className="mt-14 max-w-[1420px] text-[24px] leading-10 tracking-[0.06em] text-[#747486] sm:text-[30px]">{step.body}</p>
             </div>
-            <div className="mt-9">
-              <PremiumLink href="/daily">{copy.daily.cta}</PremiumLink>
-            </div>
-          </div>
-        </motion.div>
+          </article>
+        ))}
       </div>
-    </RoomShell>
+    </EditorialShell>
+  );
+}
+
+function InterpretationSection() {
+  return (
+    <EditorialShell className="py-20 lg:py-24">
+      <div>
+        <Kicker>03 — Interpretation</Kicker>
+        <div className="mt-24 grid gap-16 lg:grid-cols-[.48fr_.52fr]">
+          <div>
+            <h2 className="max-w-[620px] font-serif text-[clamp(3.7rem,5.6vw,6.6rem)] font-normal leading-[.86]">
+              An interpretation
+              <br />
+              <em className="italic">written for</em>
+              <br />
+              the jewel.
+            </h2>
+            <p className="mt-24 max-w-[720px] text-[24px] leading-[1.72] tracking-[0.06em] text-[#747486]">
+              Every jewel we create arrives with a text — a poetic interpretation of your signals, written in the voice of the ring itself. Not a description. A portrait.
+            </p>
+            <div className="mt-28">
+              <EditorialArrowLink href="/product/dione-signet-ring">See a full interpretation</EditorialArrowLink>
+            </div>
+          </div>
+          <div className="hidden lg:block" />
+        </div>
+        <div className="mt-28 border border-[#efe5d8] p-8 sm:p-16">
+          <div className="flex items-center justify-between gap-8 text-[13px] uppercase tracking-[0.46em] text-[#070816] sm:text-base">
+            <span>Lunar Architect</span>
+            <span className="text-[#747486]">Moonlight 月光</span>
+          </div>
+          <div className="relative mt-20 aspect-[16/8.4] overflow-hidden bg-black">
+            <Image src="/products/微信图片_20260214000203_40_36.jpg" alt="" fill sizes="(max-width: 1024px) 100vw, 82vw" className="object-cover opacity-90" />
+          </div>
+          <blockquote className="mt-20 border-l border-[#e0d0bb] pl-8 font-serif text-[clamp(1.7rem,2.4vw,3rem)] italic leading-[1.55] text-[#eee6db]">
+            &ldquo;She constructs silence the way an architect designs with light — each absence as deliberate as presence. The stone holds a room she has not yet entered.&rdquo;
+          </blockquote>
+          <div className="mt-20 grid border-t border-[#ece3d6] pt-14 text-[16px] tracking-[0.36em] text-[#747486] sm:grid-cols-3 sm:text-xl">
+            <p>Rose Gold</p>
+            <p>Round Brilliant</p>
+            <p>Pave Band</p>
+          </div>
+          <div className="mt-16 flex flex-wrap gap-10">
+            <EditorialArrowLink href="/try-on">Try your jewel</EditorialArrowLink>
+            <EditorialArrowLink href="/shop">View the collection</EditorialArrowLink>
+          </div>
+        </div>
+      </div>
+    </EditorialShell>
+  );
+}
+
+function AtelierFooter() {
+  return (
+    <footer className="bg-[#fbfaf8] text-[#070816]">
+      <div className="mx-auto grid min-h-[100svh] max-w-[1510px] gap-20 px-6 py-12 sm:px-12 lg:grid-cols-[.42fr_.58fr] lg:px-[96px]">
+        <div>
+          <Link href="/" className="text-[22px] uppercase tracking-[0.42em]">STYLIX</Link>
+          <p className="mt-16 max-w-[520px] text-[26px] leading-[1.6] tracking-[0.06em] text-[#747486]">
+            A private atelier for bespoke jewellery — authored by artificial intelligence, made precious by the person who wears it.
+          </p>
+        </div>
+        <div className="grid gap-20 sm:grid-cols-2">
+          <div>
+            <Kicker>Atelier</Kicker>
+            <div className="mt-16 grid gap-12">
+              {atelierNav.map((item) => (
+                <Link key={item.href} href={item.href} className="text-[26px] tracking-[0.06em] text-[#747486] transition hover:text-[#070816]">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Kicker>Contact</Kicker>
+            <div className="mt-16 grid gap-12">
+              {contactNav.map((item) => (
+                <Link key={item.href} href={item.href} className="text-[26px] tracking-[0.06em] text-[#747486] transition hover:text-[#070816]">
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
 
 export function IdentityHome() {
   const { t } = useI18n();
-  const copy = t.home.redesign;
-  const homeRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: homeRef, offset: ["start start", "end end"] });
-  const backgroundWash = useTransform(
-    scrollYProgress,
-    [0, 0.18, 0.38, 0.58, 0.78, 1],
-    [
-      "radial-gradient(circle at 72% 18%, rgba(199,170,112,.12), transparent 28%)",
-      "radial-gradient(circle at 64% 34%, rgba(199,170,112,.16), transparent 30%)",
-      "radial-gradient(circle at 50% 38%, rgba(255,244,224,.12), transparent 30%)",
-      "radial-gradient(circle at 58% 42%, rgba(199,170,112,.18), transparent 34%)",
-      "radial-gradient(circle at 42% 50%, rgba(199,170,112,.12), transparent 32%)",
-      "radial-gradient(circle at 34% 64%, rgba(255,244,224,.08), transparent 28%)",
-    ]
-  );
+  void t;
 
   return (
-    <div ref={homeRef} className="relative bg-[#08090a] text-[#f4f0e8]">
+    <div className="relative bg-[#fbfaf8] text-[#05050a]">
       <style jsx global>{`
         .site-main {
-          background: #08090a;
+          background: #fbfaf8;
         }
         .site-main a:active,
         .site-main button:active {
           transform: none;
         }
+        .site-main [data-theme="light"] {
+          --ui-text: #05050a;
+        }
       `}</style>
-      <motion.div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0" style={{ background: backgroundWash }} />
-      <SharedStoryLayer progress={scrollYProgress} />
-      <div className="relative z-[2]">
-        <HeroSection copy={copy} />
-        <IdentityInputSection copy={copy} />
-        <ProcessingSection copy={copy} />
-        <ResultAndTryOnSection copy={copy} />
-        <ObjectStudySection copy={copy} />
-        <JewelrySection copy={copy} />
-        <AtelierDailySection copy={copy} />
-      </div>
+      <HeroSection />
+      <SignalInputSection />
+      <VoiceSection />
+      <MaterialLanguageSection />
+      <ProcessSection />
+      <InterpretationSection />
+      <AtelierFooter />
     </div>
   );
 }

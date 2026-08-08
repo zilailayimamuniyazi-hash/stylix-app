@@ -40,22 +40,22 @@ const sansCn = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: "Stylix — AI-Powered Jewelry Styling",
+  title: "Stylix — Private Jewelry Maison",
   description:
-    "Luxury jewelry styling platform: AI stylist, virtual try-on, and intelligent matching for every occasion.",
+    "A private jewelry maison where personal identity is quietly translated into a meaningful jewel.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://stylix.app"),
   openGraph: {
-    title: "Stylix — AI-Powered Jewelry Styling",
+    title: "Stylix — Private Jewelry Maison",
     description:
-      "Luxury jewelry styling platform: AI stylist, virtual try-on, and intelligent matching for every occasion.",
+      "A private jewelry maison where personal identity is quietly translated into a meaningful jewel.",
     siteName: "Stylix",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stylix — AI-Powered Jewelry Styling",
+    title: "Stylix — Private Jewelry Maison",
     description:
-      "Luxury jewelry styling platform: AI stylist, virtual try-on, and intelligent matching for every occasion.",
+      "A private jewelry maison where personal identity is quietly translated into a meaningful jewel.",
   },
   robots: {
     index: true,
