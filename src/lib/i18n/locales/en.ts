@@ -599,17 +599,6 @@ export const en: Translations = {
         modelLabel: "The piece in focus",
         modelNote: "Private intelligence remains unseen, serving only the encounter between you and the jewel.",
       },
-      intelligence: {
-        eyebrow: "AI Jewelry Intelligence",
-        title: "A private stylist that reads the person before the piece.",
-        body:
-          "Stylix combines an AI Jewelry Stylist, GPT-guided conversation and identity signals to understand personality, zodiac, lifestyle, occasion and aesthetic preference before recommending jewelry.",
-        panelEyebrow: "Personalized Recommendation Engine",
-        panelTitle: "The collection narrows with taste, proportion and context until one piece feels personally chosen.",
-        stageLabel: "Identity signals",
-        primaryCta: "Reveal your match",
-        secondaryCta: "View the collection",
-      },
       identityInput: {
         eyebrow: "Identity Input",
         title: "Six signals shape the recommendation.",
@@ -658,9 +647,6 @@ export const en: Translations = {
         body:
           "The Virtual Try-On experience lets you visualize scale, placement and light before purchase, with AI-assisted fitting and recommendations shaped by your profile.",
         cta: "Try your jewel",
-        secondaryCta: "View your piece",
-        panelEyebrow: "AI-assisted fitting",
-        panelTitle: "A quieter way to understand proportion, reflection and presence.",
         note: "Uses current try-on route and jewelry assets.",
         labels: ["Neckline", "Pendant drop", "Light on skin"],
       },
@@ -682,24 +668,7 @@ export const en: Translations = {
         body:
           "Private Atelier turns your identity reading into a collaboration: custom materials, gemstone direction, engraving, proportion and VIP refinement handled as a discreet design relationship.",
         cta: "Enter the atelier",
-        panelEyebrow: "Custom collaboration",
-        panelTitle: "A jewel refined through personal consultation, craftsmanship and intention.",
-        points: ["Private consultation", "Stone and metal direction", "Engraving and proportion", "VIP customization"],
-      },
-      global: {
-        eyebrow: "Global Experience",
-        title: "A personal jewelry journey, wherever you enter.",
-        body:
-          "Stylix supports an international customer experience with multi-language journeys, saved profiles and personal recommendations that continue from discovery to try-on, atelier and daily styling.",
-        panelEyebrow: "International maison service",
-        panelTitle: "Language, profile and recommendation flow stay connected around the client.",
-        primaryCta: "Read today's note",
-        secondaryCta: "View your profile",
-        points: [
-          { title: "Multi-language maison", body: "Chinese and English experiences preserve the same luxury rhythm across customer journeys." },
-          { title: "Personal profile", body: "Identity preferences remain available for recommendations, try-on context and future appointments." },
-          { title: "Continuous styling", body: "Daily Identity keeps the relationship alive with color, jewel and styling notes." },
-        ],
+        points: ["Private consultation", "Stone and metal direction", "Engraving and proportion"],
       },
       daily: {
         eyebrow: "Daily Identity",

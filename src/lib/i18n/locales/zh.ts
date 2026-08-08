@@ -589,17 +589,6 @@ export const zh: Translations = {
         modelLabel: "此刻凝视的作品",
         modelNote: "私密智能隐于幕后，只服务于你与珠宝相遇的这一刻。",
       },
-      intelligence: {
-        eyebrow: "AI 珠宝智能",
-        title: "先理解人，再选择珠宝的私人造型师",
-        body:
-          "Stylix 将 AI 珠宝造型师、GPT 引导对话与身份信号结合，理解人格、星座、生活方式、场合与审美偏好，再给出珠宝推荐。",
-        panelEyebrow: "个性化推荐引擎",
-        panelTitle: "系列选择会因审美、比例与场景逐步收束，直到一件作品显得像是为你而来。",
-        stageLabel: "身份信号",
-        primaryCta: "揭示你的匹配",
-        secondaryCta: "浏览系列",
-      },
       identityInput: {
         eyebrow: "身份输入",
         title: "六类信号共同影响推荐结果",
@@ -648,9 +637,6 @@ export const zh: Translations = {
         body:
           "虚拟试戴体验帮助你在购买前理解尺寸、位置与光泽，并以 AI 辅助贴合与个人推荐，让选择更接近真实佩戴。",
         cta: "试戴你的珠宝",
-        secondaryCta: "查看这件作品",
-        panelEyebrow: "AI 辅助贴合",
-        panelTitle: "以更安静的方式理解比例、反光与佩戴气质。",
         note: "使用当前试戴路由与珠宝素材。",
         labels: ["领口", "吊坠高度", "肤色光泽"],
       },
@@ -672,24 +658,7 @@ export const zh: Translations = {
         body:
           "Private Atelier 将你的身份解读转化为一场协作：材质、宝石方向、刻字、比例与 VIP 细节，都以私密设计关系推进。",
         cta: "进入 Atelier",
-        panelEyebrow: "定制协作",
-        panelTitle: "通过私人咨询、手工工艺与清晰意图被细化的一件珠宝。",
-        points: ["私人咨询", "宝石与金属方向", "刻字与比例", "VIP 定制"],
-      },
-      global: {
-        eyebrow: "全球体验",
-        title: "无论从何处进入，都延续同一段私人珠宝旅程",
-        body:
-          "Stylix 支持国际化客户体验，以多语言旅程、已保存档案与持续推荐，连接发现、试戴、Atelier 与每日造型。",
-        panelEyebrow: "国际 Maison 服务",
-        panelTitle: "语言、档案与推荐流程始终围绕同一位客户保持连接。",
-        primaryCta: "阅读今日手记",
-        secondaryCta: "查看你的档案",
-        points: [
-          { title: "多语言 Maison", body: "中文与英文体验保留同样的奢华节奏与客户关系。" },
-          { title: "个人档案", body: "身份偏好会延续到推荐、试戴场景与未来预约之中。" },
-          { title: "持续造型", body: "每日身份以幸运色、珠宝方向与造型提示维系关系。" },
-        ],
+        points: ["私人咨询", "宝石与金属方向", "刻字与比例"],
       },
       daily: {
         eyebrow: "每日身份",
