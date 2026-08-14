@@ -76,7 +76,7 @@ export default async function ProductPage({ params }: Props) {
     <div className="ui-page pb-20">
       <ProductPageTracker productId={product.id} />
       <div className="ui-container py-10 lg:py-14">
-        <div className="mb-8 flex items-center gap-3 text-[9px] uppercase tracking-[.24em] text-white/35"><Link href="/shop" className="hover:text-[#c8a96b]">商城</Link><span>/</span><span>{product.category}</span></div>
+        <div className="mb-8 flex items-center gap-3 text-[9px] uppercase tracking-[.24em] text-[var(--ui-text-3)]"><Link href="/shop" className="hover:text-[var(--ui-text)]">Jewelry</Link><span>/</span><span>{product.category}</span></div>
         <div className="grid gap-12 lg:grid-cols-[1.12fr_.88fr] xl:gap-20">
 
           {/* ── Left: imagery + 3D ─────────────────────────────────── */}
@@ -133,7 +133,7 @@ export default async function ProductPage({ params }: Props) {
             {/* ── Symbolism ──────────────────────────────────────── */}
             {product.symbolism && (
               <div className="mt-10 border-t border-ivory/10 pt-8">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">设计寓意</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">Design Meaning</p>
                 <p className="mt-3 text-sm leading-relaxed text-ivory-dim italic">{product.symbolism}</p>
               </div>
             )}
@@ -141,7 +141,7 @@ export default async function ProductPage({ params }: Props) {
             {/* ── Material energy ───────────────────────────────── */}
             {product.materialEnergy && (
               <div className="mt-8 border-t border-ivory/10 pt-8">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">材质与质感</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">Material & Finish</p>
                 <p className="mt-2 text-xs uppercase tracking-[0.15em] text-ivory/50">{product.material}</p>
                 <p className="mt-3 text-sm leading-relaxed text-ivory-dim">{product.materialEnergy}</p>
               </div>
@@ -150,7 +150,7 @@ export default async function ProductPage({ params }: Props) {
             {/* ── Styling notes ─────────────────────────────────── */}
             {product.stylingNotes && (
               <div className="mt-8 border-t border-ivory/10 pt-8">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">搭配建议</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">Styling Notes</p>
                 <p className="mt-3 text-sm leading-relaxed text-ivory-dim">{product.stylingNotes}</p>
               </div>
             )}
@@ -178,7 +178,7 @@ export default async function ProductPage({ params }: Props) {
             {/* ── Customization options ─────────────────────────── */}
             {product.customizationOptions && product.customizationOptions.length > 0 && (
               <div className="mt-8 border-t border-ivory/10 pt-8">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">高级定制选项</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold">Bespoke Options</p>
                 <ul className="mt-4 space-y-2">
                   {product.customizationOptions.map((opt) => (
                     <li key={opt} className="flex items-start gap-3 text-sm text-ivory-dim">
@@ -208,14 +208,14 @@ export default async function ProductPage({ params }: Props) {
                 <WishlistHeartButton product={product} size={24} className="border border-ivory/15" />
               </div>
               <div className="flex flex-wrap gap-4 pt-2">
-                <ButtonLink href={`/try-on?piece=${product.slug}`} variant="outline" className="!border-white/25 !text-white hover:!border-white hover:!bg-white hover:!text-black">
-                  虚拟试戴
+                <ButtonLink href={`/try-on?piece=${product.slug}`} variant="outline">
+                  Virtual Try-On
                 </ButtonLink>
                 <ButtonLink href="/advisor" variant="ghost" className="!px-0">
-                  获取搭配建议
+                  Get Styling Advice
                 </ButtonLink>
                 <ButtonLink href="/vip" variant="ghost" className="!px-0">
-                  高级定制
+                  Private Atelier
                 </ButtonLink>
               </div>
             </div>
@@ -228,12 +228,12 @@ export default async function ProductPage({ params }: Props) {
         {related.length > 0 && (
           <section className="mt-28 border-t border-ivory/10 pt-16">
             <div className="flex items-end justify-between">
-              <h2 className="font-serif text-2xl text-ivory">同系列作品</h2>
+              <h2 className="font-serif text-2xl text-ivory">Related Pieces</h2>
               <Link
                 href="/collection"
                 className="text-[10px] uppercase tracking-[0.3em] text-gold/70 transition-colors hover:text-gold"
               >
-                查看系列 →
+                View Collection →
               </Link>
             </div>
             <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

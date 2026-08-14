@@ -84,13 +84,23 @@ export const ja: Translations = {
   },
   nav: {
     collection: "コレクション",
-    advisor: "AI Luxury Styling",
-    tryOn: "Virtual Try-On",
-    arTryOn: "AR Virtual Try-On",
-    identityPortrait: "Identity Portrait",
-    designerCapsule: "Designer Capsule",
-    vip: "Private Atelier",
-    bag: "Bag",
+    advisor: "AIスタイリング",
+    tryOn: "バーチャル試着",
+    arTryOn: "AR試着",
+    identityPortrait: "アイデンティティポートレート",
+    designerCapsule: "デザイナーカプセル",
+    vip: "プライベートアトリエ",
+    bag: "バッグ",
+    openNavigation: "ナビを開く",
+    closeNavigation: "ナビを閉じる",
+    loginRegister: "ログイン",
+    member: "メンバー",
+    wishlist: "ウィッシュリスト",
+    daily: "デイリーID",
+    shop: "ジュエリー",
+    designers: "デザイナー",
+    beadLab: "デザインスタジオ",
+    test: "アイデンティティ診断",
   },
   hero: {
     eyebrow: "Stylix",
@@ -441,6 +451,11 @@ export const ja: Translations = {
     statusUpload: "— アップロードモード · あなたの写真に合成済み。",
   },
   footer: {
+    description: "アイデンティティ診断から試着、選択、カスタムまで。文脈で選ばれるジュエリー。",
+    experience: "体験",
+    service: "サービス",
+    customerEmail: "カスタマーケア",
+    rights: "全著作権所有。",
     tagline:
       "AI搭載のジュエリースタイリングプラットフォーム — エディトリアルな展示、インテリジェントマッチング、Virtual Try-Onをひとつの場所に。",
     collectionsLabel: "コレクション",
@@ -571,6 +586,159 @@ export const ja: Translations = {
       success: "You are on the waitlist. We will be in touch when private access opens.",
       error: "Unable to join the waitlist right now.",
     },
+    redesign: {
+          "hero": {
+                "eyebrow": "AIラグジュアリー・アイデンティティシステム",
+                "title": "あなたらしさで選ばれるジュエリー。",
+                "subtitle": "MBTI、星座、個人スタイル、現実のシーンをもとに、精度の高い推薦、バーチャル試着、プライベートカスタムへ導きます。",
+                "primaryCta": "診断を始める",
+                "secondaryCta": "ジュエリーを見る",
+                "modelLabel": "星座ジュエリー研究",
+                "modelNote": "実際のジュエリーGLBがカーソルとスクロールに静かに反応します。"
+          },
+          "identityInput": {
+                "eyebrow": "入力する個性",
+                "title": "6つのシグナルが推薦を形づくります。",
+                "subtitle": "Stylixは好み、比率、文脈からコレクションを絞ります。各シグナルに触れて影響を確認してください。",
+                "hint": "ファセットに触れる",
+                "facets": [
+                      {
+                            "label": "MBTI",
+                            "value": "INTJ / ENFP / ISFP",
+                            "effect": "決断傾向、装飾の許容量、存在感を調整します。"
+                      },
+                      {
+                            "label": "星座",
+                            "value": "太陽星座 + エレメント",
+                            "effect": "象徴素材、モチーフ、ラッキーカラーを導きます。"
+                      },
+                      {
+                            "label": "ムード",
+                            "value": "力強い / 柔らかい / 光る",
+                            "effect": "サイズ、輝き、感情の温度を調整します。"
+                      },
+                      {
+                            "label": "シーン",
+                            "value": "日常 / 式典 / ギフト",
+                            "effect": "着用頻度、主張、投資感を絞ります。"
+                      },
+                      {
+                            "label": "テイスト",
+                            "value": "ミニマル / ロマンティック / ボールド",
+                            "effect": "シルエットと言語を選びます。"
+                      },
+                      {
+                            "label": "比率",
+                            "value": "顔、手、ネックライン",
+                            "effect": "ピアス丈、リング幅、ネックレスの落ち感を導きます。"
+                      }
+                ]
+          },
+          "processing": {
+                "eyebrow": "AIプロセス",
+                "title": "入力はアイデンティティDNAへ。",
+                "subtitle": "個人シグナルを解釈し、重みづけし、実際のジュエリー選択へつなげる製品ロジックの可視化です。",
+                "disclaimer": "製品可視化であり、科学的証明ではありません。",
+                "steps": [
+                      {
+                            "label": "入力",
+                            "title": "個人シグナル",
+                            "body": "MBTI、星座、ムード、シーン、好み、比率を集めます。"
+                      },
+                      {
+                            "label": "解釈",
+                            "title": "IDプロフィール",
+                            "body": "素材、シルエット、スタイリング優先度へ翻訳します。"
+                      },
+                      {
+                            "label": "一致",
+                            "title": "推薦",
+                            "body": "より少ない候補、試着、カスタム方向へ整理します。"
+                      }
+                ]
+          },
+          "result": {
+                "eyebrow": "パーソナル結果",
+                "title": "本診断前のサンプルカード。",
+                "profileLabel": "プロフィール",
+                "profileName": "ルナー・アーキテクト",
+                "luckyElementLabel": "ラッキー要素",
+                "luckyElement": "シャンパンゴールド · パール · ディープグリーン",
+                "categoryLabel": "カテゴリー",
+                "category": "メダリオンネックレス + 彫刻的リング",
+                "reasonLabel": "推薦理由",
+                "reason": "静かな構造と天体的な焦点を両立し、夜にも日常にもなじみます。",
+                "occasionLabel": "シーン",
+                "occasion": "プライベートディナー、発表、意味のあるギフト",
+                "cta": "本診断を始める"
+          },
+          "tryOn": {
+                "eyebrow": "バーチャル試着",
+                "title": "最後の決断の前に比率を確認。",
+                "body": "既存の試着機能で、自分の写真上の配置を確認できます。Stylixは現在の体験範囲を超えるリアルタイムARを示唆しません。",
+                "cta": "試着を開く",
+                "note": "現在の試着ルートとアセットを使用します。",
+                "labels": [
+                      "ネックライン",
+                      "ペンダント位置",
+                      "肌の光"
+                ]
+          },
+          "jewelry": {
+                "eyebrow": "セレクトジュエリー",
+                "title": "実際の作品をアイデンティティで編集。",
+                "cta": "すべて見る",
+                "revealLabel": "ホバーで関連性を表示",
+                "viewObject": "作品を見る",
+                "pieces": [
+                      {
+                            "name": "Iris Spectrum",
+                            "meta": "クロマティックセット",
+                            "relevance": "コントラストと色を纏える表現型に。",
+                            "price": "680ドルから"
+                      },
+                      {
+                            "name": "Dione Signet",
+                            "meta": "22Kゴールドリング",
+                            "relevance": "静かな権威を求める地と火のタイプに。",
+                            "price": "420ドルから"
+                      },
+                      {
+                            "name": "Lyra Harp",
+                            "meta": "ホワイトゴールドリング",
+                            "relevance": "線と透明感、抑制を好む風のタイプに。",
+                            "price": "390ドルから"
+                      }
+                ]
+          },
+          "atelier": {
+                "eyebrow": "プライベートアトリエ",
+                "title": "デザイナーと作品をカスタマイズ。",
+                "body": "推薦が近いけれど最終ではない時、Stylixはプロフィールを素材、石、刻印、サイズ、協業のブリーフに変えます。",
+                "cta": "アトリエを始める",
+                "points": [
+                      "デザイナー向けブリーフ",
+                      "素材と宝石の方向",
+                      "VIP相談フロー"
+                ]
+          },
+          "daily": {
+                "eyebrow": "デイリーID",
+                "title": "今日の色、ジュエリー、スタイルメモを確認。",
+                "body": "Daily Identityは初回診断後も、ラッキーカラー、ジュエリー方向、個人チェックインで関係を続けます。",
+                "cta": "Daily Identityを開く",
+                "luckyColorLabel": "ラッキーカラー",
+                "luckyColor": "深いアイボリー",
+                "luckyJewelryLabel": "ラッキージュエリー",
+                "luckyJewelry": "パールペンダント"
+          },
+          "shared": {
+                "continue": "続ける",
+                "input": "入力",
+                "interpretation": "解釈",
+                "match": "ジュエリーマッチ"
+          }
+    }
   },
   collectionPage: {
     pageEyebrow: "Stylix · AI Luxury Styling Platform",

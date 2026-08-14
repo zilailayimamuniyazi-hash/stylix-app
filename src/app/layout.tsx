@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans, Noto_Serif_SC, Noto_Sans_SC } from "next/font/google";
 import "./globals.css";
+import "@fontsource/noto-serif-sc/chinese-simplified-300.css";
+import "@fontsource/noto-serif-sc/chinese-simplified-400.css";
+import "@fontsource/noto-sans-sc/chinese-simplified-300.css";
+import "@fontsource/noto-sans-sc/chinese-simplified-400.css";
+import "@fontsource/noto-sans-sc/chinese-simplified-500.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { I18nProvider } from "@/lib/i18n/context";
@@ -11,51 +15,23 @@ import { OrderProvider } from "@/lib/order/OrderContext";
 import { AnalyticsPageView } from "@/lib/analytics/AnalyticsPageView";
 import { IdentityProfileSync } from "@/lib/identity/IdentityProfileSync";
 
-const serif = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-const sans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const serifCn = Noto_Serif_SC({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-serif-cn",
-  display: "swap",
-});
-
-const sansCn = Noto_Sans_SC({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sans-cn",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Stylix — AI-Powered Jewelry Styling",
+  title: "Stylix — Private Jewelry Maison",
   description:
-    "Luxury jewelry styling platform: AI stylist, virtual try-on, and intelligent matching for every occasion.",
+    "A private jewelry maison where personal identity is quietly translated into a meaningful jewel.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://stylix.app"),
   openGraph: {
-    title: "Stylix — AI-Powered Jewelry Styling",
+    title: "Stylix — Private Jewelry Maison",
     description:
-      "Luxury jewelry styling platform: AI stylist, virtual try-on, and intelligent matching for every occasion.",
+      "A private jewelry maison where personal identity is quietly translated into a meaningful jewel.",
     siteName: "Stylix",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stylix — AI-Powered Jewelry Styling",
+    title: "Stylix — Private Jewelry Maison",
     description:
-      "Luxury jewelry styling platform: AI stylist, virtual try-on, and intelligent matching for every occasion.",
+      "A private jewelry maison where personal identity is quietly translated into a meaningful jewel.",
   },
   robots: {
     index: true,
@@ -69,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh" className={`${serif.variable} ${sans.variable} ${serifCn.variable} ${sansCn.variable}`}>
+    <html lang="en">
       <body className="min-h-screen font-sans">
         <I18nProvider>
           <AuthProvider>

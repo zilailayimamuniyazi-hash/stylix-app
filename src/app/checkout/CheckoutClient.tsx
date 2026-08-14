@@ -236,11 +236,11 @@ export function CheckoutClient() {
                     >
                       <option value="US">{t.checkout.countryUS}</option>
                       <option value="CA">{t.checkout.countryCA}</option>
-                      <option value="CN">中国大陆</option>
-                      <option value="HK">中国香港</option>
-                      <option value="SG">新加坡</option>
-                      <option value="AU">澳大利亚</option>
-                      <option value="GB">英国</option>
+                      <option value="CN">Mainland China</option>
+                      <option value="HK">Hong Kong</option>
+                      <option value="SG">Singapore</option>
+                      <option value="AU">Australia</option>
+                      <option value="GB">United Kingdom</option>
                     </select>
                   </div>
                 </div>

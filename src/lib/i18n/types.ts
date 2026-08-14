@@ -110,12 +110,22 @@ export interface Translations {
   nav: {
     collection: string;
     advisor: string;
+    test: string;
     tryOn: string;
     arTryOn: string;
     identityPortrait: string;
     designerCapsule: string;
+    beadLab: string;
+    designers: string;
+    shop: string;
+    daily: string;
+    wishlist: string;
+    member: string;
     vip: string;
     bag: string;
+    loginRegister: string;
+    closeNavigation: string;
+    openNavigation: string;
   };
   hero: {
     eyebrow: string;
@@ -451,6 +461,85 @@ export interface Translations {
       success: string;
       error: string;
     };
+    redesign: {
+      hero: {
+        eyebrow: string;
+        title: string;
+        subtitle: string;
+        primaryCta: string;
+        secondaryCta: string;
+        modelLabel: string;
+        modelNote: string;
+      };
+      identityInput: {
+        eyebrow: string;
+        title: string;
+        subtitle: string;
+        hint: string;
+        facets: Array<{ label: string; value: string; effect: string }>;
+      };
+      processing: {
+        eyebrow: string;
+        title: string;
+        subtitle: string;
+        disclaimer: string;
+        steps: Array<{ label: string; title: string; body: string }>;
+      };
+      result: {
+        eyebrow: string;
+        title: string;
+        profileLabel: string;
+        profileName: string;
+        luckyElementLabel: string;
+        luckyElement: string;
+        categoryLabel: string;
+        category: string;
+        reasonLabel: string;
+        reason: string;
+        occasionLabel: string;
+        occasion: string;
+        cta: string;
+      };
+      tryOn: {
+        eyebrow: string;
+        title: string;
+        body: string;
+        cta: string;
+        note: string;
+        labels: [string, string, string];
+      };
+      jewelry: {
+        eyebrow: string;
+        title: string;
+        cta: string;
+        revealLabel: string;
+        viewObject: string;
+        pieces: Array<{ name: string; meta: string; relevance: string; price: string }>;
+      };
+      atelier: {
+        eyebrow: string;
+        title: string;
+        body: string;
+        cta: string;
+        points: [string, string, string];
+      };
+      daily: {
+        eyebrow: string;
+        title: string;
+        body: string;
+        cta: string;
+        luckyColorLabel: string;
+        luckyColor: string;
+        luckyJewelryLabel: string;
+        luckyJewelry: string;
+      };
+      shared: {
+        continue: string;
+        input: string;
+        interpretation: string;
+        match: string;
+      };
+    };
   };
   collectionPage: {
     pageEyebrow: string;
@@ -473,6 +562,11 @@ export interface Translations {
     emptyBody: string;
   };
   footer: {
+    description: string;
+    experience: string;
+    service: string;
+    customerEmail: string;
+    rights: string;
     tagline: string;
     collectionsLabel: string;
     servicesLabel: string;

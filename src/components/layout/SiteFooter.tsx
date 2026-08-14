@@ -1,17 +1,24 @@
 "use client";
 
 import Link from "next/link";
-
-const links = [
-  { href: "/test", label: "JMTI 珠宝人格测试" },
-  { href: "/try-on", label: "虚拟试戴" },
-  { href: "/vip-atelier", label: "VIP 高级定制" },
-  { href: "/designers", label: "设计师合作" },
-  { href: "/daily", label: "Daily 每日身份" },
-  { href: "/member", label: "会员中心" },
-];
+import { usePathname } from "next/navigation";
+import { useI18n } from "@/lib/i18n/context";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  const { t } = useI18n();
+  const links = [
+    { href: "/test", label: t.nav.test },
+    { href: "/try-on", label: t.nav.tryOn },
+    { href: "/vip-atelier", label: t.nav.vip },
+    { href: "/designers", label: t.nav.designers },
+    { href: "/daily", label: t.nav.daily },
+    { href: "/member", label: t.nav.member },
+  ];
+
+  // The editorial homepage already contains its own Atelier/Contact footer.
+  if (pathname === "/") return null;
+
   return (
     <footer className="border-t border-[var(--ui-line)] bg-[var(--ui-bg)]">
       <div className="ui-container py-14 lg:py-16">
@@ -19,11 +26,11 @@ export function SiteFooter() {
           <div>
             <p className="font-serif text-3xl uppercase tracking-[0.14em] text-[var(--ui-text)]">Stylix</p>
             <p className="ui-copy mt-4 max-w-sm">
-              从理解个人风格，到预览、选择与定制一件真正适合你的珠宝。
+              {t.footer.description}
             </p>
           </div>
           <div>
-            <p className="ui-eyebrow">体验</p>
+            <p className="ui-eyebrow">{t.footer.experience}</p>
             <div className="mt-4 grid gap-1">
               {links.slice(0, 4).map((link) => (
                 <Link key={link.href} href={link.href} className="flex min-h-9 items-center text-sm text-[var(--ui-text-2)] hover:text-[var(--ui-text)]">
@@ -33,7 +40,7 @@ export function SiteFooter() {
             </div>
           </div>
           <div>
-            <p className="ui-eyebrow">服务</p>
+            <p className="ui-eyebrow">{t.footer.service}</p>
             <div className="mt-4 grid gap-1">
               {links.slice(4).map((link) => (
                 <Link key={link.href} href={link.href} className="flex min-h-9 items-center text-sm text-[var(--ui-text-2)] hover:text-[var(--ui-text)]">
@@ -41,15 +48,15 @@ export function SiteFooter() {
                 </Link>
               ))}
               <a href="mailto:zilailayimamuniyazi@gmail.com" className="flex min-h-9 items-center text-sm text-[var(--ui-text-2)] hover:text-[var(--ui-text)]">
-                客服邮箱
+                {t.footer.customerEmail}
               </a>
-              <Link href="/privacy" className="flex min-h-9 items-center text-sm text-[var(--ui-text-2)] hover:text-[var(--ui-text)]">隐私政策</Link>
-              <Link href="/terms" className="flex min-h-9 items-center text-sm text-[var(--ui-text-2)] hover:text-[var(--ui-text)]">服务条款</Link>
+              <Link href="/privacy" className="flex min-h-9 items-center text-sm text-[var(--ui-text-2)] hover:text-[var(--ui-text)]">{t.footer.privacy}</Link>
+              <Link href="/terms" className="flex min-h-9 items-center text-sm text-[var(--ui-text-2)] hover:text-[var(--ui-text)]">{t.footer.terms}</Link>
             </div>
           </div>
         </div>
         <p className="mt-10 border-t border-[var(--ui-line)] pt-6 text-[10px] text-[var(--ui-text-3)]">
-          © {new Date().getFullYear()} Stylix. JMTI identity-led jewelry intelligence.
+          © {new Date().getFullYear()} Stylix. {t.footer.rights}
         </p>
       </div>
     </footer>
