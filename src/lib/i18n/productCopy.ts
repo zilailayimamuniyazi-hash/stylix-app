@@ -24,11 +24,29 @@ const zhTags: Record<string, string> = {
 const zhCategories: Record<string, string> = { rings: "戒指", necklaces: "项链", earrings: "耳饰", bracelets: "手链" };
 
 export function productDisplay(product: Product, locale: string) {
-  if (locale !== "zh") return { name: product.name, subtitle: product.subtitle, category: product.category, tags: product.tags.styleTags };
+  const generic: Record<string, { subtitle: string; narrative: string }> = {
+    fr: { subtitle: "Une pièce de joaillerie pensée pour votre identité", narrative: "Choisie pour son équilibre entre matière, proportion et présence, cette pièce accompagne naturellement votre style personnel." },
+    es: { subtitle: "Una joya pensada para tu identidad", narrative: "Elegida por su equilibrio entre material, proporción y presencia, esta pieza acompaña con naturalidad tu estilo personal." },
+    de: { subtitle: "Ein Schmuckstück für Ihre persönliche Identität", narrative: "Ausgewählt für das Zusammenspiel von Material, Proportion und Präsenz – als natürliche Ergänzung Ihres persönlichen Stils." },
+    ja: { subtitle: "あなたらしさのために選ばれたジュエリー", narrative: "素材、プロポーション、存在感の調和から選ばれ、あなた自身のスタイルに自然に寄り添う一品です。" },
+    ko: { subtitle: "당신의 정체성을 위해 선별된 주얼리", narrative: "소재와 비율, 존재감의 균형을 기준으로 선택되어 당신만의 스타일에 자연스럽게 어우러지는 작품입니다." },
+    ar: { subtitle: "قطعة مجوهرات مختارة لهويتك الخاصة", narrative: "اختيرت لتوازنها بين الخامة والتناسب والحضور، فتنسجم بطبيعية مع أسلوبك الشخصي." },
+  };
+  if (locale !== "zh") {
+    const localized = generic[locale];
+    return {
+      name: product.name,
+      subtitle: localized?.subtitle ?? product.subtitle,
+      narrative: localized?.narrative ?? product.narrative,
+      category: product.category,
+      tags: product.tags.styleTags,
+    };
+  }
   const copy = zhProducts[product.slug];
   return {
     name: copy?.name ?? product.name,
     subtitle: copy?.subtitle ?? product.subtitle,
+    narrative: `这件作品以克制的材质、比例与光泽回应你的珠宝人格，既适合独立佩戴，也能自然融入日常叠搭。`,
     category: zhCategories[product.category] ?? product.category,
     tags: product.tags.styleTags.map((tag) => zhTags[tag] ?? tag),
   };
