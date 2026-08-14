@@ -10,6 +10,7 @@ import type { MotionValue } from "framer-motion";
 import type { MutableRefObject } from "react";
 import * as THREE from "three";
 import { useI18n } from "@/lib/i18n/context";
+import { homeCopy, type HomeCopy } from "./homeCopy";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -799,19 +800,8 @@ function ObjectPedestal({ variant, label, active = false }: { variant: StageVari
   );
 }
 
-const atelierNav = [
-  { label: "Our Process", href: "/test" },
-  { label: "Materials", href: "/shop" },
-  { label: "Journal", href: "/daily" },
-  { label: "About", href: "/designers" },
-];
-
-const contactNav = [
-  { label: "Private Consultation", href: "/vip-atelier" },
-  { label: "Custom Orders", href: "/bead-lab" },
-  { label: "Virtual Try-On", href: "/try-on" },
-  { label: "Client Profile", href: "/member" },
-];
+const atelierHrefs = ["/test", "/shop", "/daily", "/designers"];
+const contactHrefs = ["/vip-atelier", "/bead-lab", "/try-on", "/member"];
 
 function EditorialShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
@@ -837,7 +827,7 @@ function EditorialArrowLink({ href, children }: { href: string; children: React.
   );
 }
 
-function HeroSection() {
+function HeroSection({ copy }: { copy: HomeCopy }) {
   return (
     <section className="relative min-h-[100svh] overflow-hidden bg-[#050505] text-white">
       <video
@@ -854,19 +844,19 @@ function HeroSection() {
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1510px] flex-col justify-between px-6 py-9 sm:px-12 lg:px-[96px]">
         <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.42em]">
           <Link href="/" className="outline-none focus-visible:ring-2 focus-visible:ring-white/40">STYLIX</Link>
-          <Link href="/vip-atelier" className="hidden text-white/72 outline-none transition hover:text-white focus-visible:ring-2 focus-visible:ring-white/40 sm:block">Atelier</Link>
+          <Link href="/vip-atelier" className="hidden text-white/72 outline-none transition hover:text-white focus-visible:ring-2 focus-visible:ring-white/40 sm:block">{copy.atelier}</Link>
         </div>
         <div className="pb-12">
-          <motion.h1 className="max-w-[1040px] font-serif text-[clamp(4.2rem,11.5vw,12.5rem)] font-normal leading-[.82] tracking-[-0.02em]" variants={stagger} initial="hidden" animate="show">
-            <motion.span variants={reveal} className="block">Your identity.</motion.span>
-            <motion.em variants={reveal} className="block font-serif italic">Your jewel.</motion.em>
+          <motion.h1 className="zh-luxury-hero max-w-[1040px] font-serif text-[clamp(4.2rem,11.5vw,12.5rem)] font-normal leading-[.82] tracking-[-0.02em]" variants={stagger} initial="hidden" animate="show">
+            <motion.span variants={reveal} className="block">{copy.hero1}</motion.span>
+            <motion.em variants={reveal} className="block font-serif italic">{copy.hero2}</motion.em>
           </motion.h1>
           <motion.p variants={reveal} initial="hidden" animate="show" className="mt-8 max-w-[620px] text-[18px] leading-9 tracking-[0.08em] text-white/74">
-            A private atelier for bespoke jewellery, authored by artificial intelligence and made precious by the person who wears it.
+            {copy.heroBody}
           </motion.p>
           <motion.div variants={reveal} initial="hidden" animate="show" className="mt-10 flex flex-wrap items-center gap-8">
-            <EditorialArrowLink href="/test">Begin your reading</EditorialArrowLink>
-            <Link href="/try-on" className="text-[11px] uppercase tracking-[0.42em] text-white/74 transition hover:text-white sm:text-sm">Virtual try-on</Link>
+            <EditorialArrowLink href="/test">{copy.begin}</EditorialArrowLink>
+            <Link href="/try-on" className="text-[11px] uppercase tracking-[0.42em] text-white/74 transition hover:text-white sm:text-sm">{copy.tryOn}</Link>
           </motion.div>
         </div>
       </div>
@@ -874,47 +864,43 @@ function HeroSection() {
   );
 }
 
-function SignalInputSection() {
+function SignalInputSection({ copy }: { copy: HomeCopy }) {
   return (
     <EditorialShell className="py-16 sm:py-20 lg:py-24">
       <div className="space-y-24">
         <div>
-          <p className="text-[24px] leading-none text-[#b8b2aa] sm:text-[30px]">A feeling, a memory, a gesture</p>
+          <p className="text-[24px] leading-none text-[#b8b2aa] sm:text-[30px]">{copy.feeling}</p>
           <div className="mt-10 h-px bg-[#e5dac9]" />
         </div>
         <div>
-          <Kicker>A place that feels like home</Kicker>
-          <p className="mt-20 text-[26px] text-[#b8b2aa] sm:text-[32px]">Real or imagined</p>
+          <Kicker>{copy.place}</Kicker>
+          <p className="mt-20 text-[26px] text-[#b8b2aa] sm:text-[32px]">{copy.imagined}</p>
           <div className="mt-8 h-px bg-[#e5dac9]" />
         </div>
         <div>
-          <Kicker>Your most personal word</Kicker>
-          <p className="mt-20 text-[26px] text-[#b8b2aa] sm:text-[32px]">One word only</p>
+          <Kicker>{copy.word}</Kicker>
+          <p className="mt-20 text-[26px] text-[#b8b2aa] sm:text-[32px]">{copy.oneWord}</p>
           <div className="mt-8 h-px bg-[#e5dac9]" />
         </div>
         <Link
           href="/test"
           className="inline-flex min-h-[110px] min-w-[310px] items-center justify-center gap-6 border border-[#e1d5c3] px-10 text-[12px] uppercase tracking-[0.44em] text-[#05050a] outline-none transition duration-500 hover:border-[#05050a] focus-visible:ring-2 focus-visible:ring-[#d8ccb7] sm:min-w-[386px] sm:text-sm"
         >
-          Continue <Arrow />
+          {copy.continue} <Arrow />
         </Link>
       </div>
     </EditorialShell>
   );
 }
 
-function VoiceSection() {
-  const voices = [
-    { number: "01", title: "Minimal", body: "" },
-    { number: "02", title: "Romantic", body: "Softness held in precious metal. A feeling made permanent." },
-    { number: "03", title: "Bold", body: "" },
-  ];
+function VoiceSection({ copy }: { copy: HomeCopy }) {
+  const voices = copy.voices.map((voice, index) => ({ number: String(index + 1).padStart(2, "0"), ...voice }));
 
   return (
     <EditorialShell className="py-16 sm:py-20 lg:py-24">
       <div className="min-h-[920px]">
-        <Kicker>02 — Voice</Kicker>
-        <p className="mt-12 text-[24px] leading-9 tracking-[0.08em] text-[#727286] sm:text-[30px]">Choose the aesthetic language of your jewel.</p>
+        <Kicker>{copy.voiceKicker}</Kicker>
+        <p className="mt-12 text-[24px] leading-9 tracking-[0.08em] text-[#727286] sm:text-[30px]">{copy.voiceIntro}</p>
         <div className="mt-36 border-y border-[#ece3d6]">
           {voices.map((voice) => (
             <Link
@@ -935,34 +921,23 @@ function VoiceSection() {
   );
 }
 
-function MaterialLanguageSection() {
+function MaterialLanguageSection({ copy }: { copy: HomeCopy }) {
   return (
     <EditorialShell className="flex min-h-[100svh] items-center justify-center py-24">
       <div className="text-center">
-        <h2 className="font-serif text-[clamp(4.6rem,10vw,11rem)] font-normal leading-[.82] tracking-[-0.025em]">
-          Identity becomes
+        <h2 className="zh-luxury-statement font-serif text-[clamp(4.6rem,10vw,11rem)] font-normal leading-[.82] tracking-[-0.025em]">
+          {copy.material1}
           <br />
-          <em className="italic">a material language.</em>
+          <em className="italic">{copy.material2}</em>
         </h2>
-        <p className="mt-24 text-[18px] tracking-[0.36em] text-[#747486] sm:text-2xl">A Stylix ring is not purchased. It is authored.</p>
+        <p className="mt-24 text-[18px] tracking-[0.36em] text-[#747486] sm:text-2xl">{copy.materialBody}</p>
       </div>
     </EditorialShell>
   );
 }
 
-function ProcessSection() {
-  const steps = [
-    {
-      numeral: "I",
-      title: "Personal symbols",
-      body: "We begin where language ends. Your memories, textures, zodiac, lifestyle and private references become the grammar of your ring.",
-    },
-    {
-      numeral: "II",
-      title: "Identity made visible",
-      body: "The AI Jewelry Stylist and GPT conversation transform what you carry inside into precise form — proportion, stone, finish, weight.",
-    },
-  ];
+function ProcessSection({ copy }: { copy: HomeCopy }) {
+  const steps = copy.steps.map((step, index) => ({ numeral: index === 0 ? "I" : "II", ...step }));
 
   return (
     <EditorialShell className="py-20 lg:py-28">
@@ -981,48 +956,48 @@ function ProcessSection() {
   );
 }
 
-function InterpretationSection() {
+function InterpretationSection({ copy }: { copy: HomeCopy }) {
   return (
     <EditorialShell className="py-20 lg:py-24">
       <div>
-        <Kicker>03 — Interpretation</Kicker>
+        <Kicker>{copy.interpretationKicker}</Kicker>
         <div className="mt-24 grid gap-16 lg:grid-cols-[.48fr_.52fr]">
           <div>
             <h2 className="max-w-[620px] font-serif text-[clamp(3.7rem,5.6vw,6.6rem)] font-normal leading-[.86]">
-              An interpretation
+              {copy.interpretation1}
               <br />
-              <em className="italic">written for</em>
+              <em className="italic">{copy.interpretation2}</em>
               <br />
-              the jewel.
+              {copy.interpretation3}
             </h2>
             <p className="mt-24 max-w-[720px] text-[24px] leading-[1.72] tracking-[0.06em] text-[#747486]">
-              Every jewel we create arrives with a text — a poetic interpretation of your signals, written in the voice of the ring itself. Not a description. A portrait.
+              {copy.interpretationBody}
             </p>
             <div className="mt-28">
-              <EditorialArrowLink href="/product/dione-signet-ring">See a full interpretation</EditorialArrowLink>
+              <EditorialArrowLink href="/product/dione-signet-ring">{copy.seeInterpretation}</EditorialArrowLink>
             </div>
           </div>
           <div className="hidden lg:block" />
         </div>
         <div className="mt-28 border border-[#efe5d8] p-8 sm:p-16">
           <div className="flex items-center justify-between gap-8 text-[13px] uppercase tracking-[0.46em] text-[#070816] sm:text-base">
-            <span>Lunar Architect</span>
-            <span className="text-[#747486]">Moonlight 月光</span>
+            <span>{copy.portraitName}</span>
+            <span className="text-[#747486]">{copy.portraitTheme}</span>
           </div>
           <div className="relative mt-20 aspect-[16/8.4] overflow-hidden bg-black">
             <Image src="/products/微信图片_20260214000203_40_36.jpg" alt="" fill sizes="(max-width: 1024px) 100vw, 82vw" className="object-cover opacity-90" />
           </div>
           <blockquote className="mt-20 border-l border-[#e0d0bb] pl-8 font-serif text-[clamp(1.7rem,2.4vw,3rem)] italic leading-[1.55] text-[#eee6db]">
-            &ldquo;She constructs silence the way an architect designs with light — each absence as deliberate as presence. The stone holds a room she has not yet entered.&rdquo;
+            &ldquo;{copy.quote}&rdquo;
           </blockquote>
           <div className="mt-20 grid border-t border-[#ece3d6] pt-14 text-[16px] tracking-[0.36em] text-[#747486] sm:grid-cols-3 sm:text-xl">
-            <p>Rose Gold</p>
-            <p>Round Brilliant</p>
-            <p>Pave Band</p>
+            <p>{copy.roseGold}</p>
+            <p>{copy.brilliant}</p>
+            <p>{copy.pave}</p>
           </div>
           <div className="mt-16 flex flex-wrap gap-10">
-            <EditorialArrowLink href="/try-on">Try your jewel</EditorialArrowLink>
-            <EditorialArrowLink href="/shop">View the collection</EditorialArrowLink>
+            <EditorialArrowLink href="/try-on">{copy.tryJewel}</EditorialArrowLink>
+            <EditorialArrowLink href="/shop">{copy.collection}</EditorialArrowLink>
           </div>
         </div>
       </div>
@@ -1030,19 +1005,21 @@ function InterpretationSection() {
   );
 }
 
-function AtelierFooter() {
+function AtelierFooter({ copy }: { copy: HomeCopy }) {
+  const atelierNav = copy.atelierNav.map((label, index) => ({ label, href: atelierHrefs[index] }));
+  const contactNav = copy.contactNav.map((label, index) => ({ label, href: contactHrefs[index] }));
   return (
     <footer className="bg-[#fbfaf8] text-[#070816]">
       <div className="mx-auto grid min-h-[100svh] max-w-[1510px] gap-20 px-6 py-12 sm:px-12 lg:grid-cols-[.42fr_.58fr] lg:px-[96px]">
         <div>
           <Link href="/" className="text-[22px] uppercase tracking-[0.42em]">STYLIX</Link>
           <p className="mt-16 max-w-[520px] text-[26px] leading-[1.6] tracking-[0.06em] text-[#747486]">
-            A private atelier for bespoke jewellery — authored by artificial intelligence, made precious by the person who wears it.
+            {copy.footerBody}
           </p>
         </div>
         <div className="grid gap-20 sm:grid-cols-2">
           <div>
-            <Kicker>Atelier</Kicker>
+            <Kicker>{copy.footerAtelier}</Kicker>
             <div className="mt-16 grid gap-12">
               {atelierNav.map((item) => (
                 <Link key={item.href} href={item.href} className="text-[26px] tracking-[0.06em] text-[#747486] transition hover:text-[#070816]">
@@ -1052,7 +1029,7 @@ function AtelierFooter() {
             </div>
           </div>
           <div>
-            <Kicker>Contact</Kicker>
+            <Kicker>{copy.footerContact}</Kicker>
             <div className="mt-16 grid gap-12">
               {contactNav.map((item) => (
                 <Link key={item.href} href={item.href} className="text-[26px] tracking-[0.06em] text-[#747486] transition hover:text-[#070816]">
@@ -1068,8 +1045,8 @@ function AtelierFooter() {
 }
 
 export function IdentityHome() {
-  const { t } = useI18n();
-  void t;
+  const { locale } = useI18n();
+  const copy = homeCopy[locale];
 
   return (
     <div className="relative bg-[#fbfaf8] text-[#05050a]">
@@ -1085,13 +1062,13 @@ export function IdentityHome() {
           --ui-text: #05050a;
         }
       `}</style>
-      <HeroSection />
-      <SignalInputSection />
-      <VoiceSection />
-      <MaterialLanguageSection />
-      <ProcessSection />
-      <InterpretationSection />
-      <AtelierFooter />
+      <HeroSection copy={copy} />
+      <SignalInputSection copy={copy} />
+      <VoiceSection copy={copy} />
+      <MaterialLanguageSection copy={copy} />
+      <ProcessSection copy={copy} />
+      <InterpretationSection copy={copy} />
+      <AtelierFooter copy={copy} />
     </div>
   );
 }

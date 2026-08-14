@@ -33,6 +33,8 @@ function HeartIcon({ filled }: { filled: boolean }) {
 
 export function WishlistClient() {
   const { locale } = useI18n();
+  const zh = locale === "zh";
+  const copy = zh ? { saved: "已收藏珠宝", title: "心愿单", loading: "加载中…", empty: "你的心愿单还是空的", emptyBody: "收藏你喜欢的珠宝，准备好时再回来查看。", explore: "探索珠宝商城", remove: "从心愿单移除", add: "加入购物袋" } : { saved: "Saved Pieces", title: "Wishlist", loading: "Loading…", empty: "Your wishlist is empty", emptyBody: "Save pieces you love and come back when you're ready.", explore: "Explore Shop", remove: "Remove from wishlist", add: "Add to Bag" };
   const { items, removeItem } = useWishlist();
   const { addItem } = useCart();
   const [mounted, setMounted] = useState(false);
@@ -54,9 +56,9 @@ export function WishlistClient() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-6 flex items-center gap-3">
           <span className="h-px w-8 bg-gold/40" />
-          <p className="text-[10px] uppercase tracking-[0.55em] text-gold/70">Saved Pieces</p>
+          <p className="text-[10px] uppercase tracking-[0.55em] text-gold/70">{copy.saved}</p>
         </div>
-        <h1 className="font-serif text-4xl text-ivory sm:text-5xl">Wishlist</h1>
+        <h1 className="font-serif text-4xl text-ivory sm:text-5xl">{copy.title}</h1>
       </div>
     </div>
   );
@@ -66,7 +68,7 @@ export function WishlistClient() {
       <div className="ui-page">
         {header}
         <div className="mx-auto max-w-7xl px-6 py-32 lg:px-10 text-center">
-          <p className="font-serif text-2xl text-ivory/30">Loading…</p>
+          <p className="font-serif text-2xl text-ivory/30">{copy.loading}</p>
         </div>
       </div>
     );
@@ -77,15 +79,15 @@ export function WishlistClient() {
       <div className="ui-page">
         {header}
         <div className="mx-auto max-w-7xl px-6 py-32 lg:px-10 text-center">
-          <p className="font-serif text-2xl text-ivory/30">Your wishlist is empty</p>
+          <p className="font-serif text-2xl text-ivory/30">{copy.empty}</p>
           <p className="mt-4 text-sm text-ivory/40">
-            Save pieces you love and come back when you&apos;re ready.
+            {copy.emptyBody}
           </p>
           <Link
             href="/shop"
             className="mt-10 inline-flex items-center justify-center border border-gold/30 px-10 py-4 text-[11px] uppercase tracking-[0.25em] font-medium text-gold transition-colors hover:border-gold"
           >
-            Explore Shop
+            {copy.explore}
           </Link>
         </div>
       </div>
@@ -104,7 +106,7 @@ export function WishlistClient() {
             >
               <button
                 type="button"
-                aria-label="Remove from wishlist"
+                aria-label={copy.remove}
                 onClick={() => removeItem(item.id)}
                 className="absolute right-3 top-3 z-10 flex items-center justify-center rounded-full bg-ink-deep/60 p-2 text-rosegold transition-colors hover:bg-gold/10 hover:text-rosegold"
               >
@@ -138,7 +140,7 @@ export function WishlistClient() {
                     }}
                     className="w-full border border-gold/35 px-4 py-3 text-[10px] uppercase tracking-[0.22em] text-gold transition-colors hover:bg-gold hover:text-ink-deep"
                   >
-                    Add to Bag
+                    {copy.add}
                   </button>
                 </div>
               </div>

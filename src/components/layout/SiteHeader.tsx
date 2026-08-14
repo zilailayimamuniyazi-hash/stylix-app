@@ -43,7 +43,7 @@ export function SiteHeader() {
   }, [pathname]);
 
   return (
-    <header className={`fixed top-0 z-50 w-full border-b border-[var(--ui-line)] backdrop-blur-xl ${isHome ? "bg-black/55" : "bg-[rgba(11,12,14,.88)]"}`}>
+    <header className="fixed top-0 z-50 w-full border-b border-[var(--ui-line)] bg-[rgba(251,250,248,.92)] text-[#08090d] backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-6 sm:px-10 lg:px-16">
         <Link href="/" className="font-serif text-xl uppercase tracking-[0.14em] text-[var(--ui-text)] hover:text-[var(--ui-accent-hover)] sm:text-2xl">
           STYLIX

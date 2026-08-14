@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@fontsource/noto-serif-sc/chinese-simplified-300.css";
+import "@fontsource/noto-serif-sc/chinese-simplified-400.css";
+import "@fontsource/noto-sans-sc/chinese-simplified-300.css";
+import "@fontsource/noto-sans-sc/chinese-simplified-400.css";
+import "@fontsource/noto-sans-sc/chinese-simplified-500.css";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { I18nProvider } from "@/lib/i18n/context";
@@ -40,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh">
+    <html lang="en">
       <body className="min-h-screen font-sans">
         <I18nProvider>
           <AuthProvider>

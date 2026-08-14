@@ -18,8 +18,8 @@ function detectLocale(): Locale {
   if (typeof window === "undefined") return "en";
   const stored = localStorage.getItem(STORAGE_KEY) as Locale | null;
   if (stored && LOCALES.includes(stored)) return stored;
-  const browser = navigator.language.split("-")[0] as Locale;
-  if (LOCALES.includes(browser)) return browser;
+  // English is the canonical first-visit language. Only an explicit language
+  // choice is persisted, so a browser locale cannot create mixed-language UI.
   return "en";
 }
 
@@ -39,7 +39,7 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("zh");
+  const [locale, setLocaleState] = useState<Locale>("en");
 
   useEffect(() => {
     const detected = detectLocale();

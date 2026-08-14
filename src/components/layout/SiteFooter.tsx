@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 
 export function SiteFooter() {
+  const pathname = usePathname();
   const { t } = useI18n();
   const links = [
     { href: "/test", label: t.nav.test },
@@ -13,6 +15,9 @@ export function SiteFooter() {
     { href: "/daily", label: t.nav.daily },
     { href: "/member", label: t.nav.member },
   ];
+
+  // The editorial homepage already contains its own Atelier/Contact footer.
+  if (pathname === "/") return null;
 
   return (
     <footer className="border-t border-[var(--ui-line)] bg-[var(--ui-bg)]">
