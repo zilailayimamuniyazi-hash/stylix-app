@@ -7,12 +7,14 @@ import { useCart } from "@/lib/cart/CartContext";
 import { track } from "@/lib/analytics/tracker";
 import { EVENTS } from "@/lib/analytics/events";
 import { useI18n } from "@/lib/i18n/context";
+import { getPreorderCopy } from "@/lib/i18n/preorderCopy";
 
 const SHIPPING_THRESHOLD = 500;
 const STANDARD_SHIPPING = 15;
 
 export function BagClient() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const preorder = getPreorderCopy(locale);
   const { items, subtotal, removeItem, setQuantity } = useCart();
 
   useEffect(() => {
@@ -99,6 +101,9 @@ export function BagClient() {
                         <p className="mt-0.5 text-sm text-ivory/40">{product.subtitle}</p>
                         <p className="mt-1 text-xs uppercase tracking-wider text-ivory/30">
                           {product.material}
+                        </p>
+                        <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.15em] text-gold/80">
+                          {preorder.bagNote}
                         </p>
                       </div>
                       <p className="shrink-0 font-serif text-lg text-ivory">

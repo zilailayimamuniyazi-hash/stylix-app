@@ -1,0 +1,41 @@
+import type { JmtiQuestion } from "./engine";
+
+export const jmtiQuestionsEn: JmtiQuestion[] = [
+  { id: 1, dimension: "LO", prompt: "When buying jewellery, what catches your attention first?", optionA: { letter: "L", text: "Material, lasting value and durability" }, optionB: { letter: "O", text: "An immediate emotional connection" } },
+  { id: 2, dimension: "LO", prompt: "When the budget is limited, where would you rather invest?", optionA: { letter: "L", text: "More dependable materials and craftsmanship" }, optionB: { letter: "O", text: "A design story that moves me" } },
+  { id: 3, dimension: "LO", prompt: "Which compliment about your jewellery feels better?", optionA: { letter: "L", text: "It feels beautifully made and valuable" }, optionB: { letter: "O", text: "It feels unmistakably like you" } },
+  { id: 4, dimension: "LO", prompt: "Before choosing a jewel, you usually…", optionA: { letter: "L", text: "Compare specifications, materials and price" }, optionB: { letter: "O", text: "See whether it sparks your imagination" } },
+  { id: 5, dimension: "LO", prompt: "What matters most in a jewel?", optionA: { letter: "L", text: "That it stands the test of time" }, optionB: { letter: "O", text: "That it carries the feeling of the moment" } },
+  { id: 6, dimension: "LO", prompt: "When you encounter a trend piece, you…", optionA: { letter: "L", text: "First decide whether it will endure and is worth it" }, optionB: { letter: "O", text: "Try it if the feeling is right" } },
+  { id: 7, dimension: "LO", prompt: "Which recommendation do you trust more?", optionA: { letter: "L", text: "One based on material, occasion and price" }, optionB: { letter: "O", text: "One based on story, zodiac and personality" } },
+  { id: 8, dimension: "LO", prompt: "For a jewel you keep for years, you want it to…", optionA: { letter: "L", text: "Remain valuable, dependable and timeless" }, optionB: { letter: "O", text: "Hold memories, emotion and a personal trace" } },
+  { id: 9, dimension: "MT", prompt: "Which kind of jewellery do you buy more often?", optionA: { letter: "M", text: "Pieces made for every day" }, optionB: { letter: "T", text: "Pieces chosen for an important moment" } },
+  { id: 10, dimension: "MT", prompt: "When choosing jewellery before going out, you want it to…", optionA: { letter: "M", text: "Feel effortless with your whole wardrobe" }, optionB: { letter: "T", text: "Give the day a clear sense of occasion" } },
+  { id: 11, dimension: "MT", prompt: "How important is comfort to you?", optionA: { letter: "M", text: "Essential — I want to wear it all day" }, optionB: { letter: "T", text: "For a special occasion, impact can come first" } },
+  { id: 12, dimension: "MT", prompt: "What is your jewellery box missing?", optionA: { letter: "M", text: "Versatile foundations I can repeat" }, optionB: { letter: "T", text: "A statement piece that owns the room" } },
+  { id: 13, dimension: "MT", prompt: "Which phrase is more persuasive?", optionA: { letter: "M", text: "You can wear this every day" }, optionB: { letter: "T", text: "This was made for important moments" } },
+  { id: 14, dimension: "MT", prompt: "If you could travel with only one jewel, you would choose…", optionA: { letter: "M", text: "Something versatile with every outfit" }, optionB: { letter: "T", text: "Something striking in photographs and at dinner" } },
+  { id: 15, dimension: "MT", prompt: "What is your ideal wearing frequency?", optionA: { letter: "M", text: "Several times a week" }, optionB: { letter: "T", text: "Worn deliberately at exactly the right moment" } },
+  { id: 16, dimension: "AS", prompt: "Your aesthetic leans closer to…", optionA: { letter: "A", text: "Independent, designed and rarely seen elsewhere" }, optionB: { letter: "S", text: "Classic, poised and universally elegant" } },
+  { id: 17, dimension: "AS", prompt: "When you see an unusual jewel, you…", optionA: { letter: "A", text: "Want to know its inspiration and craft" }, optionB: { letter: "S", text: "First consider how widely you could wear it" } },
+  { id: 18, dimension: "AS", prompt: "Which reaction to your jewellery do you prefer?", optionA: { letter: "A", text: "It is so distinctive — where is it from?" }, optionB: { letter: "S", text: "It is so refined and timeless" } },
+  { id: 19, dimension: "AS", prompt: "How do you feel about a brand bestseller?", optionA: { letter: "A", text: "Seeing it everywhere makes it less interesting" }, optionB: { letter: "S", text: "Its popularity suggests lasting appeal" } },
+  { id: 20, dimension: "AS", prompt: "When choosing a gift, you prefer…", optionA: { letter: "A", text: "A personal design with a story" }, optionB: { letter: "S", text: "A classic that is difficult to get wrong" } },
+  { id: 21, dimension: "AS", prompt: "Which design language feels more natural?", optionA: { letter: "A", text: "Asymmetry, mixed elements and experimentation" }, optionB: { letter: "S", text: "Symmetry, completeness and classical proportion" } },
+  { id: 22, dimension: "AS", prompt: "Your ideal jewellery style is…", optionA: { letter: "A", text: "A small work of art" }, optionB: { letter: "S", text: "An elevated foundation for your wardrobe" } },
+  { id: 23, dimension: "DG", prompt: "What role should jewellery play in your look?", optionA: { letter: "D", text: "A detail discovered up close" }, optionB: { letter: "G", text: "A highlight visible at first glance" } },
+  { id: 24, dimension: "DG", prompt: "For daily wear, what feels more comfortable?", optionA: { letter: "D", text: "Quiet, light and unobtrusive" }, optionB: { letter: "G", text: "Noticeable, flattering and full of presence" } },
+  { id: 25, dimension: "DG", prompt: "In photographs, you want your jewellery to…", optionA: { letter: "D", text: "Blend into the overall mood" }, optionB: { letter: "G", text: "Become the focus of the image" } },
+  { id: 26, dimension: "DG", prompt: "What level of brilliance do you prefer?", optionA: { letter: "D", text: "A soft, subtle shimmer" }, optionB: { letter: "G", text: "High shine, strong sparkle and presence" } },
+  { id: 27, dimension: "DG", prompt: "When you enter a gathering, you would rather people…", optionA: { letter: "D", text: "Discover your taste gradually" }, optionB: { letter: "G", text: "Notice your energy immediately" } },
+  { id: 28, dimension: "DG", prompt: "Which ring do you choose more often?", optionA: { letter: "D", text: "A fine band with a small, close-set stone" }, optionB: { letter: "G", text: "A broad band, large stone or unusual silhouette" } },
+  { id: 29, dimension: "DG", prompt: "A jewel is beautiful but very conspicuous. You…", optionA: { letter: "D", text: "Hesitate because it may be difficult to style" }, optionB: { letter: "G", text: "Feel excited — it is exactly what you need" } },
+  { id: 30, dimension: "DG", prompt: "Your ideal kind of radiance is…", optionA: { letter: "D", text: "A fine veil of light across the skin" }, optionB: { letter: "G", text: "The first spotlight at the opening of a scene" } },
+];
+
+export const jmtiBasisEn = [
+  "JMTI describes jewellery identity through four dimensions: L/O, M/T, A/S and D/G.",
+  "The reading contains 30 A/B choices: 1–8 measure L/O, 9–15 M/T, 16–22 A/S and 23–30 D/G.",
+  "The higher-scoring letter in each dimension forms the four-letter code; ties default to L, M, S and D.",
+  "Match strength reflects the score difference across all four dimensions, with a maximum of 25 points per dimension.",
+];

@@ -10,6 +10,8 @@
     "qa:commercial": "node scripts/qa-commercial.mjs"
   },
   "dependencies": {
+    "@fontsource/noto-sans-sc": "^5.3.0",
+    "@fontsource/noto-serif-sc": "^5.2.8",
     "@google/model-viewer": "^4.3.1",
     "@mediapipe/tasks-vision": "^0.10.34",
     "@react-three/drei": "^10.7.7",
@@ -17,6 +19,7 @@
     "@stripe/react-stripe-js": "^6.3.0",
     "@stripe/stripe-js": "^9.4.0",
     "@supabase/supabase-js": "^2.49.4",
+    "framer-motion": "^12.42.2",
     "next": "^15.1.0",
     "openai": "^6.38.0",
     "react": "^19.0.0",
