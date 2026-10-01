@@ -23,6 +23,62 @@ const zhTags: Record<string, string> = {
 
 const zhCategories: Record<string, string> = { rings: "戒指", necklaces: "项链", earrings: "耳饰", bracelets: "手链" };
 
+const zhOccasions: Record<string, string> = {
+  "black-tie": "晚宴",
+  "wedding guest": "婚礼宾客",
+  "date night": "约会夜",
+  work: "工作场合",
+  "casual brunch": "周末早午餐",
+  "holiday gift": "节日礼物",
+};
+
+const zhCollections: Record<string, string> = {
+  "Celestial Guardians": "星辰守护系列",
+  "Solar Myth": "日曜神话系列",
+  "Hearth & Halo": "暖光光环系列",
+  "Jewelry Sets": "珠宝套装系列",
+  "Athena Line": "雅典娜系列",
+  "Stellar Talisman Jewelry": "星辰护符系列",
+};
+
+const zhZodiac: Record<string, string> = {
+  Aquarius: "水瓶座",
+  Pisces: "双鱼座",
+  Gemini: "双子座",
+  Leo: "狮子座",
+  Aries: "白羊座",
+  Sagittarius: "射手座",
+  Cancer: "巨蟹座",
+  Scorpio: "天蝎座",
+  Libra: "天秤座",
+  Capricorn: "摩羯座",
+  Taurus: "金牛座",
+  Virgo: "处女座",
+};
+
+function zhMaterial(material: string) {
+  return material
+    .replace(/18k/gi, "18K")
+    .replace(/22k/gi, "22K")
+    .replace(/champagne gold/gi, "香槟金")
+    .replace(/yellow gold/gi, "黄金")
+    .replace(/white gold/gi, "白金")
+    .replace(/rose gold/gi, "玫瑰金")
+    .replace(/gold-plated/gi, "镀金")
+    .replace(/gold/gi, "黄金")
+    .replace(/moissanite/gi, "莫桑石")
+    .replace(/diamond-style stones/gi, "钻石感宝石")
+    .replace(/diamond-style/gi, "钻石感")
+    .replace(/diamond/gi, "钻石")
+    .replace(/cubic zirconia/gi, "锆石")
+    .replace(/freshwater pearl/gi, "淡水珍珠")
+    .replace(/blue sapphire-style stone/gi, "蓝宝石感宝石")
+    .replace(/satin finish/gi, "缎面工艺")
+    .replace(/polished/gi, "抛光")
+    .replace(/brushed/gi, "拉丝")
+    .replace(/,/g, "，");
+}
+
 export function productDisplay(product: Product, locale: string) {
   const generic: Record<string, { subtitle: string; narrative: string }> = {
     fr: { subtitle: "Une pièce de joaillerie pensée pour votre identité", narrative: "Choisie pour son équilibre entre matière, proportion et présence, cette pièce accompagne naturellement votre style personnel." },
@@ -37,17 +93,37 @@ export function productDisplay(product: Product, locale: string) {
     return {
       name: product.name,
       subtitle: localized?.subtitle ?? product.subtitle,
+      description: product.description,
       narrative: localized?.narrative ?? product.narrative,
+      symbolism: product.symbolism,
+      materialEnergy: product.materialEnergy,
+      stylingNotes: product.stylingNotes,
+      customizationOptions: product.customizationOptions ?? [],
+      material: product.material,
+      priceLabel: product.priceLabel ?? `$${product.price.toLocaleString()}`,
+      collectionName: product.tags.collectionName,
+      zodiacAffinity: product.zodiacAffinity ?? [],
       category: product.category,
       tags: product.tags.styleTags,
+      occasions: product.tags.occasionTags,
     };
   }
   const copy = zhProducts[product.slug];
   return {
     name: copy?.name ?? product.name,
     subtitle: copy?.subtitle ?? product.subtitle,
+    description: "一件以真实佩戴场景、比例和材质克制感为核心的珠宝，适合作为日常标志，也适合进入私人定制流程继续细化。",
     narrative: `这件作品以克制的材质、比例与光泽回应你的珠宝人格，既适合独立佩戴，也能自然融入日常叠搭。`,
+    symbolism: "它承载的是个人符号，而不是装饰口号：把星座、记忆、场合与审美偏好转化为可以佩戴的形态。",
+    materialEnergy: "材质方向将根据最终工厂样品确认，以金属色泽、宝石火彩、重量和佩戴舒适度共同决定。",
+    stylingNotes: "建议作为造型里的一个安静焦点佩戴。保持周围服装线条干净，让珠宝的比例和光泽自然被看见。",
+    customizationOptions: ["金属颜色与镀层调整", "宝石密度或主石替换", "戒圈或链长比例微调", "刻字、符号或私人定制细节"],
+    material: zhMaterial(product.material),
+    priceLabel: `$${product.price.toLocaleString()} 起`,
+    collectionName: zhCollections[product.tags.collectionName] ?? product.tags.collectionName,
+    zodiacAffinity: (product.zodiacAffinity ?? []).map((sign) => zhZodiac[sign] ?? sign),
     category: zhCategories[product.category] ?? product.category,
     tags: product.tags.styleTags.map((tag) => zhTags[tag] ?? tag),
+    occasions: product.tags.occasionTags.map((tag) => zhOccasions[tag] ?? tag),
   };
 }

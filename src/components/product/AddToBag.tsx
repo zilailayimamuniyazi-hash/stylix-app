@@ -7,9 +7,11 @@ import type { Product } from "@/lib/types/product";
 import { track } from "@/lib/analytics/tracker";
 import { EVENTS } from "@/lib/analytics/events";
 import { useI18n } from "@/lib/i18n/context";
+import { getPreorderCopy } from "@/lib/i18n/preorderCopy";
 
 export function AddToBag({ product }: { product: Product }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const preorder = getPreorderCopy(locale);
   const { addItem, items } = useCart();
   const [added, setAdded] = useState(false);
 
@@ -29,7 +31,7 @@ export function AddToBag({ product }: { product: Product }) {
         onClick={handleAdd}
         className="ui-button ui-button--primary"
       >
-        {added ? t.product.addedToBag : inCart ? t.product.addAnother : t.product.addToBag}
+        {added ? t.product.addedToBag : inCart ? t.product.addAnother : preorder.button}
       </button>
       {inCart && (
         <Link
