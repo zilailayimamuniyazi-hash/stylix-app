@@ -5,9 +5,13 @@ import Link from "next/link";
 import type { Product } from "@/lib/types/product";
 import { WishlistHeartButton } from "@/components/product/WishlistHeartButton";
 import { useI18n } from "@/lib/i18n/context";
+import { productDisplay } from "@/lib/i18n/productCopy";
+import { getPreorderCopy } from "@/lib/i18n/preorderCopy";
 
 export function ProductCard({ product, compact }: { product: Product; compact?: boolean }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const display = productDisplay(product, locale);
+  const preorder = getPreorderCopy(locale);
   const isArchive = product.tags.collectionCategory === "ai-concept-archive";
   const isDesigner = product.tags.collectionCategory === "designer-capsule";
 
@@ -20,22 +24,27 @@ export function ProductCard({ product, compact }: { product: Product; compact?: 
         <Link href={`/product/${product.slug}`} className="relative block h-full w-full">
           <Image
             src={product.coverImage}
-            alt={product.name}
+            alt={display.name}
             fill
             className={`object-cover transition-transform duration-[700ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.025] ${
               isArchive ? "opacity-80" : ""
             }`}
             sizes="(max-width:768px) 100vw, 33vw"
           />
+          <div className="absolute left-3 top-3 z-10">
+            <span className="border border-white/35 bg-black/75 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
+              {preorder.badge}
+            </span>
+          </div>
           {isArchive && (
-            <div className="absolute top-3 left-3">
+            <div className="absolute left-3 top-11">
               <span className="rounded-full bg-black/65 px-2.5 py-1 text-[8px] uppercase tracking-[0.18em] text-white/80 backdrop-blur-sm">
                 {t.product.conceptArchive}
               </span>
             </div>
           )}
           {isDesigner && product.collaboratorName && (
-            <div className="absolute top-3 left-3">
+            <div className="absolute left-3 top-11">
               <span className="rounded-full bg-black/65 px-2.5 py-1 text-[8px] uppercase tracking-[0.18em] text-white/80 backdrop-blur-sm">
                 {t.product.selectedByStylix}
               </span>
@@ -49,10 +58,13 @@ export function ProductCard({ product, compact }: { product: Product; compact?: 
             {product.collaboratorName} · {t.product.designerCapsule}
           </p>
         ) : (
-          <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ui-text-3)]">{product.category}</p>
+          <p className="text-[9px] uppercase tracking-[0.18em] text-[var(--ui-text-3)]">{display.category}</p>
         )}
-        <Link href={`/product/${product.slug}`} className="mt-2 font-serif text-xl leading-tight text-[var(--ui-text)] hover:text-[var(--ui-accent-hover)]">{product.name}</Link>
-        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--ui-text-3)]">{product.subtitle}</p>
+        <Link href={`/product/${product.slug}`} className="mt-2 font-serif text-xl leading-tight text-[var(--ui-text)] hover:text-[var(--ui-accent-hover)]">{display.name}</Link>
+        <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-[var(--ui-accent)]">
+          {preorder.badge}
+        </p>
+        <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--ui-text-3)]">{display.subtitle}</p>
         {isArchive ? (
           <p className="mt-4 text-xs italic text-[var(--ui-text-3)]">{t.product.conceptPieceArchive}</p>
         ) : (
@@ -61,7 +73,7 @@ export function ProductCard({ product, compact }: { product: Product; compact?: 
           </p>
         )}
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {product.tags.styleTags.slice(0, 3).map((tag) => (
+          {display.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="ui-badge"

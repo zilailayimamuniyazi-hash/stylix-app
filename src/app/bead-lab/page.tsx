@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import JewelryPreview3D from "./JewelryPreview3D";
+import { BeadLabLanguageBridge } from "./BeadLabLanguageBridge";
 import type { CategoryId, ChainVariant, DesignState, EarringVariant, RingVariant } from "./data/types";
 import {
   CATEGORIES, MATERIALS, PENDANTS as CATALOG_PENDANTS, byId, findTemplate, templatesFor,
@@ -367,7 +368,8 @@ export default function BeadLabPage() {
   const isFinalStep = currentIndex === dimensions.length - 1;
 
   return (
-    <div className="studio-shell min-h-screen text-ivory">
+    <div className="studio-shell min-h-screen text-ivory" data-bead-lab>
+      <BeadLabLanguageBridge />
       <div className="pointer-events-none absolute inset-x-0 top-16 h-72 bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgba(212,175,55,0.08),transparent)]" />
       <div className="studio-shell__inner relative mx-auto max-w-[1440px] px-4 pb-14 pt-24 sm:px-8 lg:px-12">
         <header className="studio-header mb-7 text-center">

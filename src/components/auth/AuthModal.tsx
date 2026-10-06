@@ -51,7 +51,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
         : await register(email, password, name);
 
       if (result.ok && "requiresConfirmation" in result && result.requiresConfirmation) {
-        setSuccess("注册邮件已发送，请前往邮箱完成验证后登录。");
+        setSuccess("We sent you a verification email. Please verify your address, then sign in.");
       } else if (result.ok) {
         onClose();
       } else {

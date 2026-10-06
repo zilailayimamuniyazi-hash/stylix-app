@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useI18n } from "@/lib/i18n/context";
+import { jmtiBasisEn, jmtiQuestionsEn } from "@/lib/identity/questions.en";
 import {
   evaluateJmti,
   jmtiBasis,
@@ -38,14 +40,21 @@ function loadStoredProgress(): StoredTestProgress | null {
   }
 }
 
-const steps: { dimension: JmtiDimension; label: string; title: string; note: string }[] = [
+const stepsZh: { dimension: JmtiDimension; label: string; title: string; note: string }[] = [
   { dimension: "LO", label: "理性 / 情绪", title: "你买珠宝时更看重价值，还是心动？", note: "第 1-8 题，判断 L 理性保值或 O 情绪审美。" },
   { dimension: "MT", label: "日常 / 仪式", title: "你的珠宝更像日常护身符，还是重要时刻的开场？", note: "第 9-15 题，判断 M 日常常戴或 T 仪式佩戴。" },
   { dimension: "AS", label: "小众 / 经典", title: "你更偏向设计师感，还是经得起时间的经典？", note: "第 16-22 题，判断 A 小众设计或 S 经典大众。" },
   { dimension: "DG", label: "低调 / 亮眼", title: "你希望光芒被慢慢发现，还是一眼被看见？", note: "第 23-30 题，判断 D 低调内敛或 G 亮眼吸睛。" },
 ];
 
-const occasions: { value: OccasionTag; label: string }[] = [
+const stepsEn: typeof stepsZh = [
+  { dimension: "LO", label: "Logic / Emotion", title: "Do you value enduring worth or emotional attraction?", note: "Questions 1–8 reveal whether you lean toward rational value (L) or emotional aesthetics (O)." },
+  { dimension: "MT", label: "Daily / Occasion", title: "Is jewellery your daily talisman or the opening of an important moment?", note: "Questions 9–15 reveal daily wear (M) or ceremonial dressing (T)." },
+  { dimension: "AS", label: "Independent / Classic", title: "Do you prefer a designer point of view or a timeless classic?", note: "Questions 16–22 reveal independent design (A) or enduring classicism (S)." },
+  { dimension: "DG", label: "Quiet / Radiant", title: "Should your radiance be discovered slowly or seen at first glance?", note: "Questions 23–30 reveal understated expression (D) or visible brilliance (G)." },
+];
+
+const occasionsZh: { value: OccasionTag; label: string }[] = [
   { value: "work", label: "工作通勤" },
   { value: "black-tie", label: "正式晚宴" },
   { value: "wedding guest", label: "婚礼宾客" },
@@ -54,13 +63,25 @@ const occasions: { value: OccasionTag; label: string }[] = [
   { value: "holiday gift", label: "节日送礼" },
 ];
 
-const styles: { value: StyleTag; label: string }[] = [
+const occasionsEn: typeof occasionsZh = [
+  { value: "work", label: "Work" }, { value: "black-tie", label: "Black tie" },
+  { value: "wedding guest", label: "Wedding guest" }, { value: "date night", label: "Date night" },
+  { value: "casual brunch", label: "Weekend brunch" }, { value: "holiday gift", label: "Holiday gift" },
+];
+
+const stylesZh: { value: StyleTag; label: string }[] = [
   { value: "classic", label: "经典" },
   { value: "bold", label: "强存在感" },
   { value: "celestial", label: "星月灵感" },
   { value: "romantic", label: "浪漫柔和" },
   { value: "minimal", label: "极简" },
   { value: "elegant", label: "精致优雅" },
+];
+
+const stylesEn: typeof stylesZh = [
+  { value: "classic", label: "Classic" }, { value: "bold", label: "Bold" },
+  { value: "celestial", label: "Celestial" }, { value: "romantic", label: "Romantic" },
+  { value: "minimal", label: "Minimal" }, { value: "elegant", label: "Elegant" },
 ];
 
 function OptionButton({ active, children, onClick }: { active: boolean; children: React.ReactNode; onClick: () => void }) {
@@ -78,6 +99,7 @@ function OptionButton({ active, children, onClick }: { active: boolean; children
 
 export function TestClient() {
   const router = useRouter();
+  const { locale } = useI18n();
   const { user, register } = useAuth();
   const [step, setStep] = useState(() => loadStoredProgress()?.step ?? 0);
   const [responses, setResponses] = useState<Record<number, AnswerChoice>>(() => loadStoredProgress()?.responses ?? {});
@@ -93,10 +115,29 @@ export function TestClient() {
   const [authLoading, setAuthLoading] = useState(false);
   const [registrationSkipped, setRegistrationSkipped] = useState(false);
 
+  const isZh = locale === "zh";
+  const steps = isZh ? stepsZh : stepsEn;
+  const questions = isZh ? jmtiQuestions : jmtiQuestionsEn;
+  const basis = isZh ? jmtiBasis : jmtiBasisEn;
+  const occasions = isZh ? occasionsZh : occasionsEn;
+  const styles = isZh ? stylesZh : stylesEn;
+  const copy = isZh ? {
+    title: "用直觉选择，建立你的珠宝风格坐标。", intro: "30 个直觉选择，约 4 分钟。没有正确答案，只需选择更接近你的那一项。",
+    progress: "测试进度", dimensions: "四种维度，构成你的身份坐标。", method: "了解测试方法",
+    continue: "继续下一部分", extra: "补充推荐条件", zodiac: "星座", occasion: "今天的场景", style: "偏好风格", budget: "价格筛选", finish: "生成今日身份卡",
+    save: "保存身份档案", saveTitle: "注册后可保存 JMTI 档案（可选）。", saveBody: "档案会保存测试结果、预算与推荐偏好，并在登录设备间同步。你也可以跳过注册，直接继续测试。",
+    name: "昵称", email: "邮箱", password: "密码", creating: "创建中...", create: "创建档案", skip: "跳过，继续测试",
+  } : {
+    title: "Choose by instinct. Map your jewellery identity.", intro: "30 intuitive choices in about four minutes. There are no correct answers — choose what feels closer to you.",
+    progress: "Reading progress", dimensions: "Four dimensions compose your identity coordinate.", method: "About the method",
+    continue: "Continue to the next part", extra: "Refine your recommendation", zodiac: "Zodiac", occasion: "Today’s occasion", style: "Preferred style", budget: "Price range", finish: "Create today’s identity card",
+    save: "Save your identity", saveTitle: "Create an optional profile to save your JMTI reading.", saveBody: "Your reading, budget and preferences can sync between signed-in devices. You may also skip registration and continue.",
+    name: "Name", email: "Email", password: "Password", creating: "Creating...", create: "Create profile", skip: "Skip and continue",
+  };
   const activeStep = steps[step];
   const activeQuestions = useMemo(
-    () => jmtiQuestions.filter((question) => question.dimension === activeStep.dimension),
-    [activeStep.dimension],
+    () => questions.filter((question) => question.dimension === activeStep.dimension),
+    [activeStep.dimension, questions],
   );
   const answeredInStep = activeQuestions.filter((question) => responses[question.id]).length;
   const stepComplete = answeredInStep === activeQuestions.length;
@@ -119,10 +160,10 @@ export function TestClient() {
     const result = await register(email, password, name || "Stylix Member");
     setAuthLoading(false);
     if (!result.ok) {
-      setAuthError("请输入有效邮箱，并设置至少 6 位密码。");
+      setAuthError(isZh ? "请输入有效邮箱，并设置至少 6 位密码。" : "Enter a valid email and a password of at least six characters.");
       return;
     }
-    if (result.requiresConfirmation) setAuthNotice("验证邮件已发送。你可以继续测试，验证后档案会自动同步。");
+    if (result.requiresConfirmation) setAuthNotice(isZh ? "验证邮件已发送。你可以继续测试，验证后档案会自动同步。" : "A verification email has been sent. You may continue; your profile will sync after verification.");
     setStep(1);
   }
 
@@ -137,7 +178,7 @@ export function TestClient() {
   }
 
   function finish() {
-    if (answeredTotal !== jmtiQuestions.length) return;
+    if (answeredTotal !== questions.length) return;
     const result = evaluateJmti(responses);
     const answers: IdentityAnswers = {
       jmtiCode: result.code,
@@ -158,13 +199,13 @@ export function TestClient() {
   return (
     <div className="ui-page">
       <header className="border-b border-[var(--ui-line)]">
-        <div className="ui-container py-10"><div className="flex min-w-0 flex-col justify-between gap-6 md:flex-row md:items-end"><div className="min-w-0 max-w-full"><p className="ui-eyebrow">JMTI · Jewelry identity index</p><h1 className="ui-title mt-4">用直觉选择，建立你的珠宝风格坐标。</h1></div><p className="ui-copy max-w-sm">30 个直觉选择，约 4 分钟。没有正确答案，只需选择更接近你的那一项。</p></div><div className="mt-8 h-px bg-[var(--ui-line)]"><div className="h-px bg-[var(--ui-accent)] transition-all duration-500" style={{ width: `${(answeredTotal / jmtiQuestions.length) * 100}%` }} /></div></div>
+        <div className="ui-container py-10"><div className="flex min-w-0 flex-col justify-between gap-6 md:flex-row md:items-end"><div className="min-w-0 max-w-full"><p className="ui-eyebrow">JMTI · Jewelry identity index</p><h1 className="ui-title mt-4">{copy.title}</h1></div><p className="ui-copy max-w-sm">{copy.intro}</p></div><div className="mt-8 h-px bg-[var(--ui-line)]"><div className="h-px bg-[var(--ui-accent)] transition-all duration-500" style={{ width: `${(answeredTotal / questions.length) * 100}%` }} /></div></div>
       </header>
       <div className="ui-container py-10 lg:py-14">
         <div className="grid gap-8 lg:grid-cols-[280px_1fr] xl:gap-12">
           <aside className="min-w-0 border-b border-[var(--ui-line)] pb-7 lg:sticky lg:top-24 lg:h-fit lg:border-b-0 lg:pb-0 lg:pr-6">
-            <p className="ui-eyebrow">测试进度 · {answeredTotal}/30</p>
-            <h2 className="ui-heading mt-4">四种维度，构成你的身份坐标。</h2>
+            <p className="ui-eyebrow">{copy.progress} · {answeredTotal}/30</p>
+            <h2 className="ui-heading mt-4">{copy.dimensions}</h2>
             <div className="mt-7 grid min-w-0 grid-cols-2 gap-2 overflow-hidden sm:grid-cols-4 lg:block lg:space-y-4 lg:overflow-visible">
               {steps.map((item, index) => {
                 const isFutureStep = index > step;
@@ -183,7 +224,7 @@ export function TestClient() {
               })}
             </div>
             <div className="mt-6 border-t border-ivory/10 pt-5 lg:mt-8 lg:pt-6">
-              <details className="group"><summary className="cursor-pointer list-none text-[10px] uppercase tracking-[0.28em] text-white/42 hover:text-[#c8a96b]">了解测试方法 <span className="ml-2 group-open:hidden">+</span><span className="ml-2 hidden group-open:inline">−</span></summary><div className="mt-4 space-y-3 text-xs leading-6 text-white/42">{jmtiBasis.map((item) => <p key={item}>{item}</p>)}</div></details>
+              <details className="group"><summary className="cursor-pointer list-none text-[10px] uppercase tracking-[0.28em] text-white/42 hover:text-[#c8a96b]">{copy.method} <span className="ml-2 group-open:hidden">+</span><span className="ml-2 hidden group-open:inline">−</span></summary><div className="mt-4 space-y-3 text-xs leading-6 text-white/42">{basis.map((item) => <p key={item}>{item}</p>)}</div></details>
             </div>
           </aside>
 
@@ -218,19 +259,19 @@ export function TestClient() {
 
               {needsRegistration && (
                 <form onSubmit={createProfile} className="mt-10 max-w-xl border border-gold/20 bg-gold/5 p-6">
-                  <p className="text-[10px] uppercase tracking-[0.35em] text-gold/70">保存身份档案</p>
-                  <h3 className="mt-2 font-serif text-2xl text-ivory">注册后可保存 JMTI 档案（可选）。</h3>
-                  <p className="mt-3 text-sm leading-6 text-ivory/55">档案会保存测试结果、预算与推荐偏好，并在登录设备间同步。你也可以跳过注册，直接继续测试。</p>
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-gold/70">{copy.save}</p>
+                  <h3 className="mt-2 font-serif text-2xl text-ivory">{copy.saveTitle}</h3>
+                  <p className="mt-3 text-sm leading-6 text-ivory/55">{copy.saveBody}</p>
                   <div className="mt-5 grid gap-3">
-                    <input value={name} onChange={(e) => setName(e.target.value)} placeholder="昵称" className="ui-field" />
-                    <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="邮箱" className="ui-field" />
-                    <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={6} required placeholder="密码" className="ui-field" />
+                    <input value={name} onChange={(e) => setName(e.target.value)} placeholder={copy.name} className="ui-field" />
+                    <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder={copy.email} className="ui-field" />
+                    <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={6} required placeholder={copy.password} className="ui-field" />
                   </div>
                   {authError && <p className="mt-3 text-xs text-red-400">{authError}</p>}
                   {authNotice && <p className="mt-3 text-xs text-gold">{authNotice}</p>}
                   <div className="mt-5 flex flex-wrap items-center gap-4">
                     <button disabled={authLoading} className="ui-button ui-button--primary">
-                      {authLoading ? "创建中..." : "创建档案"}
+                      {authLoading ? copy.creating : copy.create}
                     </button>
                     <button
                       type="button"
@@ -238,7 +279,7 @@ export function TestClient() {
                       disabled={authLoading}
                       className="text-[11px] uppercase tracking-[0.23em] text-ivory/55 underline-offset-4 hover:text-gold hover:underline disabled:opacity-50"
                     >
-                      跳过，继续测试
+                      {copy.skip}
                     </button>
                   </div>
                 </form>
@@ -246,24 +287,24 @@ export function TestClient() {
 
               {!needsRegistration && step < steps.length - 1 && (
                 <button type="button" disabled={!stepComplete} onClick={nextStep} className="ui-button ui-button--primary mt-8">
-                  继续下一部分
+                  {copy.continue}
                 </button>
               )}
 
               {step === steps.length - 1 && (
                 <div className="mt-10 border-t border-ivory/10 pt-8">
-                  <p className="text-[10px] uppercase tracking-[0.32em] text-gold/70">补充推荐条件</p>
+                  <p className="text-[10px] uppercase tracking-[0.32em] text-gold/70">{copy.extra}</p>
                   <div className="mt-6 grid gap-8 xl:grid-cols-2">
                     <div>
-                      <p className="mb-3 text-[10px] uppercase tracking-[0.28em] text-ivory/40">星座</p>
+                      <p className="mb-3 text-[10px] uppercase tracking-[0.28em] text-ivory/40">{copy.zodiac}</p>
                       <div className="grid gap-3 sm:grid-cols-3">
                         {zodiacSigns.map((sign) => (
-                          <OptionButton key={sign} active={zodiac === sign} onClick={() => setZodiac(sign)}>{zodiacLabels[sign]}</OptionButton>
+                          <OptionButton key={sign} active={zodiac === sign} onClick={() => setZodiac(sign)}>{isZh ? zodiacLabels[sign] : sign}</OptionButton>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <p className="mb-3 text-[10px] uppercase tracking-[0.28em] text-ivory/40">今天的场景</p>
+                      <p className="mb-3 text-[10px] uppercase tracking-[0.28em] text-ivory/40">{copy.occasion}</p>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {occasions.map((item) => (
                           <OptionButton key={item.value} active={occasion === item.value} onClick={() => setOccasion(item.value)}>{item.label}</OptionButton>
@@ -271,7 +312,7 @@ export function TestClient() {
                       </div>
                     </div>
                     <div>
-                      <p className="mb-3 text-[10px] uppercase tracking-[0.28em] text-ivory/40">偏好风格</p>
+                      <p className="mb-3 text-[10px] uppercase tracking-[0.28em] text-ivory/40">{copy.style}</p>
                       <div className="grid gap-3 sm:grid-cols-2">
                         {styles.map((item) => (
                           <OptionButton key={item.value} active={style === item.value} onClick={() => setStyle(item.value)}>{item.label}</OptionButton>
@@ -280,14 +321,14 @@ export function TestClient() {
                     </div>
                     <div className="border border-ivory/10 p-5">
                       <div className="flex justify-between gap-4">
-                        <p className="text-[10px] uppercase tracking-[0.28em] text-ivory/40">价格筛选</p>
+                        <p className="text-[10px] uppercase tracking-[0.28em] text-ivory/40">{copy.budget}</p>
                         <p className="font-serif text-xl text-gold">{"$" + budgetMax}</p>
                       </div>
                       <input type="range" min={150} max={2500} step={25} value={budgetMax} onChange={(e) => setBudgetMax(Number(e.target.value))} className="mt-5 w-full accent-[#C9A962]" />
                     </div>
                   </div>
                   <button type="button" disabled={!stepComplete} onClick={finish} className="ui-button ui-button--primary mt-8">
-                    生成今日身份卡
+                    {copy.finish}
                   </button>
                 </div>
               )}

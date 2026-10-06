@@ -10,18 +10,18 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: "#0B0C0E",
-          deep: "#0B0C0E",
-          soft: "#16181C",
-          muted: "#1B1E22",
-          border: "#292C31",
+          DEFAULT: "#FBFAF8",
+          deep: "#FBFAF8",
+          soft: "#FFFFFF",
+          muted: "#F1EFE9",
+          border: "#D9D6CF",
         },
         ivory: {
-          DEFAULT: "#F2F0EB",
-          soft: "#F7F4EE",
-          dim: "#B6B7BA",
-          warm: "#FAF8F3",
-          muted: "#85888E",
+          DEFAULT: "#08090D",
+          soft: "#17181D",
+          dim: "#4F5058",
+          warm: "#08090D",
+          muted: "#777780",
         },
         gold: {
           DEFAULT: "#C7AA70",

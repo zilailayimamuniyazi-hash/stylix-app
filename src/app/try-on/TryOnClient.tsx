@@ -10,6 +10,7 @@ import { EVENTS } from "@/lib/analytics/events";
 import { useCart } from "@/lib/cart/CartContext";
 import { useWishlist } from "@/lib/wishlist/WishlistContext";
 import { getProductBySlug } from "@/lib/data/products";
+import { useI18n } from "@/lib/i18n/context";
 import {
   getDefaultTryOnItem,
   getTryOnItemBySlug,
@@ -122,6 +123,9 @@ interface TryOnClientProps {
 }
 
 export function TryOnClient({ piece }: TryOnClientProps) {
+  const { locale } = useI18n();
+  const zh = locale === "zh";
+  const L = (en: string, cn: string) => zh ? cn : en;
   const router = useRouter();
   const { addItem } = useCart();
   const { addItem: addToWishlist, isInWishlist } = useWishlist();
@@ -324,14 +328,14 @@ export function TryOnClient({ piece }: TryOnClientProps) {
     try {
       const landmarker = await getPoseLandmarker();
       if (!landmarker) {
-        setFitMessage("已使用标准位置，可通过下方控制微调");
+        setFitMessage("Standard placement applied. Use the controls below to refine it.");
         return;
       }
 
       const result = landmarker.detect(img);
       const lms = result.landmarks?.[0];
       if (!lms || lms.length < 21) {
-        setFitMessage("未识别到完整姿态，已保留标准位置");
+        setFitMessage("A complete pose was not detected, so standard placement has been retained.");
         return;
       }
 
@@ -348,7 +352,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
           placeNecklace(lms);
           break;
       }
-      setFitMessage("已完成自动贴合，可继续微调");
+      setFitMessage("Automatic fitting is complete. You can continue refining the placement.");
     } finally {
       setDetecting(false);
     }
@@ -447,11 +451,11 @@ export function TryOnClient({ piece }: TryOnClientProps) {
     setUploadError(null);
     setSamplePhoto(false);
     if (!f.type.startsWith("image/")) {
-      setUploadError("请选择 JPG、PNG 或 WEBP 图片");
+      setUploadError("Please choose a JPG, PNG or WEBP image.");
       return;
     }
     if (f.size > 12 * 1024 * 1024) {
-      setUploadError("图片不能超过 12MB");
+      setUploadError("The image must be smaller than 12MB.");
       return;
     }
     setPhotoFileName(f.name);
@@ -464,7 +468,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
       render();
       autoPlace(img);
     };
-    img.onerror = () => setUploadError("图片读取失败，请更换文件重试");
+    img.onerror = () => setUploadError("The image could not be read. Please try another file.");
     img.src = url;
   }
 
@@ -472,7 +476,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
     const url = "/products/af5f213e39ff746e4ea3efa8a5e0a7d9.jpg";
     setUploadError(null);
     setSamplePhoto(true);
-    setPhotoFileName("示例人像");
+    setPhotoFileName("Sample Portrait");
     setPhotoUrl(url);
     const img = new window.Image();
     img.onload = () => {
@@ -480,7 +484,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
       render();
       autoPlace(img);
     };
-    img.onerror = () => setUploadError("示例图片暂时不可用");
+    img.onerror = () => setUploadError("The sample image is temporarily unavailable.");
     img.src = url;
   }
 
@@ -526,16 +530,16 @@ export function TryOnClient({ piece }: TryOnClientProps) {
   }
 
   const inWishlist = isInWishlist(selectedItem.id);
-  const categoryLabel = selectedItem.category === "necklace" ? "项链" : selectedItem.category === "ring" ? "戒指" : selectedItem.category === "earring" ? "耳饰" : "手链";
+  const categoryLabel = selectedItem.category === "necklace" ? L("Necklace", "项链") : selectedItem.category === "ring" ? L("Ring", "戒指") : selectedItem.category === "earring" ? L("Earrings", "耳饰") : L("Bracelet", "手链");
   const visibleItems = tryOnItems.filter((item) => item.category === categoryFilter);
 
   return (
     <div className="ui-container py-8 lg:py-12">
       <header className="mb-7 border-b border-[var(--ui-line)] pb-7">
-        <p className="ui-eyebrow">Virtual Try-On</p>
+        <p className="ui-eyebrow">{L("Virtual Try-On", "虚拟试戴")}</p>
         <div className="mt-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div><h1 className="ui-title">上传照片，预览真实佩戴比例。</h1><p className="ui-copy mt-3 max-w-2xl">系统会定位珠宝并保留手动微调能力；照片仅在当前浏览器中处理。</p></div>
-          <button type="button" onClick={useSamplePhoto} className="ui-button ui-button--secondary w-fit">使用示例照片</button>
+          <div><h1 className="ui-title">{L("Upload a photo. Preview the true wearing scale.", "上传照片，预览真实佩戴比例。")}</h1><p className="ui-copy mt-3 max-w-2xl">{L("Stylix positions the jewel while preserving fine manual controls. Your image is processed only in this browser.", "Stylix 会自动定位珠宝，同时保留精细的手动调整功能。你的照片只会在当前浏览器中处理。")}</p></div>
+          <button type="button" onClick={useSamplePhoto} className="ui-button ui-button--secondary w-fit">{L("Use a Sample Photo", "使用示例照片")}</button>
         </div>
       </header>
       {/* Success toast */}
@@ -545,7 +549,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
           role="status"
         >
           <p className="text-[10px] uppercase tracking-[0.3em] text-gold">
-            {addedToBag ? "已加入购物袋" : "已收藏"}
+            {addedToBag ? L("Added to Bag", "已加入购物袋") : L("Saved to Wishlist", "已加入心愿单")}
           </p>
         </div>
       )}
@@ -555,7 +559,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
         <div className="order-2 space-y-5 lg:sticky lg:top-20">
           {/* Product selector */}
           <div className="ui-surface p-5">
-            <p className="ui-eyebrow mb-3">当前试戴</p>
+            <p className="ui-eyebrow mb-3">{L("Current Selection", "当前选择")}</p>
             <div className="flex items-center gap-3 mb-4">
               <div className="relative h-12 w-12 shrink-0 overflow-hidden bg-stone-900 border border-ivory/10">
                 <Image
@@ -575,9 +579,9 @@ export function TryOnClient({ piece }: TryOnClientProps) {
             </div>
 
             <div className="mb-3 grid grid-cols-2 rounded border border-[var(--ui-line)] p-1">
-              {(["necklace", "ring"] as const).map((category) => <button key={category} type="button" onClick={() => setCategoryFilter(category)} className={`min-h-11 rounded text-[10px] tracking-[0.12em] ${categoryFilter === category ? "bg-[var(--ui-action)] text-[var(--ui-action-text)]" : "text-[var(--ui-text-3)] hover:text-[var(--ui-text)]"}`}>{category === "necklace" ? "项链" : "戒指"}</button>)}
+              {(["necklace", "ring"] as const).map((category) => <button key={category} type="button" onClick={() => setCategoryFilter(category)} className={`min-h-11 rounded text-[10px] tracking-[0.12em] ${categoryFilter === category ? "bg-[var(--ui-action)] text-[var(--ui-action-text)]" : "text-[var(--ui-text-3)] hover:text-[var(--ui-text)]"}`}>{category === "necklace" ? L("Necklaces", "项链") : L("Rings", "戒指")}</button>)}
             </div>
-            <p className="text-[9px] uppercase tracking-[0.35em] text-ivory/40 mb-2">选择款式</p>
+            <p className="text-[9px] uppercase tracking-[0.35em] text-ivory/40 mb-2">{L("Select a Piece", "选择珠宝")}</p>
             <div className="grid grid-cols-3 gap-2">
               {visibleItems.map((item) => {
                 const active = item.id === selectedItem.id;
@@ -608,23 +612,23 @@ export function TryOnClient({ piece }: TryOnClientProps) {
 
           {/* Upload area */}
           <div>
-            <p className="text-[9px] uppercase tracking-[0.35em] text-ivory/40 mb-3">上传照片</p>
+            <p className="text-[9px] uppercase tracking-[0.35em] text-ivory/40 mb-3">{L("Upload Photo", "上传照片")}</p>
             <label className="ui-surface flex cursor-pointer flex-col items-center justify-center border-dashed px-6 py-9 hover:border-[var(--ui-line-strong)] hover:bg-[var(--ui-surface-hover)]">
               <span className="text-[10px] uppercase tracking-[0.3em] text-ivory/30 mb-1">
-                {photoFileName ?? "点击上传或调用相机拍摄"}
+                {photoFileName ?? L("Upload a photo or use your camera", "上传照片或使用相机")}
               </span>
-              <span className="text-[9px] text-ivory/40">JPG · PNG · WEBP · 最大 12MB</span>
+              <span className="text-[9px] text-ivory/40">JPG · PNG · WEBP · {L("12MB maximum", "最大 12MB")}</span>
               <input type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={onFile} className="sr-only" />
             </label>
             {uploadError && <p role="alert" className="mt-2 text-xs text-red-300">{uploadError}</p>}
-            <p className="mt-2 text-[9px] leading-4 text-ivory/30">图片不会上传到服务器，离开页面后即释放。</p>
+            <p className="mt-2 text-[9px] leading-4 text-ivory/30">{L("Your image is never uploaded and is released when you leave this page.", "你的照片不会上传，并会在离开页面时释放。")}</p>
             {photoUrl && (
               <button
                 type="button"
                 onClick={resetUpload}
                 className="mt-2 text-[9px] uppercase tracking-[0.2em] text-ivory/40 hover:text-ivory/60 transition-colors"
               >
-                清除照片
+                {L("Remove Photo", "移除照片")}
               </button>
             )}
           </div>
@@ -633,10 +637,10 @@ export function TryOnClient({ piece }: TryOnClientProps) {
           {photoUrl && !samplePhoto && (
             <div className="border border-ivory/10 px-5 py-5 space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-[9px] uppercase tracking-[0.4em] text-gold/60">位置微调</p>
+                <p className="text-[9px] uppercase tracking-[0.4em] text-gold/60">{L("Fine Positioning", "精细定位")}</p>
                 <div className="flex items-center gap-3">
                   {detecting && (
-                    <span className="text-[9px] text-ivory/30 tracking-[0.2em]">识别中…</span>
+                    <span className="text-[9px] text-ivory/30 tracking-[0.2em]">{L("Detecting…", "识别中…")}</span>
                   )}
                 </div>
               </div>
@@ -644,7 +648,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">左右位置</label>
+                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">{L("Horizontal Position", "水平位置")}</label>
                   <span className="text-[9px] text-ivory/30">{overlayX}%</span>
                 </div>
                 <input
@@ -659,7 +663,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">上下位置</label>
+                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">{L("Vertical Position", "垂直位置")}</label>
                   <span className="text-[9px] text-ivory/30">{overlayY}%</span>
                 </div>
                 <input
@@ -674,7 +678,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">尺寸</label>
+                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">{L("Scale", "缩放")}</label>
                   <span className="text-[9px] text-ivory/30">{overlayScale}%</span>
                 </div>
                 <input
@@ -689,7 +693,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">旋转</label>
+                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">{L("Rotation", "旋转")}</label>
                   <span className="text-[9px] text-ivory/30">{overlayRotate}°</span>
                 </div>
                 <input
@@ -704,7 +708,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">融合强度</label>
+                  <label className="text-[9px] uppercase tracking-[0.25em] text-ivory/40">{L("Blend Strength", "融合强度")}</label>
                   <span className="text-[9px] text-ivory/30">{overlayOpacity}%</span>
                 </div>
                 <input
@@ -721,8 +725,8 @@ export function TryOnClient({ piece }: TryOnClientProps) {
 
           {photoUrl && samplePhoto && (
             <div className="border border-gold/15 bg-gold/5 px-5 py-4">
-              <p className="text-[9px] uppercase tracking-[0.3em] text-gold/65">示例佩戴成片</p>
-              <p className="mt-2 text-xs leading-5 text-ivory/45">这是当前款式的真实佩戴参考。上传你自己的正面照片后，系统会进入自动贴合与手动微调模式。</p>
+              <p className="text-[9px] uppercase tracking-[0.3em] text-gold/65">{L("Sample Wearing Reference", "示例佩戴参考")}</p>
+              <p className="mt-2 text-xs leading-5 text-ivory/45">{L("This shows the piece at a realistic scale. Upload your own front-facing photo to enable automatic fitting and manual refinement.", "此示例展示珠宝的真实比例。上传你自己的正面照片后，可使用自动适配与手动微调。")}</p>
             </div>
           )}
 
@@ -734,7 +738,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
                 onClick={download}
                 className="ui-button ui-button--secondary"
               >
-                保存试戴图
+                {L("Save Try-On Image", "保存试戴图片")}
               </button>
               <button
                 type="button"
@@ -745,7 +749,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
                     : "ui-button--secondary"
                 }`}
               >
-                {addedToBag ? "已加入" : "加入购物袋"}
+                {addedToBag ? L("Added", "已加入") : L("Add to Bag", "加入购物袋")}
               </button>
               <button
                 type="button"
@@ -756,7 +760,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
                     : "ui-button--ghost"
                 }`}
               >
-                {inWishlist ? "已在心愿单" : savedToWishlist ? "已收藏" : "收藏款式"}
+                {inWishlist ? L("In Wishlist", "已在心愿单") : savedToWishlist ? L("Saved", "已收藏") : L("Save Piece", "收藏珠宝")}
               </button>
             </div>
           )}
@@ -766,7 +770,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
               href="/advisor"
               className="text-[10px] uppercase tracking-[0.3em] text-gold/60 hover:text-gold transition-colors"
             >
-              获取 JMTI 搭配推荐 →
+              {L("Get a JMTI Styling Recommendation →", "获取 JMTI 造型推荐 →")}
             </Link>
           </div>
         </div>
@@ -777,12 +781,12 @@ export function TryOnClient({ piece }: TryOnClientProps) {
             {!photoUrl && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8 text-center">
                 <Image src="/tryon-model.svg" alt="" fill sizes="(max-width:1024px) 100vw, 70vw" className="pointer-events-none object-contain opacity-[.11]" />
-                <p className="relative text-[10px] uppercase tracking-[0.24em] text-gold/70">Virtual Try-On</p>
-                <p className="relative font-serif text-2xl text-ivory/70">上传照片开始试戴</p>
+                <p className="relative text-[10px] uppercase tracking-[0.24em] text-gold/70">{L("Virtual Try-On", "虚拟试戴")}</p>
+                <p className="relative font-serif text-2xl text-ivory/70">{L("Upload a photo to begin", "上传照片开始试戴")}</p>
                 <p className="relative max-w-xs text-xs text-ivory/45">
-                  项链建议使用正面上半身照片，戒指建议使用能清晰看到手部的照片。
+                  {L("For necklaces, use a front-facing portrait. For rings, use a clear photograph of your hand.", "项链建议使用正面人像照片；戒指建议使用清晰的手部照片。")}
                 </p>
-                <button type="button" onClick={useSamplePhoto} className="ui-button ui-button--primary relative mt-3">先看示例效果</button>
+                <button type="button" onClick={useSamplePhoto} className="ui-button ui-button--primary relative mt-3">{L("Preview a Sample", "预览示例效果")}</button>
               </div>
             )}
 
@@ -796,7 +800,7 @@ export function TryOnClient({ piece }: TryOnClientProps) {
           </div>
 
           <p className="text-xs text-ivory/40">
-            {selectedItem.name} · {selectedItem.material} · {photoUrl ? "可在右侧继续微调" : "请选择款式并上传照片"}
+            {selectedItem.name} · {selectedItem.material} · {photoUrl ? L("Continue refining the placement", "继续微调佩戴位置") : L("Select a piece and upload a photo", "选择珠宝并上传照片")}
           </p>
         </div>
       </div>
